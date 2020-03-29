@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
+title: 记忆的时间差
+subtitle: '实践是检验真理的唯一标准'
 description: ''
 keywords:
-author: John Doe
-language: en
+author: king
+language: zh-CN
 timezone: ''
 
 # URL
@@ -77,7 +77,7 @@ meta_generator: true
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
 ## Use post's date for updated date unless set in front-matter
-use_date_for_updated: false
+use_date_for_updated: true
 
 # Pagination
 ## Set per_page to 0 to disable pagination
@@ -93,11 +93,17 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:RocWangPeng/king.github.io.git
+  repo: git@github.com:RocWangPeng/RocWangPeng.github.io.git
   branch: master
+
+  search:
+    path: search.xml
+    field: post
+    format: html
+    limit: 10000
