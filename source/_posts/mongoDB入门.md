@@ -7,7 +7,7 @@ tags:
 categories:
 - 数据库
 ---
-##MongoDB介绍
+## MongoDB介绍
 - MongoDB是一个NoSQL的数据库
 - MongoDB是一款文档型数据库
 - 数据库指的就是一个存储数据的仓库
@@ -22,7 +22,7 @@ categories:
 		mongod --dbpath 路径 --port 端口号
 	- 启动客户端
 		mongo
-
+<!-- more -->
 ## 安装MongoDB
 - 安装
 - 配置环境变量
@@ -56,9 +56,13 @@ categories:
 	- 3 .以管理员的身份打开命令行窗口	
 	
 	- 4.执行如下的命令
-		`sc.exe create MongoDB binPath= "\"C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe\" --service --config=\"C:\Program Files\MongoDB\Server\3.2\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"`
+		```
+        sc.exe create MongoDB binPath= "\"C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe\" --service --config=\"C:\Program Files\MongoDB\Server\3.2\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"
+        ```
 		
-	`	sc.exe create MongoDB binPath= "\"mongod的bin目录\mongod.exe\" --service --config=\"mongo的安装目录\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"`
+	```
+    sc.exe create MongoDB binPath= "\"mongod的bin目录\mongod.exe\" --service --config=\"mongo的安装目录\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"
+      ```
 		
 	- 5.启动mongodb服务
 
