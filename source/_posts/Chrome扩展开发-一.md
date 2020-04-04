@@ -1,5 +1,5 @@
 ---
-title: 'Chrome扩展开发（大全）'
+title: 'Chrome插件开发-极速入门教程（必看）'
 date: 2020-03-30 16:38:38
 tags:
 - chrome
@@ -28,6 +28,12 @@ Chrome插件提供了很多实用API供我们使用，包括但不限于：
 - 自定义原生菜单；
 - 完善的通信机制；
 - 等等；
+
+**详细目录**
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200404113340.png)
+
+**demo部分截图：**
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200404113442.png)
 
 #  3. 为什么是Chrome插件而不是Firefox插件
 - Chrome占有率更高，更多人用；
@@ -939,8 +945,11 @@ chrome.webRequest.onBeforeRequest.addListener(details => {
 - [permissions权限][26]
 - chrome.xxx.api文档
 - 模糊匹配规则语法详解
-#Chrome扩展demo
+
+# Chrome扩展demo
 https://github.com/RocWangPeng/chrome-plugin-demo
+
+原文参考自:[好记的博客](http://blog.haoji.me/chrome-plugin-develop.html?from=xa)
 
   [1]: http://image.liuxianan.com/201706/20170620_195047_992_5668.png
   [2]: https://developer.chrome.com/extensions/manifest
