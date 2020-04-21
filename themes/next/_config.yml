@@ -128,6 +128,7 @@ menu:
   categories: /categories/ || th
   archives: /archives/ || archive
   about: /about/ || user
+  作品: /project/ || th
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
@@ -1039,4 +1040,7 @@ js: js
 images: images
 
 copyright:
+  enable: true
+
+needmoreshare2:
   enable: true

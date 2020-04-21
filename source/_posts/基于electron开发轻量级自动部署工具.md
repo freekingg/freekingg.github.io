@@ -25,18 +25,22 @@ $ npm run dev
 
 **项目管理**
 
-![avatar](https://user-gold-cdn.xitu.io/2020/2/13/1703d79184901871?w=693&h=771&f=png&s=42357)
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/1703d79184901871%20(1).jpg)
 
+<!-- more -->
 **添加项目**
 
-![avatar](https://user-gold-cdn.xitu.io/2020/2/13/1703d7aa01fcc8cd?w=693&h=771&f=png&s=29836)
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/2.jpg)
+
 
 **发布进度**
 
-![avatar](https://user-gold-cdn.xitu.io/2020/2/13/1703d798d3af68bc?w=687&h=769&f=png&s=45462)
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/3.jpg)
+
 
 ## 部署流程
-![avatar](https://user-gold-cdn.xitu.io/2020/2/13/1703d7aa2f4edcd9?w=263&h=552&f=png&s=17054)
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/4.jpg)
+
 
 
 ## 安装包
