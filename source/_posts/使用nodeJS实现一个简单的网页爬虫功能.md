@@ -6,7 +6,8 @@ tags:
 - 爬虫
 - 案例
 categories:
-- nodejs
+- [nodejs]
+- [案例]
 ---
 
 本文将使用nodeJS+cheerio实现一个简单的网页爬虫功能

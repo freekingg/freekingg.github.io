@@ -4,8 +4,10 @@ date: 2020-04-03 16:16:30
 tags:
 - puppeteer
 - 自动化测试
+- 案例
 categories:
-- puppeteer
+- [puppeteer]
+- [案例]
 ---
 # puppeteer实践-批量下载图灵图书
 

@@ -4,8 +4,10 @@ date: 2020-04-03 16:51:12
 tags:
 - puppeteer
 - 自动化测试
+- 案例
 categories:
-- puppeteer
+- [puppeteer]
+- [案例]
 ---
 
 ## 1、Puppeteer 简介

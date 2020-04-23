@@ -1,0 +1,1102 @@
+---
+title: 极速入门Node·Vue·React服务器部署
+date: 2020-04-21 13:11:48
+tags:
+- nodejs
+- 部署
+categories:
+- nodejs
+---
+
+## 你为什么要学习部署上线？
+
+试想，你用 Node.js 开发了一个网站，一个 App，一个小程序，一个公众号，或者是一个 API 服务器的后台，然后你一直藏在电脑的后面，默默的写着代码，静静的看着效果，却没有足够的信心，把开发的产品，扔到互联网上！
+
+那如何凭借一人之力，把一个 Nodejs 的项目部署到互联网的某台服务器上去，完成一个项目的 “最后一公里” 呢？
+
+这一公里，隔断了前端和后端，隔断了本地和上线，隔绝了此时此刻的你和明天你期望的全栈，这一公里，有域名和服务器的选购备案，有域名到 IP 的解析指向，有服务器的远程连接与系统权限，有 Node.js 生产环境的搭建，有数据库的安装配置和备份，有单台主机多个应用的端口代理和映射，有项目源代码从本地同步到线上，有远程自动化的项目更新发布与服务器的平滑重启，这一公里很短，却有很多你意想不到的 “坑”。
+
+那我来帮你走完这最后一公里，让你的全栈成为可能，让你从前端走向后端，我会利用无数据库的静态站点、有数据库的电影站点、Vue 纯前端项目、React/Egg 前后端分离这 4 个项目，演示全部的流程，从如何购买主机，如何域名解析，如何配置环境，一直到数据库的自动备份，项目的部署上线，让你足够应对绝大多数的部署上线工作。
+
+<!-- more -->
+
+**部署上线，要把一个 Node 项目成功部署上线会涉及这几个技能点：**
+
+- 域名与云服务器的选购与备案
+- 基于 Ubuntu/CentOS 或者其他 Linux 系统的配置
+- Node.js 环境的线上配置
+- 基于 iptables 防火墙和 Fail2Ban 动作防御等对于服务器和 web 服务的保护
+- 线上 MongoDB 数据库的安装配置与权限角色，库表导入导出与迁移备份
+- Nginx 作为前置引擎映射端口进行服务识别和转发
+- SSL 证书的申请安装与配置
+- 项目部署上线的 PM2 的配置使用和服务守护
+
+## 部署Node项目重要的技术：
+
+首先，先看下发布部署 Node 项目会用到的几个重要的技术：
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421131904.png)
+
+整个部署的流程自下向上、自左向右的操作流程如下：
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421131927.png)
+
+## Node.js 诞生简要回顾
+大家都知道，前端跟后端有着难以逾越的门槛，它包括语言和系统知识门槛，知识门槛（网络知识、操作系统知识）还可以慢慢看书充电，但语言门槛还是会很大程度上增加新手的学习难度，更不要提把一个后端语言的服务，手动部署到线上了，**而 Node.js 的诞生则打破了这个局面，让前后端可以用 JavaScript 一门语言横跨前后端。**
+
+因为 Node.js 底层是 Chrome V8 对 JavaScript 代码进行编译和执行，所以天然支持 Javascript 语法特性，那么你写惯了 JavaScript 代码，使用 Node.js 也自然会很顺手的。
+
+> 阿特伍德定律：“Any application that can be written in JavaScript, will eventually be written in JavaScript”，任何可以用 JavaScript 来写的应用，最终都将用JavaScript 来写。
+
+这是早在 2007 年，Jeff Atwood 在文章中提出的观点，那时候 Node.js 还没出现，作者对 JavaScript 的前途是非常看好的，到今天为止，这个定律也基本已经被证实了。
+
+与此同时，有一个程序员，名字叫做 Ryan Dahl，那时候 Ruby on Rails 很火，他也不例外地学习了它。早期的时候 Ryan Dahl 的生活方式就是接项目，然后去客户的地方工作，在他眼中，拿工资和上班其实就是去那里旅行。
+
+此后他去了阿根廷的布宜诺斯艾利斯、德国科隆、奥地利的维也纳这些地方为当地的客户服务，在经过两年的工作后，Ryan Dahl 成为了高性能 Web 服务器的专家，从开发应用到变成专门帮客户解决性能问题的专家。
+
+期间他开始写一些开源项目帮助客户解决 Web 服务器的高并发性能问题，尝试过的语言有 Ruby、C、Lua，当然这些尝试都最终失败了，只有其中通过 C 写的 HTTP 服务库 libebb 项目略有起色，基本上算作 libuv 的前身。
+
+这些失败各有各的原因：
+
+- Ruby 因为虚拟机性能太烂而无法解决根本问题；
+- C 代码的性能高，但是让业务通过 C 进行开发太多底层显然是不太现实的事情；
+- Lua 则是已有的同步 I/O 导致无法发挥性能优势。
+
+虽然经历了失败，但 Ryan Dahl 大致的感觉到了解决问题的关键是要通过事件驱动和异步 I/O 来达成目的，在他快绝望的时候，V8 引擎来了，V8 满足他关于高性能 Web 服务器的想象：
+
+- 没有历史包袱，没有同步 I/O，不会出现一个同步 I/O 导致事件循环性能急剧降低的情况
+- V8 性能足够好，远远比 Python、Ruby 等其他脚本语言的引擎快
+- JavaScript 语言的闭包特性非常方便，比 C 中的回调函数好用
+
+于是在 2009 年的 2 月，按照这个想法他提交了项目的第一行代码，这个项目的名字最终被定名为 “Node”，2009 年 5 月，Ryan Dahl 正式向外界宣布他做的这个项目
+
+2009 年底，Ryan Dahl 在柏林举行的 JSConf EU 会议上发表关于 Node.js 的演讲，之后 Node.js 逐渐流行起来，这就是 Node.js 项目的由来，也是一个普通程序员的励志奋斗史，从一个专注于实现高性能 Web 服务器优化的程序员，几经探索几经挫折后，遇到 V8 而诞生了一个风靡全球的项目。
+
+此时 36 岁的 Ryan Dahl 还不知道，Node.js 将怎么深远的影响到全球的整个开发者生态，因为自此之后，这短短 10 年，Node.js 走完了其他语言可能需要 20 年才能走完的路，无论是在前端开发者群体里还是服务端开发者群体中，都得到了广泛而深入的应用，Node 本身的版本发展也像坐火箭一样，一跃冲天，自此前后端不可逾越的疆界也被打开了。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421132824.png)
+
+**小结**
+
+疆界一旦打开，便如洪水之势一般，迅速蚕食可被重塑重构的地带，而 Node.js 就在扮演这样的“洪水猛兽”，不仅在前端的生态里攻城掠地，也在前后端的边界包括后端领域强势推进，直到它把整个开发生态翻个底朝天再也无可拓展市场才会放缓停止。
+
+## 要不要学习 Node.js？
+
+这一篇专栏我们会对要不要学习 Node.js 进行讨论，分别从前端开发、后端开发、运营和产品经理的角度出发，来分析学习 Node.js 对各自的本职工作会带来怎么样的便利。
+
+Node.js 的前世今生我们已经了解了，那真的需要学习它么，对我有什么直接可见的好处呢，我们来角色扮演一下。
+
+**如果你是前端开发工程师**
+
+你本地电脑上一定会要安装 Node.js，它作为工具也好，作为服务器也好，会帮助你处理完很多又脏又累的事情，比如 LESS/SCSS 的编译，ES6/7 到 ES5 的转换，JavaScript 代码的压缩合并，切换页面调试样式的热更新，无论是通过社区迅速更新换代的 Grunt/Gulp/Webpack，还是通过自己集成或者定制到本地的其他模块，Node.js 的这个运行环境都是你得力的助手。
+
+**如果你是后端开发工程师**
+如果你之前是 PHP 或 Java 工程师，最近转行做 Node.js， 或者想要增加一个语言技能才来学习 Node.js，你不可避免的要去了解 ES5/6/7， 或者说 JavaScipt 的整个语法，去翻阅 Node.js 的各个 API，最后借助 Node.js 社区的一些流行框架，比如 Express/Koa，甚至是阿里开源的 Egg，用你现有的后端开发经验（对于 Web 服务层交互的知识）再套上这些框架的 API，来玩票性质的搭建一些子项目，运行一些产品业务。
+
+**如果你是运营或者产品经理**
+通常喜欢鼓捣的运营和产品经理，会对代码有一定的接触，事实上我认识的不少产品经理对 Express/React/Vue 这些很喜欢，能高效的帮他们实现一些产品原型的测试，已具备了一些基本的开发技能，比如 HTML/CSS/JavaScript，还有 Linux 主机的系统使用，域名解析也有一些经验，在不去学习另外一种全新的语言下，你可能也更愿意，借助 Node.js 搭建你的 Web 服务，帮你的小点子、小创意快速上线测试，获取一些用户的反馈或者价值验证。
+
+以上举例，其实是为了说明影响你职业发展的其中一个因素，便是某项技能的深度，或者是某些技能的广度，这些技能不限于前端后端或者产品，不要给自己设限。
+
+从事某个工种，不代表你只可以钻研这个工种，就拿前端举例，既然本地有了 Node.js 的运行环境，那么适度的往下扩展技能树，是顺水推舟的事情，而对 Node.js 很感兴趣的无论任何职业的人来说，什么时候学习它都不晚，因为整个互联网经过几十年的发展目前的现状就是： JavaScript 成为了 Web 层最容易入门语言，而且最被工业标准和厂商推广的语言，掌握了它，就掌握了 Node.js 的 1/3，剩下的 2/3 分别是 HTTP 知识和 Node.js 本身的运行机制的系统能力。
+
+## 搭建线上生产环境需要做什么？
+这一小节我们就开始真正的课程主题内容了，我们先来说一说搭建配置一个线上生产环境，把应用部署到服务器中，通过域名再暴露到互联网上，需要几个步骤来完成它，它们是购买域名、购买服务器、备案、服务环境配置、数据库配置运维、项目部署发布。下面我们来分别看看它们各自的大概意思，后面会有相应篇幅来详细讲解它们的步骤。
+
+### 一、购买域名
+我们要做的第一件事情是，购买一个属于自己的域名，虽然 IP 地址也可以访问到资源，但是 IP 不够友好不容易记住，而且一些第三方应用平台对于 IP 的支持度也不够，比如苹果商店和微信小程序是不支持 IP 绑定的，必须是域名，而域名的访问协议还必须是 HTTPS 的，所以域名这个一定需要买，关于在哪里买、如何购买、生成 HTTPS 的证书，域名的解析等等，后面章节会有介绍。
+
+### 二、购买服务器
+搞定域名后，第二件事情是需要购买一个服务器，无论它是共享的还是独享的，可以理解为一台带外网 IP 的电脑，在这台服务器上，我们会把服务端的 Node.js 代码部署上去，启动后，我们会监听 80 端口的请求，然后根据一些转发机制，比如通过 Nginx 来把这些请求转发到这个 Node.js 的服务端口上，让它接管以及给予响应。
+
+### 三、备案
+第三件事情，就是购买域名和购买服务器后，通过服务器的配置提供一个可外面访问的网站，我们需要对这个域名进行备案，几年前，备案是让站长十分头疼的事情，现在已经容易多了，为什么要备案的原因我相信你懂的，除非你是在国外提供服务，什么都在国外，但是只要你对国内提供一些服务或者使用一些服务，比如你想用一些短信服务或者邮件服务，包括基于微信公众号和小程序的服务，备案都是我们作为公民要去遵守的一个规范，这个专栏中我也会告诉大家如何备案。
+
+### 四、服务环境配置
+第四件事情，就是服务器的配置，这个配置包含：
+
+- 用户权限和无密码登录
+- Node.js 环境和必备包组件安装搭建
+- 端口转发
+- HTTPS 证书的生成配置
+- Nginx 的安装配置
+- 防火墙
+- 本地数据库
+- 自动备份机制等
+
+### 五、数据库配置运维
+
+第五件事情，就是数据库，这个跟服务器配置强相关，如果我们使用服务器上安装的本地数据库的话（如果是用云数据库，就不需要这一步了，不过云数据库一般价格不菲，我们还是尽量选择免费的东西，让大家尽量低成本地学习），服务器的本地数据库就会涉及数据库的角色、读写权限和自动备份机制，这里面会有很多坑，也有很多容易让人望而却步的流程，所以也会单独拎出来讲。
+
+### 六、项目部署发布
+
+第六件事情，就是项目的部署发布，我们可以粗暴的把代码拷贝和上传，比如 FTP 到服务器中启动，但是这样低效也容易出错，现在可以选择的方式很多。
+
+我个人推荐使用付费或者是免费但私密的第三方 Git 仓库平台。
+
+把本地代码自动化部署到线上，本地一句命令，就可以实现服务器自动拉代码，拉分支，部署代码，然后在线上自动重启，整个过程尽量的傻瓜化，通过技术来解决效率问题。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421140424.png)
+
+
+## 准备待部署的项目
+要想学习布署项目到服务器上发布，咱们总得有项目吧，这一篇我们就准备了 4 个非常具有代表性的项目：纯静态站点、前端项目、前后端分离的项目，以及带有数据库的项目。现在我们来熟悉下它们的结构，最后预览下部署后访问时的效果，通过这个过程，我们会了解到前端静态项目，和后端服务发布到网上会是什么样的效果。
+
+### 案例 1：快速搭建一个纯静态简易站点
+第一个项目，我们设计一个简单的静态站点，只有一个网站首页，我们不依赖任何第三方的框架库或模块，用纯的 Node.js 原生 API 来实现。
+
+好，现在我们在本地新建一个项目文件夹，名字叫 node-deploy-static，里面只有一个 app.js：
+
+``` js
+const http = require('http')
+
+const homePage = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Node.js 部署上线示例</title>
+    </head>
+    <body>
+      <h1>Nodejs 部署发布</h1>
+    </body>
+  </html>
+`
+
+http.createServer((req, res) => {
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/html')
+  res.end(homePage)
+}).listen(5000, () => {
+  console.log('Server running at 5000')
+})
+```
+然后在本地 node app 我们把这个项目测试一下，跑起来服务后，网页中打开 http://127.0.0.1:5000 或者命令行中执行：
+``` js
+➜  curl http://127.0.0.1:5000
+```
+返回内容是一个 HTML 文档：
+``` html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Node.js 部署上线示例</title>
+  </head>
+  <body>
+    <h1>Nodejs 部署发布</h1>
+  </body>
+</html>
+```
+这就是一个纯静态的极简项目，但是要把它部署到线上，也是要有一些方法论和流程在里面的，后面会给大家讲解。
+
+### 案例 2：准备一个 Vue 的前端站点
+
+除了纯静态项目（用纯的 Node.js 原生 API 来实现的），我们还准备了一个 Vue 的前端项目，部署 Vue 前端项目的资源有很多种方式，最简易的一种是在本地编译后，把编译后的资源再同步到服务器上，再进阶一些，会把 JS/CSS、图片这些静态资源单独传到图床上，然后把图床的地址拿回来替换到 HTML 文件中，最终往服务器上部署的是这个 HTML 文件。
+
+这里为你们准备了一个简单的 Vue 前端站点项目 demo，我们要把这样的一个项目部署上线，它的项目结构很简单，首先是 index.html：
+``` js
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Vue 前端站点部署案例</title>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
+然后会有一个 main.js 来作为入口文件：
+``` js
+import Vue from 'vue'
+import App from './App'
+
+Vue.config.productionTip = false
+new Vue({
+  el: '#app',
+  components: { App },
+  template: '<App/>'
+})
+```
+以及站点的首页模板 App.vue：
+``` js
+<template>
+  <div id="app">
+    <img src="./assets/logo.png">
+    <Demo />
+  </div>
+</template>
+
+<script>
+import Demo from './components/demo'
+
+export default {
+  name: 'App',
+  components: {
+    Demo
+  }
+}
+</script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+```
+最后是首页的内容模板 demo.vue：
+``` js
+<template>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+    <p>搭建配置一个线上生产环境，把应用部署到服务器中，通过域名再暴露到互联网上，主要有这几件事情大家需要了解下：     </p>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      msg: 'Vue 前端项目部署案例'
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .hello {
+    width: 680px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  h1 {
+    text-align: center;
+  }
+</style>
+```
+主要的代码就这些了，大家可以直接 vue-cli 来跑个模板项目，然后把刚才这些代码参考上面修改一下就可以了
+
+### 案例 3：准备一个 Node + MongoDB 服务端渲染的站点
+现在稍微复杂一些的网站项目都需要信息存储，比如用户、账号、密码等登录信息，这就需要数据库的支持。我们的课程也为大家准备了这样的一个带有 MongoDB 数据库的网站项目。
+
+### 如何部署这几个项目呢
+这里给大家用简单的一句话介绍一下这几个项目大概的布署方法，后面会手把手给大家进行详细讲解。所以这里看不懂的同学不要着急。
+
+- 对于纯静态简易站点，部署的办法非常简单，只需要把资源同步到服务器上即可，我们给它一个域名来访问，
+
+- 对于 Vue 的前端网站，部署的时候需要把必要的资源编译上传好，最后把 HTML 文件同步到服务器上后，通过 Nginx 代理就行，我们同样给它一个域名来访问
+
+- 对于有数据库的站点，我们部署的时候，主要就是更新代码后重启服务，但需要额外把数据库相关的事情都处理好，包括 SSL 证书的集成，我们给它分配一个域名
+
+## 域名与云服务器的选购与备案
+这一篇专栏，主要讲解我前面讲到的前三步中的 ”准备工作“，包括购买域名、购买服务器，还有最后的备案。
+
+### 购买域名
+出售域名的厂商有很多，比如国外的 GoDaddy，国内的阿里云，大家百度随便搜一下，也是一抓一大把，我个人购买域名，通常会看厂商背景，而不会特别在意它的价格，原因是服务好的厂商对于域名的管理、解析甚至备案都有较好的流程可以保障。而小厂商的服务可能比较薄弱，很可能会倒闭跑路。
+
+如果大家考虑备案的话，域名尽量从国内买
+
+如果是从阿里云购买了域名，会有一个管理域名的列表：
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421141700.png)
+
+### 购买阿里云服务器
+
+现在是云的时代，许多公司的服务器也通常是部署到云上的，再也不像 10 年前，可能需要抱着机器到某地的一个机房，去换配件、架网线、装系统，现在通过云主机，可以方便的对外提供服务。
+
+那么大家选择主机时，应该选择什么样配置的主机，多高价位的主机，哪家厂商的主机呢？老实讲，关于这个问题，我很难做到绝对客观公正，只能从我自身的使用经验来看，过去的 10 年中，我用过 Windows 主机，Lamp 标配主机，朋友自己在机房承包的主机，共享的虚拟主机，一直到三四年前开始尝试使用青云、ucloud、阿里云、包括国外的 DigitalOcean、PSY、Linode 主机、亚马逊的主机，甚至是可以直接部署 Node.js 应用的 Heroku，百度云 等等，这些主机机房有在香港的、东京的、新加坡的、马来西亚的、旧金山的，甚至我还折腾过部署树莓派的主机。
+
+这么多年折腾下来，我最大的感受是，自己的青春，无数个夜晚都浪费在主机的选择和无谓的折腾上了，如果让我重新选择，我情愿选择一两家主流厂商使用到底，而不是完全从成本和追风热情上主观折腾。这里给大家分享以下几点建议。
+
+**1. 尽量选择大厂商或知名厂商的主机**
+不要只图便宜，没有强大背景的创业公司所推出的主机尽量不要选择，因为有的后面会倒闭，会被收购，就比如 nodejistu，后来被 GoDaddy 收购了整个团队，导致 nodejistu 云主机逐步被关闭了，如果你是它的用户，迁移业务的时候会无比痛苦。那么哪些算是知名厂商或者大厂商呢？在我的心目中也就只有阿里云、亚马逊 AWS、Linode、DigitalOcean、heroku 云平台等，如果让我选择，我会首选阿里云。
+
+**2. 尽量选择国内的主机商**
+跟域名一样，你会面临不可越过的一关，就是备案和国家的监控审核，选择国内的主机，最起码的一点，你基本上不会被那个众所周知的原因，拦截掉你的服务，其次审核备案什么的，也基本都能快速通过。同时因为你机子在国内，无论是华东机房，还是青岛机房，你连上服务器的时间都在几十毫秒之内，远程操作会比较便捷。而要说国内的主机商，我掰着指头算算，也就剩下阿里云了。像青云、 UCloud、 百度云等，我都使用过，在客服的跟进速度，平台的技术背景，被阿里云拉开不是一条街。当然也不是不能考虑，比如我之前就把我的一个公司业务部署到了 UCloud 上面，后来有了一次事故，UCloud 给我赔了 3000 多块钱代金券，让我免费用一年，服务的诚意还是满满的，但是最后我还是选择迁移到阿里云。如果你想要稳定的服务，那么可以毫不犹豫的选择阿里云，不要太考虑价格，因为现在试图通过小厂商省下的钱，都会在其他方面让你几倍几十倍的偿还，特别是时间成本。
+
+这样的建议比较有偏向性，因为发现好像只剩下阿里云可选了，这一次的教学内容，也确实是使用阿里云 ECS 主机来讲解，我个人也是强烈建议，如果你是服务器新手，对服务器接触较少，请务必购买阿里云服务器来跟进，当然你动手能力强的话，选别的也可以，只是有可能要花更数倍的时间折腾服务器，可能因小失大不太划算。
+
+选定厂商之后，就是购买服务器和购买域名，大家只要有微信和支付宝或者银行卡，很容易操作，我就不再演示，另外选购阿里云主机或者其他厂商主机的时机，可以凑 618/双 11/双 12 这样的大促活动日来购买，会更实惠一些。
+
+**域名备案流程走起来**
+在远程登录我们的服务器之前呢，我们先插一节，先把域名的备案流程走起来，如果是通过阿里云购买的云服务器和域名，那就可以从阿里云这里的平台进行备案，如果没有购买阿里云的服务器，是不能通过阿里云进行备案的，所以服务对于平台的依赖还是很强的，大家也可以选择从自己服务器或者网络提供商的平台进行备案，比如 UCloud 或者电信联通，我自己没有实际弄过，可能会比较麻烦。
+
+在之前我从阿里云这里走过好几次备案流程，备案过四五个域名，有的是从公司的账户走，有的从我个人的域名走，其他的云服务商我没有尝试过，没有对比，但阿里云的备案流程，我个人觉得还是比较完善，比较快捷的。
+
+### 如何购买阿里云的 MySQL 数据库 RDS 
+我们后文中会使用 MongoDB 数据库来介绍项目部署，如果大家不想选择 MongoDB，想用付费的数据库比如阿里云，可以参考我这里的流程，我特意购买了 Aliyun RDS 数据库，来给大家演示下购买流程，先打开 RDS [阿里云首页](https://cn.aliyun.com/product/rds/mysql)：
+
+大家购买可以按量付费也可以按年付费，如果学习的话可以选择按量付费，如果商业用途个人建议是包年包月，如果按量付费的话，钱不够就会提醒感觉有点麻烦。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421142523.png)
+
+然后在主界面，先给数据库增加 IP 白名单，只允许特定 IP 的内网机器访问，这样可以保障服务器的安全性：
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421142559.png)
+
+然后来给数据库创建一个登录账号：
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421142618.png)
+
+创建后，有账号也有白名单了，就可以通过它提供的连接地址，在项目中通过 SQL 的三方组件库连接开发业务了。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421142653.png)
+
+## 远程登录：ssh远程登录服务器
+
+**第一次 ssh 远程登录服务器**
+本篇我们来学习一个非常实用的技能——无密码登录服务器。原理很简单，就是让服务器存一份本地的公钥，借助本地和服务器之间的一个认证机制，可以不输入密码直接登录服务器。这在往服务器多次发布资源的时候非常实用，不然你每次往服务器上传资源或者通过服务器调用程序下载第三方资源，都要输入密码，太麻烦了，而且时间久了密码也容易忘记。 登录服务器，再也不用腰上挂一堆钥匙了，到家门口直接指纹开门。
+
+
+拿到服务器的第一件事，当然就是得连上服务器，是通过 ssh 从本地连上我们的服务器，Windows 下可以用 `PuTTY`,`xshell`这样的工具，在 Windows 下其实有很多不错的工具，比如 wsl-terminal、babun 等，在 Mac 下我们用终端就可以。
+
+登录服务器，需要你先拿到服务器的外网 IP，也就是阿里云控制台上的这个外网 IP：
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421142927.png)
+
+服务器默认用户名通常是 root，我们按照阿里云的来，首次我们登录进去，一般都会用 root 来深入虎穴，利用终端的 ssh 命令 + 空格，跟上 用户名@ip 就像邮箱一样，直接回车就可以了：
+
+> 提示：其他的云服务商不一定是 root 账号，比如 UCloud 用的是 ubuntu 作为默认的登录账号。
+
+``` shell
+ssh 命令 + 空格，跟上 用户名@ip
+ssh root@xx.xx.xx.xx
+```
+
+这时候，你其实在要告诉它，hi， 那个 xx.xx.xx.xx 的 ip，我是 root 国王，快给我开城门，迎接我微服私访。
+
+注意，在此时要登录的时候，如果遇到一个英文的提示，问你，是否同意授权，因为这是你本地的电脑，第一次连上远程的一个不认识的主机，它很紧张，屏幕上会出现一连串提示（如下面显示），意思是无法确认 host 主机的真实性，只知道它的公钥指纹，问你还想继续连接吗？直接输入 yes 回车就可以了。
+
+``` shell
+The authenticity of host '123.123.123.123 (123.123.123.123)' can't be established.
+ECDSA key fingerprint is
+79:95:46:1a:ab:37:11:8e:86:54:36:38:bb:3c:fa:c0.
+Are you sure you want to continue connecting (yes/no)?
+```
+但是一群小的们不甘心啊，你谁啊你，凭什么给你开啊，出示传国玉玺。对，就是要登录密码啊
+
+``` shell
+root@47.110.39.55's password:
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-93-generic x86_64)
+```
+
+那我们就输入密码呗，也就是我们购买阿里云服务器时候配置的密码，输入密码的时候，密码是不显示的。
+
+**无论是升级服务器后，还是第一次打开服务器，一定要先运行：**
+``` js
+sudo apt-get update
+```
+上面命令的作用是，先把服务器上所有的包和源都 check 和更新一遍，让服务器处在一个崭新的状态。
+
+假如你预测某一天，你会使用到视频啊、图片合成啊，这些多媒体服务，可以把一些底层库先预装了，比如 node-canvas 依赖的库：
+``` js
+sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev 
+```
+另外可以把一些常用的开发者套件也一并安装了，通过：
+``` js
+sudo apt-get install -y software-properties-common
+```
+这样安装后，如果我们想要安装比较新的 FFmpeg 处理视频图片的库，就可以这样来装了：
+``` js
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4
+sudo apt-get update
+sudo apt-get install ffmpeg
+ffmpeg -version
+// ffmpeg version 4.0.3-1~18.04.york0 Copyright (c) 2000-2018 the FFmpeg developers
+built with gcc 7 (Ubuntu 7.3.0-27ubuntu1~18.04)
+```
+
+**考虑多购买一块数据盘**
+另外有时候，我们选购服务器的时候，会多购买一块数据盘，这个数据盘就需要额外来挂载，记住，如果你没有购买多余的数据盘，这里是不需要额外挂载的哈。
+
+购买服务器的时候，阿里云就默认给你挂载了一块硬盘，应该是 20GB 的大小，但是这个硬盘是用来安装操作系统的，什么意思呢？如果你把网站应用都跑在这个系统盘上也不是不可以，但是，一旦重装系统，所有的网站数据，比如用户资料都丢失了（因为操作系统和用户资料都放在了一张盘中），如果你是把数据资料挂载到数据盘上的，就能提高安全性。
+
+查看是否有数据盘的命令是 `fdisk -l`，查看硬盘使用情况的命令是 `df -h`，我们先记住这一点知识就够用了，等到熟练掌握服务器的使用后，再来花时间研究如何挂载数据盘，其实就是格式化、分区这些更 Geek 一点的。
+
+> 补充：除了密码登录，我们还可以以私钥认证的方式登录，可以给不同的用户分配不同的私钥，每一个用户相当于是我们任命一个钦差大臣，由他干具体的活儿，有的活儿需要国王也就是 root 授权，有的可能不用，那么在启用新用户和配置私钥之前，我们先把 root 权限下把一些基础工作做掉，这个放到下一节来处理。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421143547.png)
+
+## 配置 root 权限账号与无密码登录
+这一篇专栏主要为大家讲解服务器创建新账号、赋予账号权限，以及配置无密码本地登录这三部分内容。我会带领大家先创建一个新账号，然后给它分派一定的权限，最后再赋予它无密码登录的能力，这样这个新账号就不用每次登录服务器的时候都得输入一遍密码了
+
+为什么要创建新的账号呢？root 权限是服务器这个大家庭里的 “一把手” 大 Boss，有至高无上的终极权限，因此我们不希望这个一把手老是抛头露面，而是找一个能干的人帮他做事，就像“冰与火之歌”里面的史塔克和龙妈身边的小恶魔，当国王外出的时候，他们做国王代理，管理天下大事。下面我们就创建这么一位代理。
+
+### 创建新账号
+
+首先依然是在 root 登录的窗口下，执行：
+
+``` js
+adduser rn_manager
+```
+创建了一个 rn_manager 用户，在创建这个用户的时候，会提示你一堆信息，大体上就是给你创建个分组，给你造一个房子当新家，安上门牌号之类。
+
+重点是要设置密码，千万要设置一个自己能记得住的，并且密码强度要大一些的，大小写数字特殊符号都用上，这样，就算别人知道了你的用户名，也很难破解你的密码。
+
+至于信息可以省略不填，也可以填上，关系不大，如果输错密码了，可以选择 try again 重新填写，注意，输入字母 y 回车就行了，最后也是确认 y 并回车。
+
+> 提示：在输入之前一定要确保自己的输入法是英文状态，中文的话可能会把无关字符输进去。
+
+``` js
+Adding user `rn_deployer' ...
+Adding new group `rn_deployer' (1000) ...
+Adding new user `rn_deployer' (1000) with group `rn_deployer' ...
+Creating home directory `/home/rn_deployer' ...
+Copying files from `/etc/skel' ...
+Enter new UNIX password:
+Retype new UNIX password:
+Sorry, passwords do not match
+passwd: Authentication token manipulation error
+passwd: password unchanged
+Try again? [y/N] y
+Enter new UNIX password:
+Retype new UNIX password:
+passwd: password updated successfully
+Changing the user information for rn_deployer
+Enter the new value, or press ENTER for the default
+  Full Name []: Scott
+  Room Number []: 419
+  Work Phone []:
+  Home Phone []:
+  Other []:
+Is the information correct? [Y/n] y
+```
+
+这里你在本地打开一个 txt 文件，或者找一张纸，找一只笔，把 rn_manager 这个账号及其密码记下来，一定要记下来啊，这个很容易忘记的，真的不骗你。
+
+用户创建完以后，它只是一个普通的平民，手中的权力很小，我们需要对他进行授权，就是升官嘛，那怎么升呢？输入命令：
+
+``` shell
+gpasswd -a rn_manager sudo
+```
+上面通过 gpasswd 可以让 rn_manager 以 sudo 的方式调用系统命令。
+
+### 赋予账号更高权限
+对于创建的这个用户，我们往往希望它的权限是蛮大的，可以像 root 一样能干。那么我们可以在 visudo 权限配置文件里面干脆配置一下，输入下面命令：
+``` shell
+sudo visudo
+```
+
+通过 sudo visudo 命令，来打开权限配置文件，往里面加入 `rn_manager ALL=(ALL:ALL) ALL` 这一行：
+
+> 补充：执行 sudo visudo 命令，默认是使用 nano 编辑器打开 visudo 文件。那么 nano 编辑器又是什么呢？使用 Linux 会经常和编辑器打交道，一般常用的是 vi 和 nano，虽然 vi 功能强大，但是相对新手来说稍微难上手，GNU nano 是一个体积小巧而功能强大的文本编辑器。
+
+使用 nano 编辑器，打开配置文件后，先忽略快捷键，可以通过上下键，上下移动光标，对代码进行编辑。
+
+```
+Defaults        env_reset
+Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+root        ALL=(ALL:ALL) ALL
+rn_manager    ALL=(ALL:ALL) ALL   
+
+%admin      ALL=(ALL) ALL
+%sudo       ALL=(ALL:ALL) ALL
+```
+
+``` js
+说明：这几行都是什么意思呢？
+第一行：重置终端环境，来移除一些用户信息。
+第二行：指定了一个路径，这个路径会被用来做 sudo 的操作。
+第四行：那么我们要增加的这一行，rn_manager 就是我们新加的用户名嘛，以下的规则就是对这个用户生效：
+
+第一个 ALL 是指定，这条规则对所有宿主生效
+第二个 ALL 是说，rn_manager 可以以任何用户来执行命令
+第三个是说，rn_manager 可以以任何组来执行命令
+最后一个ALL，是这个规则适用于所有命令
+上面说了这么多，总之， rn_manager 可以跟 root 一样，只要提供密码，就可以通过 sudo 运行任何命令。
+
+至于最后两行：
+%admin 和 %sudo 前面加个百分号，是指用户组的名字，可以发现 admin 用户组的用户可以在任何宿主环境内，执行任何命令，admin 的 sudo 都可以做到，权限它都有，并且可以执行任何用户组的操作。
+```
+
+最后怎么保存呢，按下 ctrl+x，然后按下 shift+y，最后回车就好了。
+
+大家对于这个权限组的概念可能一时半会搞不清楚，没关系，先这样用，等越来越熟悉了再去研究，这是一个渐进的学习过程。
+
+那么我们来新开一个命令行窗口测试一下，记住，先不要关闭这个 root 窗口哈，我们还会用到的。
+
+``` js
+ssh rn_manager@120.26.235.4
+```
+
+测试输入密码（有可能是不能登录的，保险起见，我们切换到 root 登录的这个窗口下，来重启一下 ssh 服务的，代码如下）：
+
+``` js
+service ssh restart
+```
+
+这时候可能会遇到这样的报错提示：
+``` shell
+sudo vim /etc/ssh/sshd_config
+sudo: unable to resolve host iZbp162mggaelqtp8plk48Z
+```
+host 无法解析了，这时候我们可以通过执行如下命令：
+``` js
+echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+```
+或者
+``` js
+sudo vi /etc/hosts
+127.0.0.1 localhost iZbp162mggaelqtp8plk48Z
+```
+然后重新登录，同样 ssh 就是这种格式啊，用户名跟上 IP，输入密码登录，就 ok 了。
+
+但是有没有发现，每次远程登录服务器，都要输入密码，好烦躁啊，能不能不输密码啊？当然可以了，接下来我们来配置无密码登录。
+
+### 配置无密码本地登录
+关于无密码登录的原理限于时间，我就不展开也不解释了，总之是你本地电脑上一把钥匙，服务器上一把钥匙，每次登录之前，通过比对这两把钥匙，通过一些算法来判定，你是否是具有权限的那个用户。
+
+那么，首先来本地电脑上配置这把钥匙，而且要生成两把钥匙，分别是私钥和公钥，我们将来会用到这把公钥。
+
+> 提示：如果你之前用过 GitHub 或者 GitLab 之类基于 Git 的仓库管理系统，那么你本地应该是配置过这个公钥和私钥的，这里要切记，不用再重复配置一遍了！不用重新配置一遍了！ 可能你会覆盖掉你本地用的钥匙，这样的话，你可能就连不上你之前有权限的 Git 仓库了，我会演示这一步。
+
+打开 Git Bash或者其它终端命令行工具
+粘贴下面的文本（替换为您的 GitHub 电子邮件地址）
+``` shell
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+一路回车到底，对于新手这里就先不要设置密码了，不然就搞得太复杂了。执行完这一步命令之后，可以看到 .ssh 的目录下面生成了两个文件 id_rsa（私钥）和 id_rsa.pub（公钥），然后开起来 ssh 代理：
+``` js
+eval "$(ssh-agent -s)"
+```
+最后，把 ssh key 加入到 ssh 代理中
+
+``` js
+ssh-add ~/.ssh/id_rsa
+```
+
+理论上走完这一步，你本地已经有了配置好的钥匙文件，强调一下，这里要切换到本地操作，不是服务器上，在本地的根目录的 ssh 文件夹下。
+
+通过 cat 命令打印这个公钥文件内容：
+``` js
+cat .ssh/id_rsa.pub
+```
+然后选中整段内容，复制一下，再来到服务器上。
+
+然后，这一步很重要哈！这一步是为了，以后我们可以从 GitHub 或者 GitLab 之类的仓库获得仓库的权限，因此我们要把刚才生成私钥的过程重复一遍，这一步不做是不影响我们配置无密码登录的，再把刚才的流程走一遍，一模一样的步骤：
+
+``` js
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+```
+
+然后，通过简单的 vim 命令，我们需要创建一个授权文件：
+
+``` js
+vi .ssh/authorized_keys
+```
+
+会打开一个编辑页面，不要做任何输入，切记，不要做任何输入，同时要保证当前的输入法切换到英文输入状态，然后按下键盘上的 i 键后，command+v 把刚才复制的公钥拷贝进来，再按一下键盘上的 ESC 退出键确保回到编辑状态，然后同时按下 shift 和 冒号键，最后输入 wq! 回车，这个文件就自动创建了。这是简单的 vim 快捷键，大家还是要多少了解一点点的，才能方便在服务器上增改文件。
+
+然后，我们之前不是复制过本地的公钥文件吗，这时候还在系统的剪贴板里面呢，我们这时候要注意，切换到 rn_manager 这个账号下面的终端里，不是切换到 root 账号的终端里面，我们在新的账号终端环境操作。再次通过
+``` js
+vi .ssh/authorized_keys
+```
+
+或者按一下键盘上的上选择键，来调出历史中缓存的刚才所使用的一条命令来打开授权文件，然后记住输入法是英文状态下，按一下键盘上的 i 键，切记，是 uijk 的 i 键，然后 command+v 粘贴进去（如果是 Windows 系统，是 ctrl+v 粘贴）。
+
+之后，按一下 ESC 退出键，再同时按下 shift+; 键，输入 wq! 回车即可。这个操作很容易由于不熟悉 Linux 下的 vim 编辑而出错，要多体会几遍，再动手做。
+
+如果没有生效，可以对该文件进行一个 600 可读授权，再重启下 ssh 服务：
+``` js
+chmod 600 ~/.ssh/authorized_keys
+sudo service ssh restart
+```
+在重启这个 ssh 服务的时候，应该会提示你要输入密码，这时候要输入刚才创建 rn_manager 账户的密码，千万注意，这里输入的密码不是 root 账号的密码，而是新账号的密码。
+
+最后，我们先不要关闭这个终端窗口，再另外开一个：
+
+通过 ssh rn_manager@120.26.235.4 就直接登录了，就不需要输入密码了，如果这一步没有成功，可以按照这之前的顺序，再仔细比对一遍，看有没有遗漏项。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421145151.png)
+
+## 修改服务器登录默认端口
+
+这一篇我们主要讲解修改服务器登录。
+
+为什么要修改服务器登录？我们现在登录是默认走的 22 端口，这个是 Linux 系统默认的端口，意味着这个端口其实是对所有人透明的，出于基本的安全考虑，也要修改下这个默认端口，怎么做呢？
+
+这时候我们可以在 root 账号下操作，也可以在 rn_manager 账号下操作，我们就在 rn_manager 这个账号下操作好了，直接输入：
+
+``` js
+sudo vim /etc/ssh/sshd_config
+```
+在打开的文件里，找到如下这些配置项，修改成如下的样子：
+``` js
+# 不允许空密码
+PermitEmptyPasswords no
+# 关闭密码验证登录，前提是你已经使用了 ssh 密钥验证方式登录
+PasswordAuthentication no
+# 如果你在服务器上手动添加了用户并将用户分配到 root 用户组，可以考虑禁止root用户登录
+PermitRootLogin no
+
+# 允许 pubkey 登录
+PubkeyAuthentication yes
+
+# Expect .ssh/authorized_keys2 to be disregarded by default in future.
+AuthorizedKeysFile      .ssh/authorized_keys .ssh/authorized_keys2
+
+# 登录的端口号
+Port 39999
+UseDNS no
+AllowUsers rn_manager
+# 只允许 ip4
+AddressFamily inet
+```
+> 补充：单独聊一聊端口，这个很容易被人忽视，一般来说，0 ~ 65536 端口号都是可用范围内的数，但是 0 ~ 1024 最好不要使用，通常会被系统程序占用，必须以 root 身份才能启动，那么在 1024 以上到 65536 之间我们都可以选择性的使用。可以设置得稍微大一些，这样做不仅是禁用掉了 22 默认端口的登录途径，也缩小了被扫描和猜测到的概率，在安全层面我们是增加了一点点的安全防护，多多益善吧。
+
+配置完成后，再重启动 ssh 服务：
+``` js
+sudo service ssh restart
+```
+同样，有时候依然会遇到上一节遇到的报错信息：
+
+``` js
+sudo vim /etc/ssh/sshd_config
+sudo: unable to resolve host iZbp162mggaelqtp8plk48Z
+```
+host 无法解析了，这时候我们可以通过执行如下命令：
+``` js
+echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+```
+或者，编辑下 hosts 文件，加入这一行就行：
+``` js
+sudo vi /etc/hosts
+127.0.0.1 localhost iZbp162mggaelqtp8plk48Z
+```
+然后再新开一个终端窗口，登录就不能用之前的方式，需要加上端口号了：
+
+``` js
+ssh -p 39999 rn_manager@120.26.235.4
+```
+这样，我们就配置好了 39999 端口登录，服务器的基础配置就完成了。
+
+> 注意：阿里云web管理平台的网络和安全->安全组->管理规则->添加安全组规则 添加此端口的规则，否则会登录超时。
+
+我们这一小节重点讲了如何对新账号的登录方式，设置更严格的登录权限，比如修改登录端口甚至关闭掉密码登录的方式，来最大程度的守护服务器的账号安全，这是最基本的服务器防护方式。大家购买新服务器后，建议一律取消 22 端口，一律取消密码直登，一律更换服务器默认账号，无论它是 root 还是 admin，换成自己定义的账号。
+
+## 配置阿里云进出方向安全组
+
+### 常见常用的端口与规则
+
+阿里云的服务器，默认就提供了安全组这样的高级防火墙，供我们使用，它可以控制从外网能访问到服务器的哪些端口，从内网能访问到服务器的哪些端口，流量的进和出，对哪些 IP 段的服务器授权，非常强大。
+
+根据实际使用情况，通常我们会选择开启下面这些端口：
+
+|  协议   | 端口  |
+| :-----| :---- |
+|SSH	|22|
+|telnet	|23|
+|HTTP	|80|
+|HTTPS	|443|
+|MS SQL	|1443|
+|Oracle	|1521|
+|MySQL	|3306|
+|RDP	|    3389|
+|PostgreSQL	|5432|
+|Redis	|6379|
+
+同时，它还可以非常精细的控制出入方向的规则，所谓出入，我引用下其他文档上的描述：
+
+>出方向：是指 ECS 实例访问内网中其他 ECS 实例或者公网上的资源
+入方向：是指内网中的其他 ECS 实例或公网上的资源访问 ECS 实例
+
+对于一个端口的访问，比如 80 端口，允许入方向也就意味着从互联网包括内网都可以放到这台服务器的 80 端口，这时候我们可以配置它的 IP 段为：` 0.0.0.0/0`，如果是某个特定内网 IP 才能访问，我们可以这样写：`12.1.1.1`，或者使用 IP 段：`13.1.1.1/25`。
+
+比如下图：
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421150630.png)
+
+我们允许 12.1.1.1 ~ 12.1.1.27 这个 IP 段的和 13.1.1.1 ~ 13.1.1.25 IP 段的所有服务器，都能访问阿里云服务器的 1022 端口。
+
+更详细的安全组使用攻略，建议大家参考 [阿里云安全组文档](https://help.aliyun.com/document_detail/58746.html?spm=a2c4g.11186623.6.725.59132df3zhSwyx)。
+
+## 搭建 Node 与阿里云Alinode环境
+搭建 Node.js 环境
+### 更新，安装基础包
+
+在安装以前，我们最好先更新一下系统，并安装可能用到的基础包。通过 sudo 命令来安装这些系统包：
+
+``` js
+sudo apt-get update
+sudo apt-get install vim openssl build-essential libssl-dev wget curl git
+```
+理论上后面我们用到 sudo 的地方，都需要输入密码，再强调一下，这个密码不是 root 账号的密码，而是当前登录账号下，也就是 rn_manager 新建的时候，你设置的新账号密码。安装时会遇到提示是否输入 Y 来往下进行，可以把输入法切换成英文输入法，然后按下 y 再回车就可以了。
+
+安装 Git 是为了后面部署项目到生产环境用，这个一定要安装不能漏了。
+
+### 安装 Node.js
+
+接下来，安装 Node.js，我们选用 nvm 这个工具，方便升级和管理 Node.js 版本。
+
+首先拷贝下这句 curl 命令，再粘贴到命令行里面执行：
+``` js
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+```
+安装完毕 nvm 以后，会有提示说，新打开一个命令行窗口操作，那么我们就老老实实把这个关掉，新开一个命令行窗口，然后重新登录进去。
+
+``` js
+nvm install v10.14.2
+nvm use v10.14.2
+nvm alias default v10.14.2
+node -v
+v10.14.2
+```
+
+### 直接安装阿里云的 alinode
+
+
+或者，你可以不安装官方原生的 Node.js，直接安装阿里云的 alinode，这也是我推荐给大家的 Node，因为它对 Node 做了必要的定制，可以无缝接入到 alinode 的监控中心，对于多机器多应用运维非常有用。大家可以参考 alinode [安装文档](https://help.aliyun.com/document_detail/60338.html)，实际安装命令如下，大家要参考文档，以文档为准：
+
+``` js
+# 安装版本管理工具 tnvm，安装过程出错参考：https://github.com/aliyun-node/tnvm
+wget -O- https://raw.githubusercontent.com/aliyun-node/tnvm/master/install.sh | bash
+source ~/.bashrc
+# tnvm ls-remote alinode 查看需要的版本
+tnvm install alinode-v3.11.4 # 安装需要的版本
+tnvm use alinode-v3.11.4 # 使用需要的版本
+npm install @alicloud/agenthub -g # 安装 agenthub
+```
+安装完 Node 之后，NPM 也就是 Node 的包管理工具也装好了。NPM 可以方便地安装第三方包模块，但是，我们的服务器在国内，有时候会连不上 npm 或者下载很慢，我们可以配置一个简单的 registry 参数来指定使用国内的 taobao 镜像来下载：
+
+``` js
+npm --registry=https://registry.npm.taobao.org install -g npm
+npm -v
+```
+
+最后，别忘了执行这句命令，增加文件监控数目
+
+``` js
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+还是之前安装 npm 时候的原因，为了保证更快、更稳定的安装速度，我们也可以采用 cnpm 来替代 npm 下载包信息：
+``` js
+npm --registry=https://registry.npm.taobao.org install -g cnpm
+cnpm -v
+```
+
+好了，Node.js 安装完了，我们再顺手把一些常用的全局工具包安装一下吧：
+
+``` js
+npm install pm2 -g
+```
+至此 Node.js 的环境就安装好了
+
+本节我们主要学习了在服务器上安装配置 Node.js 环境的基本步骤，特别是针对国内的同学，我们可以选择使用阿里云 alinode 的安装包，来方便后期接入到 alinode 的服务监控体系中，做更精细化的运维。
+
+## 利用 PM2 让 Node.js 服务常驻
+
+### PM2 的安装提示处理
+
+在本地安装 PM2 之后，可能会看到下面的这个提示，可以按照提示操作一下：
+``` js
+Since PM2’s deployment command runs on a non-interactive SSH connection, we need to resolve this by commenting out a few lines from the semaphoreci user’s ~/.bashrc file. We’re already logged in as this user on our droplet, so we simply need to open up this file and comment this out:
+
+
+Comment the following lines:
+
+#If not running interactively, don't do anything
+#case $- in
+#    *i*) ;;
+#      * return;;
+#esac
+
+and this in /etc/bash.bashrc
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+```
+也就是把 If case 这几行注释掉就可以了。
+
+### 尝试 PM2 启动服务
+如果一个网站的服务，必须通过命令行 node server.js 来启动，启动后，退出命令行服务就终止，这显然不符合我们的预期。
+
+而即便是服务能持续运行，一旦遇到异常情况服务即终止，也是不理想的，这时候就需要有一种能够守护进程的工具或者服务，来把已经挂起的服务再次重启，这就是服务常驻的基本需求了。
+
+对于 Node.js 来说，有很多工具可以帮我们做到这一点，PM2 就是其中一个，之前我们写了这样一个静态站点代码 - app.js：
+``` js
+const http = require('http')
+
+const homePage = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Node.js 部署上线示例</title>
+    </head>
+    <body>
+      <h1>慕课网 Node.js 部署发布</h1>
+    </body>
+  </html>
+`
+
+http.createServer((req, res) => {
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/html')
+  res.end(homePage)
+}).listen(4321, () => {
+  console.log('Server running at 4321')
+})
+```
+
+我们想要把一个静态站点开起来，需要满足 2 个条件:
+
+第一，这个站点可以持续稳定地提供服务；
+第二，这个站点可以从外网直接访问到，比如通过域名访问到。
+
+现在，我们的端口是跑在 4321 的，这显然不满足第二个条件，我们需要从外网通过 80 端口来访问。
+
+我们先解决第一个问题：让服务可以持续稳定地运行。（第二个问题留到下一个节来解决。）通过 node app.js 启动服务文件，服务就跑起来了。
+
+``` js
+node app
+```
+
+我们通过浏览器来访问，`http://120.26.235.4:4321/`就可以看到 Node.js 服务返回的页面内容了，但是一旦退出命令行，这个会话状态就会中断，随之 Node.js 服务也会终止。显然这不是我们想要的状态，我们希望服务不仅可以在后台运行，而且在出现异常的时候还可以自动重启。这时我们就可以用到 PM2 这个 Node.js 部署和进程管理工具，不作过多解释，直接来用。
+
+不加任何参数的话，PM2 会自动初始化一些基础参数，来把服务跑起来。
+
+``` js
+pm2 start app.js
+```
+### 补充：PM2 常用命令
+
+通过 PM2 跑服务器的时候，是可以进行集群配置的，也就是指定在几个核上运行几个进程：
+``` js
+pm2 start app.js -i 2
+```
+
+-i 后面跟的 2 表示启动 2 个 server 实例，如果输入 0 的话，则按照当前服务器实际的 CPU 核数来启动多个 server，启动后，我们通过 `pm2 ls` 来看看已经启动的实例：
+
+**PM2 实时扩容集群**
+如果发现线上的服务响应比较吃力，而 CPU 核数没有吃满的话，我们可以实时扩容集群，通过 scale 命令来实现，比如：
+``` js
+pm2 scale app +1
+```
+这里的 +1 就是扩容一个服务实例，其实就是增加一个 cluster 的 worker 子进程
+
+
+**PM2 终止某个进程**
+
+有时候如果某个进程明显卡住了，或者线上负载不大，可以杀掉部分进程，通过：
+
+``` js
+ pm2 stop 1
+```
+可以看到进程 ID 为 1 的 worker 已经是 stopped 状态。
+
+**PM2平滑重启进程**
+有时候，如果想要某个比较吃内存的进程可以重启，或者想要所有的 worker 都重启，但是又不希望影响进程正常处理用户的请求，可以使用 PM2 的 gracefulReload 命令：
+
+``` js
+pm2 reload app
+```
+
+## 配置 Nginx 反向代理 Node.js 端口
+
+当服务运行到线上后，我们通常通过域名而不是 IP + 端口来访问，并且一台服务器上可能有多个 Node 服务在运行，而且运行在不同的端口。如果它们都共用 80 端口显然是不行的，这时候就需要有一种机制，来把不同域名的请求，通过 80 端口进来后，分配给不同的端口服务。
+
+基于这个背景，这一节我们要做的事很简单，先让 Web 服务通过 80 端口可被访问到，之后再考虑分配或者说代理如何实现。80 端口在访问的时候是可以省略的,怎么实现呢？这就需要大名鼎鼎的 Nginx 出场了。
+
+### 安装 Nginx 和关闭版本号露出
+
+首先我们来安装 Nginx，但是，一般来说刚刚购买的阿里云服务器会预装 Apache，我们没有特别需要的话，是用不到的，可以把它删了：
+
+``` js
+sudo service apache2 stop
+sudo update-rc.d -f apache2 remove
+sudo apt-get remove apache2
+```
+
+删完 Apache，用命令 `sudo apt-get update` 更新一下包列表，然后来安装 Nginx：
+``` shell
+sudo apt-get install nginx
+```
+
+安装完毕后，检查下 Nginx 的版本：nginx -v。这个版本号通常可以在 Web 端的 header 里看到。安全起见，可以通过配置隐藏掉，如下打开 nginx.conf 文件：
+
+``` js
+sudo vi /etc/nginx/nginx.conf
+```
+
+把 nginx.conf 文件中的`server_tokens on` 改成 `server_tokens off` 就可以了。
+
+现在我们来解决 4.2 节中的第二个问题：让 Web 服务可以通过 80 端口被外网访问到。
+
+### 配置 Nginx 反向代理 Node.js 端口
+
+在「利用 PM2 让 Node.js 服务常驻」一节，我们的网站静态服务是跑在 4321 端口上的，直接通过 80 端口无法启动，原因是我们 rn_manager 下的 Node 并不具备 root 的运行权限，不能监听 0 ~ 1024 之间的端口，当然也包括 80 端口。
+
+通过 sudo 来强制启动 Node 服务也不是不可以，但是，这多少会带来一些额外的成本和风险：一是我们需要额外配置，二是需要放大 Node 程序的权限。
+
+那么如果我们想先不通过域名访问，直接使用 IP 达到访问的效果，怎么做呢？
+
+要解决这个问题，我们就需要引入 Nginx，用 root 级的权限来启动对 80 端口的监听，同时把来自 80 端口的流量分配给 Node 服务的另外一个端口，实现这种服务的代理。
+
+> 补充： 如果服务器只需放一个网站程序，那么解析网站到服务器网址，网站程序监听 80 端口即可。如果服务器有多个应用（你有多个网站），借助 Nginx 不仅可以实现端口代理，还可以实现负载均衡，由它来判断是来自哪个域名或 IP 的访问，从而根据配置的规则，将这个请求原封不动地转发给特定的端口或特定的某几台机器。在我们的这个案例中，就是把 80 端口的 IP 请求都转发到 Node.js 的 8081 端口。
+
+好了，原理我们知道了，下面第一步要在 /etc/nginx/conf.d 文件夹下面新增一个配置文件：
+
+``` js
+sudo vi  /etc/nginx/conf.d/imooc-com-4321.conf
+```
+
+我一般喜欢用这种命名方式，看一下配置文件，便知道是哪个域名对应到哪个端口。因为将来可能会有多个项目对应服务器后端的多个服务，所以要考虑这种负载均衡的这种场景。这时候通过以下配置来实现：
+
+``` js
+# 通过 upstream 我们可以设定一个简单的负载均衡策略，以应对将来可能的升级
+# 首先定义一个 server 集群 gougou，里面可以加多个 server，每个 server 对应的值可以用域名，也可以直接用 IP，但我们通常不会用 IP 来访问，而是通过域名:
+
+upstream imooc {
+    server 127.0.0.1:4321;
+}
+
+server {
+    listen 80;
+    server_name deploy-static.iblack7.com;
+
+    # Gzip Compression
+    gzip on;
+    gzip_comp_level 6;
+    gzip_vary on;
+    gzip_min_length  1000;
+    gzip_proxied any;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_buffers 16 8k;
+    
+    location / {
+        # remote_addr 代表客户端的 IP
+        proxy_set_header X-Real-IP $remote_addr;
+        # proxy_add_x_forwarded_for 获取真实的 IP
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # http_host 表示请求的 host 头
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+      
+        # proxy_pass 指令实现代理。把域名代理到集群名上面
+        # proxy_pass http://imooc;
+        # proxy_redirect off;
+    }
+}
+```
+
+保存后，通过 `sudo nginx -t` 来验证配置是否正确，有没有语法错误，然后我们把 Nginx 的服务重启一下。
+
+``` js
+sudo service nginx restart
+```
+再把 URL 中的端口号去掉即可
+
+大功告成！
+
+Nginx 与 Node.js 的配套使用是部署 Node 服务时非常关键的环节，其中 Nginx 往往扮演的是景区大导游的角色，任何人过来要工人干活，都要先经过他，他看看你是来自哪儿的，把你的信息记录下，然后看你是要去哪里，再把你分配给相应的对象接待，简单来说就是，Nginx 搞分配，Node 去干活。当然像日志、安全证书和静态资源代理这些事情，也都可以由 Nginx 前置完成，这样 Node 就可以专心负责业务的部分了。
+
+![](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421152707.png)
+
+## 安装与配置 MongoDB 数据库
+
+在工作中，我们所要部署的项目肯定会有数据库，数据库中存放着各种数据：用户信息、商品信息、供货商信息等内容，因此部署数据库到服务器上肯定是本课程必学的一项。这一节我们就来学习一下 MongoDB 数据库的部署，学会了 MongoDB 数据库，其它数据库（如 MySQL）的部署方法就大同小异了，基础步骤都差不多，不同的就是命令的写法。
+
+
+**安装免费的 MongoDB 数据库社区版**
+
+安装之前先介绍一下阿里云的付费数据库：阿里云（Aliyun） 它自己有付费的 MongoDB 数据库，具备自动的主副节点和容灾备份机制。我觉得很好用，如果实在不想自己折腾的同学可以考虑购买，但是大部分同学现在还不想承担这么高的开发成本，我们就可以在服务器上搭建一个简易的 MongoDB 数据库，也不用做什么主副节点，能让它跑起来用就行。
+
+> 提示：但是这样就带来了一个缺点，那就是我们的”应用“跟”数据“必须放在同一台机器上了（如果我们分开的话，一台放”应用“，一台放”数据“更合理）。两个混在一起，一旦应用需要重大升级，可能会影响到数据库的运行环境，而且应用服务器和数据库服务器的配置敏感度也是不同的，有可能这个应用非常吃 CPU，而数据库可能非常吃内存，一旦二者重叠，就可能因为一个的不稳定影响到另外一个。当然对于一些小型应用，如果非要把数据库跟应用放到一个服务器上，或者像我们这样的专栏用来学习的话，也是可以的。如果条件允许，我也建议大家购买 Aliyun MongoDB 数据库，虽然贵一些，但是可以完全省下来配置运行维护的成本了。
+
+参考  [Linux平台安装MongoDB](https://www.runoob.com/mongodb/mongodb-linux-install.html)
+
+
+## 私有仓库托管与 PM2 一键配置部署
+
+这一节我们开始进入重头戏，我们在服务器上面已经安装了 Nginx 和 PM2，并且用 PM2 来管理 Node.js 开启的服务来提供稳定的 HTTP 服务。我们上传项目或者需要修改项目代码的话，总不能每一次都把本地的代码，给一个个字节上传到服务器上吧？这个时候我们就用到 Git 仓库了，大家对 Git 应该都不陌生吧。
+
+Git 是一个分布式版本控制系统，说白了，就是能保存你的代码，并且能保存代码不同时期的版本，可以随时切换到某个时间点你所提交代码的状态。
+
+如果你还没有的话，可以注册一个 GitHub 账号，用用看，同时，我们的本地一定要确保是安装过 Git 的，比如在 Mac 上面，通过 brew install git 来安装就行，在 Windows 上面的话，也有 Git 的客户端可以安装，大家搜索下文档自行解决本地 Git 安装和配置的问题。
+
+### 上传项目代码到线上私有仓库
+
+我们本地现在一共有 4 个项目，分别是静态网站、Vue 应用站点、React 应用站点和电影网站
+
+我们现在把这4 个项目都通过 Git 上传到私有仓库里面。对于私有仓库，大家可以付费选择 GitHub 的私有仓库服务，也可以到开源中国使用免费的私有仓库（现在已经改名叫码云了），地址是 https://gitee.com。
+
+目前还是免费的，如果收费了，大家也可以搜索一下其他提供免费私有仓库的代码托管平台，等到注册这个账号后，我们就可以到主面板来新建 4 个私有仓库来专门对应到本地的 4 个项目。
+
+> 注意：这里建议大家一定要把项目属性更改成私有的，不然你的代码就是公开的了，这样项目代码就可能被公开访问到，对于项目本身安全就容易出问题了，因为可能包含一些敏感代码甚至密码、密钥之类。
+
+我给这几个项目配置的名字分别是：
+
+- node-deploy-static
+- node-deploy-vue
+- node-deploy-react
+- node-deploy-pug
+
+以下操作都是以静态网站 node-deploy-static 为例，先把项目关联到我们的本地项目中，每次创建项目后，它会有具体提示，来告诉我们如何通过命令来关联。
+
+另外，一定要确保，本地的 id_rsa 的公钥已经被配置到了码云的个人后台里面，在本地 cat 一下 .ssh/id_rsa.pub 这公钥，全部选中，然后复制下来，来到 Git 的个人配置后台，找到 ssh key 设置，然后，粘贴进去，提交。可能要你输入密码，输入即可，然后我们可以按照它的提示，把本地的 git 全局设置配置一下。
+
+``` js
+git config --global user.name "wolf18387"
+git config --global user.email "34xxx72@qq.com"
+```
+
+然后关联本地的 Git 仓库，如果本地已经是 Git 仓库了，可以操作最下面的这个提示：
+
+``` js
+cd existing_git_repo
+git remote add origin git@git.oschina.net:wolf18387/node-deploy-vue.git
+git push -u origin master
+```
+
+如果本来就是一个干净的项目文件夹，没有 git 历史，那么就先初始化，再提交：
+
+``` js
+# 初始化本地的项目仓库
+git init
+# 把文件加入本地暂存区
+git add README.md
+# 为本次改动增加提交的改动描述
+git commit -m "first commit"
+# 为仓库关联远端的云仓库地址
+git remote add origin git@git.oschina.net:wolf18387/node-deploy-vue.git
+# 把代码推送到云端仓库
+git push -u origin master
+```
+
+这样我们就可以从本地上传新的代码到私有仓库了。
+
+那么我们怎么让服务器也有权限可以下载到这个仓库呢？很简单，我们可以把服务器的 key 也拿过来配置到码云的后台，刚好，我们在配置无密码 ssh 登录服务器的那一节中，已经在服务器上配置过了这个 key。
+
+在服务器上， cat 一下 `.ssh/id_rsa.pub` 这公钥，全部选中，然后复制下来，来到 git 的个人配置后台，找到 ssh key 设置，然后粘贴进去，提交，可能要你输入密码，没关系输入即可。最后我们一定要确保服务器上，已经安装了 git，如果没有的话，通过 `sudo apt-get install git` 安装。
+
+安装完成 git 并且将服务器上的 `.ssh/id_rsa.pub` 配置到码云的后台之后，我们在服务器上新建一个文件夹temp/， 并且 cd 进去然后执行：
+
+``` js
+# git clone 你的线上私有仓库的地址
+git clone git@git.oschina.net:wolf18387/node-deploy-vue.git
+```
+
+中间会询问你是否要继续，输入 yes 继续即可，这样我们就把从本地上传到线上仓库的代码给 clone 到了服务器。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

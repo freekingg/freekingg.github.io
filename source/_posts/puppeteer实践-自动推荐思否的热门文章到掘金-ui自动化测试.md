@@ -4,8 +4,10 @@ date: 2020-04-03 17:15:50
 tags:
 - puppeteer
 - 自动化测试
+- 案例
 categories:
-- puppeteer
+- [puppeteer]
+- [案例]
 ---
 # 爬取'思否'热门文章并转发到'掘金'
 

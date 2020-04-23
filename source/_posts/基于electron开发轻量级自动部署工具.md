@@ -3,8 +3,10 @@ title: 基于electron开发轻量级自动部署工具
 date: 2020-04-04 18:41:43
 tags:
 - electron
+- 案例
 categories:
-- 桌面端开发
+- [桌面端开发]
+- [案例]
 ---
 
 # 部署狗
