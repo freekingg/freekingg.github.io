@@ -38,8 +38,10 @@ https://chromecj.com/shopping/2014-09/76.html
 项目为游戏平台的后台管理系统,包含会员管理，⻛控管理，⽀付管理，站点管理，代理管理，
 站点配置，app发布管理，socket信息通知，模板切换等相关体系功能
 **贡献**
-此项目也是从零开始搭建,技术选项采用vue生态vue vueRouter elementUi axios后台模型采用d2admin,结合业务api进行所有公共组件的二次封装，菜单权限采用api配置加前端动态添加，数据分析及可视化，采用echars，在线客服及订单推送采用socketIo
-[点击预览](https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200423142805.png)
+此项目也是从零开始搭建,分为功能模块14个，页面53个,技术选项采用vue生态vue vueRouter elementUi axios后台模型采用d2admin,结合业务api进行所有公共组件的二次封装，菜单权限采用api配置加前端动态添加，数据分析及可视化，采用echars，在线客服及订单推送采用socketIo
+数据仓库的api接口采用node+koa进行开发编写
+**项目地址**
+https://github.com/RocWangPeng/king-admin-d2
 
 ### 晟联保信平台
 **介绍**

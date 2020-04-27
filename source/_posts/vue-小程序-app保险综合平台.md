@@ -1,6 +1,6 @@
 ---
 title: vue+小程序+app保险综合平台
-date: 2020-04-22 17:36:02
+date: 2016-04-22 17:36:02
 tags:
 - 案例
 categories:
