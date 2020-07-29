@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="01 stream 的基本概念和常用 API 概述 什么是 stream 为何要使用 stream stream 流转的过程 stream 的常见使用场景  什么是 stream 在编写代码时，我们应该有一些方法将程序像连接水管一样连接起来 – 当我们需要获取一些数据时，可以去通过”拧”其他的部分来达到目的。这也应该是IO应有的方式。 – Doug McIlroy. October 11, 196">
+<meta property="og:type" content="article">
+<meta property="og:title" content="极速入门Node.js的stream">
+<meta property="og:url" content="http://yoursite.com/2020/04/21/%E6%9E%81%E9%80%9F%E5%85%A5%E9%97%A8Node-js%E7%9A%84stream/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="01 stream 的基本概念和常用 API 概述 什么是 stream 为何要使用 stream stream 流转的过程 stream 的常见使用场景  什么是 stream 在编写代码时，我们应该有一些方法将程序像连接水管一样连接起来 – 当我们需要获取一些数据时，可以去通过”拧”其他的部分来达到目的。这也应该是IO应有的方式。 – Doug McIlroy. October 11, 196">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421115841.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421115914.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121240.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121343.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121354.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421122740.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421123223.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+<meta property="article:published_time" content="2020-04-21T03:07:30.000Z">
+<meta property="article:modified_time" content="2020-04-21T03:07:30.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="nodejs">
+<meta property="article:tag" content="stream">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/21/%E6%9E%81%E9%80%9F%E5%85%A5%E9%97%A8Node-js%E7%9A%84stream/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>极速入门Node.js的stream | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/%E6%9E%81%E9%80%9F%E5%85%A5%E9%97%A8Node-js%E7%9A%84stream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          极速入门Node.js的stream
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-21 11:07:30" itemprop="dateCreated datePublished" datetime="2020-04-21T11:07:30+08:00">2020-04-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nodejs/" itemprop="url" rel="index"><span itemprop="name">nodejs</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>22k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>20 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="01-stream-的基本概念和常用-API-概述"><a href="#01-stream-的基本概念和常用-API-概述" class="headerlink" title="01 stream 的基本概念和常用 API 概述"></a>01 stream 的基本概念和常用 API 概述</h2><ul>
+<li>什么是 stream</li>
+<li>为何要使用 stream</li>
+<li>stream 流转的过程</li>
+<li>stream 的常见使用场景</li>
+</ul>
+<h3 id="什么是-stream"><a href="#什么是-stream" class="headerlink" title="什么是 stream"></a>什么是 stream</h3><blockquote>
+<p>在编写代码时，我们应该有一些方法将程序像连接水管一样连接起来 – 当我们需要获取一些数据时，可以去通过”拧”其他的部分来达到目的。这也应该是IO应有的方式。 – Doug McIlroy. October 11, 1964</p>
+</blockquote>
+<p>英文叫 stream 中文叫“流”，都能很形象的表述出它的本质 —— 就是让数据流动起来。</p>
+<p>我们用桶和水来做比喻还算比较恰当（其实计算机中的概念，都是数学概念，都是抽象的，都无法完全用现实事务做比喻），如下图。数据从原来的 source 流向 dest ，要像水一样，慢慢的一点一点的通过一个管道流过去。给鱼缸换水、偷汽油，都能用得上。</p>
+<a id="more"></a>
+
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>stream 并不是 node.js 独有的概念，而是一个操作系统最基本的操作方式，只不过 node.js 有 API 支持这种操作方式。linux 命令的 | 就是 stream ，因此所有 server 端语言都应该实现 stream 的 API 。</p>
+<h3 id="为何要使用-stream"><a href="#为何要使用-stream" class="headerlink" title="为何要使用 stream"></a>为何要使用 stream</h3><p>暂不管编程的原因，先分析一下上图中换水的例子。如果没有中间的管道，而是直接抱起 source 水桶往 dest 水桶中倒，那肯定得需要一个力量特别大的人（或者多个人）才能完成。而有了这个管道，小孩子都可以很轻松的完成换水，而且管道粗细都可以最终完成，只不过是时间长短的问题。即，有管道换水需要的力量消耗非常少，不用管道换水消耗力量很大，这个应该很好理解。</p>
+<p>其实这里所说的“力量”，对应到计算机编程中就是硬件的性能，这包括 CPU 的运算能力，内存的存储能力，硬盘和网络的读写速度（硬盘存储能力暂不考虑）。将上面倒水的例子对应到一个计算机的场景中，例如在线看电影，source 就是服务器端的视频，dest 就是你自己的播放器（或者浏览器中的 flash 和 h5 video）。到这里大家应该一下子能明白，目前看电影的方式就是如同用管道换水一样，一点一点的从服务端将视频流动到本地播放器，一边流动一边播放，最后流动完了也播放完了。</p>
+<p>那播放视频为何要使用这种方式？解决这个问题不妨考虑反证法，即不用管道和流动的方式，先从服务端加载完视频文件，然后再播放。这样导致最直观的问题就是，需要加载很长一段时间才能播放视频。其实这仅仅的表面现象，还有可能是视频加载过程中，因内存占用太多而导致系统卡顿或者崩溃。因为我们的网速、内存、CPU 运算速度都是有限的（而且还要多个程序共享使用），这个视频文件可能有几个 G 那么大。</p>
+<p>再说一个更加直观的例子，先看下面的这段代码。语法上并没有什么问题，但是如果 data.txt 文件非常大，在响应大量用户的并发请求时，程序可能会消耗大量的内存，这样很可能会造成用户连接缓慢的问题。而且，如果并发请求过大，服务器内存开销也很大。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">    fs.readFile(fileName, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">        res.end(data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>要解决这个问题很简单 —— 用 stream ，代码改造如下。即并不是把文件全部读取了再返回，而是一边读取一边返回，一点一点的把数据流动到客户端。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">    <span class="keyword">var</span> stream = fs.createReadStream(fileName);  <span class="comment">// 这一行有改动</span></span><br><span class="line">    stream.pipe(res); <span class="comment">// 这一行有改动</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+<p>最后总结一下，之所以用 stream ，是因为一次性读取、操作大文件，内存和网络是“吃不消”的，因此要让数据流动起来，一点一点的进行操作。这其实也符合算法中一个很重要的思想 —— 分而治之。</p>
+<h3 id="stream-流转的过程"><a href="#stream-流转的过程" class="headerlink" title="stream 流转的过程"></a>stream 流转的过程</h3><p>从管道换水的例子可以看出，stream 包括 source，dest，还有中间的管道，下面将通过这三个方面来介绍 stream 的过程。其中比较关键的 API 有：</p>
+<ul>
+<li><code>data</code> 事件，用来监听 stream 数据的输入</li>
+<li><code>end</code> 事件，用来监听 stream 数据输入完成</li>
+<li><code>fs.createReadStream</code> 方法，返回一个文件读取的 stream 对象</li>
+<li><code>fs.createWriteStream</code> 方法，返回一个文件写入的 stream 对象</li>
+<li><code>pipe</code> 方法，用来做数据流转</li>
+</ul>
+<p>这些 API 下文都会有介绍和代码演示，能通过代码看懂语义即可，暂时不用深究 API 细节，后续章节会有详细介绍。</p>
+<h4 id="source-——-从哪里来"><a href="#source-——-从哪里来" class="headerlink" title="source —— 从哪里来"></a><strong>source —— 从哪里来</strong></h4><p>stream 常见的来源方式主要有三种：</p>
+<ul>
+<li>从控制台输入</li>
+<li>http 请求中的 request</li>
+<li>读取文件</li>
+</ul>
+<p><strong>从控制台输入</strong><br>运行如下代码，然后从控制台输入任何内容，都会被 data 事件监听到，process.stdin 就是一个 stream 对象。注意，data 就是 stream 用来监听数据传入的一个自定义函数，后续会大量用到这个方法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">process.stdin.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'stream by stdin'</span>, chunk.toString())</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>http 请求中的 request</strong><br>http 请求中的 request 输入可以参考如下代码片段（不能直接运行，后面章节会详解）。即客户端发起了 http 请求，服务端可以通过这种方式（注意也用到了 data 事件监听）来监听到数据的传入。这种 http 请求一般是一个 post 请求，上传数据。注意，end 用来监听 stream 数据传输完毕，一般和 data 共用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">req.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// “一点一点”接收内容</span></span><br><span class="line">    data += chunk.toString()</span><br><span class="line">&#125;)</span><br><span class="line">req.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// end 表示接收数据完成</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>读取文件</strong><br>读取文件是用 stream 如以下代码。fs.createReadStream(…) 可以返回一个读取文件的 stream 对象，该对象可以监听 data 和 end 事件。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)  <span class="comment">// 读取文件的 Stream 对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> length = <span class="number">0</span></span><br><span class="line">readStream.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    length += chunk.toString().length</span><br><span class="line">&#125;)</span><br><span class="line">readStream.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(length)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="dest-——-到哪里去"><a href="#dest-——-到哪里去" class="headerlink" title="dest —— 到哪里去"></a><strong>dest —— 到哪里去</strong></h4><p>stream 常见输出方式主要有三种：</p>
+<ul>
+<li>输出到控制台</li>
+<li>http 请求中的 response</li>
+<li>写入文件</li>
+</ul>
+<p><strong>输出到控制台</strong><br>上文讲解 source 时提到，process.stdin.on(‘data’, …) 可以监听控制台输入，而那仅仅是手动监听。如果让控制台输入这个 source 直接通过管道连接到控制台输入，即让数据从输入直接流向输出，使用如下代码。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">process.stdin.pipe(process.stdout) <span class="comment">// source.pipe(dest) 形式</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>http 请求中的 response</strong><br>nodejs 处理 http 请求时会用到 req 和 res ，其实这两者都是 stream 对象。其中 req 是 source ，可以 req.on(‘data’, …) 使用（上文已经演示过），res 是 dest ，用法如下。下面这段代码在本节文章一开始就介绍了，到这里大家应该明白，这是用 stream 的方式读取文件然后直接返回 http 请求。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> stream = fs.createReadStream(fileName);</span><br><span class="line">stream.pipe(res); <span class="comment">// source.pipe(dest) 形式</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>写入文件</strong><br>读取文件可以用 stream ，写入文件当然也可以用 stream ，如下代码。其中，fs.createWriteStream(…) 会返回一个写入文件的 stream 对象，即 dest 。这段代码，就是将一个文件中的内容，一点一点的流动到另外的文件中，完成复制功能。跟文章一开始管道换水的例子非常像。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)  <span class="comment">// source</span></span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(<span class="string">'./file2.txt'</span>)  <span class="comment">// dest</span></span><br><span class="line">readStream.pipe(writeStream) <span class="comment">// source.pipe(dest) 形式</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="stream-的常见使用场景"><a href="#stream-的常见使用场景" class="headerlink" title="stream 的常见使用场景"></a>stream 的常见使用场景</h3><p>stream 常见的应用场景是 http 请求和文件操作</p>
+<p>总结来看，http 请求和文件操作都属于 IO ，即 stream 主要的应用场景就是处理 IO ，这就又回到了 stream 的本质 —— 由于一次性 IO 操作过大，硬件开销太多，影响软件运行效率，因此将 IO 分批分段操作，让数据一点一点的流动起来，直到操作完成。</p>
+<h2 id="02-在-http-get-请求中使用-stream"><a href="#02-在-http-get-请求中使用-stream" class="headerlink" title="02 在 http get 请求中使用 stream"></a>02 在 http get 请求中使用 stream</h2><p>stream 的应用场景都是 IO 操作，包括网络 IO 和文件 IO 。本节主要介绍 http 请求中的 get 请求如何应用 stream ，以及应用 stream 之后对性能的提升。</p>
+<ul>
+<li>node.js 实现 http 请求</li>
+<li>get 请求和 response</li>
+<li>response 和 stream</li>
+<li>使用 stream 对性能的提升</li>
+<li>应用场景</li>
+</ul>
+<h3 id="node-js-实现-http-请求"><a href="#node-js-实现-http-请求" class="headerlink" title="node.js 实现 http 请求"></a>node.js 实现 http 请求</h3><p>这段代码就创建了一个服务，监听 8000 端口。有请求进来，就去读取 data.txt 这个文件，然后返回给客户端。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">    fs.readFile(fileName, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">        res.end(data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>下面将这段代码真正运行起来。找一个目录，然后新建 test1.js 文件，然后把这段代码写入其中。然后再新建 data.txt 文件，随便写点什么文本内容，例如123456。然后打开命令行，定位到这个文件夹，运行 node test1.js ，打开浏览器访问 <a href="http://localhost:8000/" target="_blank" rel="noopener">http://localhost:8000/</a> 即可看到效果。</p>
+<h3 id="get-请求和-response"><a href="#get-请求和-response" class="headerlink" title="get 请求和 response"></a>get 请求和 response</h3><p>get 请求，通过 req.method 可获取请求方法，因此将代码做如下改造。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'GET'</span>) &#123; <span class="comment">// 暂只关注 get 请求</span></span><br><span class="line">        <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">        fs.readFile(fileName, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">            res.end(data);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他 method 暂时忽略</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+<p>将代码修改在 test1.js 中，重新运行 node 并刷新浏览器，依然可以看到效果。</p>
+<p>http 常见的有 get 和 post 请求，get 请求本意是获取数据，即 response ，post 请求本意的上传数据，即 request 。本节只关注 get 请求，也就代表本节只关注 http 请求的 response 。</p>
+<h3 id="response-和-stream"><a href="#response-和-stream" class="headerlink" title="response 和 stream"></a>response 和 stream</h3><p>response 常用的 API 有 send end 等，如上面代码中的 res.end(data) ，但是 response 也是一个 stream 对象。大家再次回顾一开始的管道换水的图，以及 source.pipe(dest) 模型，response 就是一个 dest 。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>因此，之前的代码可以做出如下改动。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'GET'</span>) &#123; <span class="comment">// 暂只关注 get 请求</span></span><br><span class="line">        <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">        <span class="keyword">var</span> stream = fs.createReadStream(fileName);</span><br><span class="line">        stream.pipe(res); <span class="comment">// 将 res 作为 stream 的 dest</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他 method 暂时忽略</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>从之前的章节学习中我们知道 fs.createReadStream() 可以创建一个读取文件的 stream 对象，通过 pipe 可以将数据传递下去，这里就传递给了 response 。修改 test1.js 并创新运行 node ，刷新浏览器即可看到效果。</p>
+<h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><p>在 nodejs 中如果要返回的数据是经过 IO 操作得来的，例如上面例子中读取文件内容，可以直接使用 stream.pipe(res); 这种方式，而不要再用 res.end(data); 了。</p>
+<p>这种应用的实例应该比较多，主要有两种场景：</p>
+<ul>
+<li>使用 node.js 作为服务代理，即客户端通过 node.js 服务作为跳板去请求其他服务，返回请求的内容</li>
+<li>使用 node.js 做静态文件服务器，直接返回静态文件</li>
+</ul>
+<h2 id="03-在-http-post-请求中使用stream"><a href="#03-在-http-post-请求中使用stream" class="headerlink" title="03 在 http post 请求中使用stream"></a>03 在 http post 请求中使用stream</h2><p>本节继续讲解常用的 post 请求，以及 stream 在其中的应用。get 请求关注 response ，而 post 请求更多关注 request 。</p>
+<ul>
+<li>node.js 处理 post 请求</li>
+<li>request 和 stream</li>
+<li>使用 stream 对性能的提升</li>
+<li>应用场景</li>
+</ul>
+<h3 id="node-js-处理-post-请求"><a href="#node-js-处理-post-请求" class="headerlink" title="node.js 处理 post 请求"></a>node.js 处理 post 请求</h3><p>上一节讲解了 node.js 处理 http 请求，以及使用 req.method 可以获取请求的方法。根据这个基础，先用 node.js 实现一个最简单的 post 请求，代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'POST'</span>) &#123; <span class="comment">// 暂只关注 post 请求</span></span><br><span class="line">        res.end(<span class="string">'OK'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他请求方法暂不关心</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在 test1.js 的文件夹中，新建 test2.js 并将代码写入，然后运行 node test2.js ，即可监听 <a href="http://localhost:8000/" target="_blank" rel="noopener">http://localhost:8000/</a> 的 post 请求。</p>
+<p>不过 post 请求就不容易用浏览器直接验证，最简单的方式是借助于 postman 这个工具来发送 post 请求。大家可以直接搜索并安装 postman ，也可以去 chrome 商店搜索 postman 并安装，然后在 Chrome 中输入 chrome://apps/ 即可看到 postman 的入口。无论哪种安装手段，打开 postman ，如下图操作，即可看到请求返回了 OK 。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421115841.png" alt=""></p>
+<p>但是，post 请求一般是要发送数据的，而且发送的数据量可能会很大，我们同样可以借助 postman 来模拟发送数据的操作。为了方便后面的演示效果，可以找一个（或者自己造一个）比较大的 json 文本，然后粘贴到 body 的文本框中，并且选择 JSON 格式。操作如下图。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421115914.png" alt=""></p>
+<p>接下来看看 post 请求发送的数据将如何被 nodejs 接收。</p>
+<h3 id="request-和-stream"><a href="#request-和-stream" class="headerlink" title="request 和 stream"></a>request 和 stream</h3><p>web server 接收 http 请求肯定是通过 request ，而 request 接收数据的本质其实就是 stream 。再次联想一下课程一开始介绍的管道换水的图，以及 source.pipe(dest) 这个模型，其实 request 就是 source 。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>虽然看似是 request 接收数据，但是在 nodejs 服务本身而言，request 是产生数据的（即 source），它产生的数据就是它接收到客户端发送来的数据。</p>
+<p>之前的章节介绍过，source 类型的 stream 对象都可以对其监听 data end 事件，分别触发数据接收和数据接收完成的通知。因此，代码可以被改造为以下样子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'POST'</span>) &#123; <span class="comment">// 暂只关注 post 请求</span></span><br><span class="line">        req.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 接收到部分数据</span></span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'chunk'</span>, chunk.toString().length);</span><br><span class="line">        &#125;);</span><br><span class="line">        req.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 接收数据完成</span></span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'end'</span>);</span><br><span class="line">            res.end(<span class="string">'OK'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他请求方法暂不关心</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>以上代码中，通过 req.on(‘data’, …) 接收流转的数据，因为数据是一点一点“流”进来的，因此每次“流”进来的那一点，都可以通过 chunk 读取。最后，通过 req.on(‘end’, …) 来监听数据传输完成，此时请求可以结束了。</p>
+<p>将代码重新修改到 test2.js ，然后重启 node ，重新运行 postman 中最后发送 json 的请求。如果你的 json 文件够大，你应该会看到控制台中打印了如下结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">chunk 63560</span><br><span class="line">chunk 64556</span><br><span class="line">chunk 64574</span><br><span class="line">chunk 64596</span><br><span class="line">chunk 64572</span><br><span class="line">chunk 64612</span><br><span class="line">chunk 64574</span><br><span class="line">chunk 23086</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>从这个结果我们能很清楚的看到，post 请求发送的数据量很大，req.on(‘data’, …) 要分 8 次才能把数据接收完毕，每次接收到的数据比较小。这就很明显的看出 stream 的“一点一点”、“流” 的这个特点。</p>
+<p>当然，如果 post 请求传递的数据本身就很小，那就没必要分多次接收，可能一次 req.on(‘data’, …) 就能把数据全部接收完成。</p>
+<p>再举一个简单的例子，如果要把 request 请求的数据直接 response ，那么最快的方式就是 req.pipe(res) ，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'POST'</span>) &#123; <span class="comment">// 暂只关注 post 请求</span></span><br><span class="line">        req.pipe(res)  <span class="comment">// 将 request 数据直接 response</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他请求方法暂不关心</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="接收到-post-请求的数据，然后将其写入文件。"><a href="#接收到-post-请求的数据，然后将其写入文件。" class="headerlink" title="接收到 post 请求的数据，然后将其写入文件。"></a>接收到 post 请求的数据，然后将其写入文件。</h3><p>下面做一个简单的示例来验证在 post 请求中使用 stream 的性能提升。为了完成测试，要做一个简单的 demo ，即 nodejs 接收到 post 请求的数据，然后将其写入文件。</p>
+<p>不适用 stream 的 demo 代码如下。即通过 req.on(‘data’, …) 获取数据，然后暂存下来，最后在 req.on(‘end’, …) 中将数据完成的写入到 post.txt 文件中。当然，你需要先创建 post.txt 文件。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> method = req.method; <span class="comment">// 获取请求方法</span></span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'POST'</span>) &#123; <span class="comment">// 暂只关注 post 请求</span></span><br><span class="line">        <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'post.txt'</span>);</span><br><span class="line">        <span class="keyword">var</span> writeStream = fs.createWriteStream(fileName)</span><br><span class="line">        req.pipe(writeStream)</span><br><span class="line">        req.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 接收数据完成</span></span><br><span class="line">            res.end(<span class="string">'OK'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他请求方法暂不关心</span></span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">8000</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="实际应用-1"><a href="#实际应用-1" class="headerlink" title="实际应用"></a>实际应用</h3><p>和 get 请求使用 stream 的场景类似，post 请求使用 stream 的场景，主要是用于将接收的数据直接进行 IO 操作，例如：</p>
+<ul>
+<li>将接收的数据直接存储为文件</li>
+<li>将接收的数据直接 post 给其他的 web server</li>
+</ul>
+<h2 id="04-node-js-文件操作中使用-stream"><a href="#04-node-js-文件操作中使用-stream" class="headerlink" title="04 node.js 文件操作中使用 stream"></a>04 node.js 文件操作中使用 stream</h2><p>stream 主要解决 IO 操作的性能问题，之前讲解了 http 即网络 IO ，本节开始讲解文件 IO 即 node.js 的文件操作。</p>
+<ul>
+<li>node.js 如何读写文件</li>
+<li>如何用 stream 读写文件</li>
+<li>使用 stream 带来的性能提升</li>
+<li>应用场景</li>
+</ul>
+<h3 id="node-js-读写文件"><a href="#node-js-读写文件" class="headerlink" title="node.js 读写文件"></a>node.js 读写文件</h3><p>node.js 提供了非常清晰易懂的读写文件的 API ，读取一个文件代码如下。通过 fs.readFile 读取文件，然后再回调函数中返回文件内容。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 文件名</span></span><br><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取文件内容</span></span><br><span class="line">fs.readFile(fileName, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="comment">// 出错</span></span><br><span class="line">        <span class="built_in">console</span>.log(err.message)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 打印文件内容</span></span><br><span class="line">    <span class="built_in">console</span>.log(data.toString())</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>写入文件操作代码如下。使用 fs.writeFile 写入文件内容，然后在回调函数中返回操作状态。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 文件名</span></span><br><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写入文件</span></span><br><span class="line">fs.writeFile(fileName, <span class="string">'xxxxxx'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="comment">// 出错</span></span><br><span class="line">        <span class="built_in">console</span>.log(err.message)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 没有报错，表示写入成功</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'写入成功'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>根据以上读写操作，可以简单做一个文件拷贝的程序，将 data.txt 中的内容拷贝到 data-bak.txt 中。代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取文件</span></span><br><span class="line"><span class="keyword">var</span> fileName1 = path.resolve(__dirname, <span class="string">'data.txt'</span>)</span><br><span class="line">fs.readFile(fileName1, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="comment">// 出错</span></span><br><span class="line">        <span class="built_in">console</span>.log(err.message)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 得到文件内容</span></span><br><span class="line">    <span class="keyword">var</span> dataStr = data.toString()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写入文件</span></span><br><span class="line">    <span class="keyword">var</span> fileName2 = path.resolve(__dirname, <span class="string">'data-bak.txt'</span>)</span><br><span class="line">    fs.writeFile(fileName2, dataStr, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (err) &#123;</span><br><span class="line">            <span class="comment">// 出错</span></span><br><span class="line">            <span class="built_in">console</span>.log(err.message)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'拷贝成功'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-stream-读写文件"><a href="#使用-stream-读写文件" class="headerlink" title="使用 stream 读写文件"></a>使用 stream 读写文件</h3><p>用 stream 读写文件其实前面章节都有多处用到，这里再统一整理一下。</p>
+<ul>
+<li>可以使用 <code>fs.createReadStream(fileName)</code> 来创建读取文件的 stream 对象</li>
+<li>使用 <code>fs.createWriteStream(fileName)</code> 来创建写入文件的 stream 对象</li>
+</ul>
+<p>回顾第一节讲的管道换水的图，还有 source.pipe(dest) 的模型图。读取文件的 stream 对象，对应的就是 source ，即数据的来源。写入文件的 steram 对象对应的就是 dest ，即数据的目的地。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>可以再分别回顾一下之前章节讲解 get 和 post 请求时的示例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line"><span class="keyword">var</span> stream = fs.createReadStream(fileName);</span><br><span class="line">stream.pipe(res); <span class="comment">// 将 res 作为 stream 的 dest</span></span><br></pre></td></tr></table></figure>
+
+<p>以上代码是 node.js 处理 get 请求时，读取了文件直接返回。这里 stream 就是 source ，res 就是 dest ，两者用 pipe 相连，表示数据流动的方向。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'post.txt'</span>);</span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(fileName)</span><br><span class="line">req.pipe(writeStream)</span><br></pre></td></tr></table></figure>
+
+<p>以上代码是 node.js 处理 post 请求时，将传入的数据直接写入文件。这里 req 就是 source ，writeStream 就是 dest ，两者用 pipe 相连，表示数据流动的方向。</p>
+<p>接下来用 stream 实现一个文件拷贝的功能，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 两个文件名</span></span><br><span class="line"><span class="keyword">var</span> fileName1 = path.resolve(__dirname, <span class="string">'data.txt'</span>)</span><br><span class="line"><span class="keyword">var</span> fileName2 = path.resolve(__dirname, <span class="string">'data-bak.txt'</span>)</span><br><span class="line"><span class="comment">// 读取文件的 stream 对象</span></span><br><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(fileName1)</span><br><span class="line"><span class="comment">// 写入文件的 stream 对象</span></span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(fileName2)</span><br><span class="line"><span class="comment">// 执行拷贝，通过 pipe</span></span><br><span class="line">readStream.pipe(writeStream)</span><br><span class="line"><span class="comment">// 数据读取完成，即拷贝完成</span></span><br><span class="line">readStream.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'拷贝完成'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="使用-stream-来带的性能提升"><a href="#使用-stream-来带的性能提升" class="headerlink" title="使用 stream 来带的性能提升"></a>使用 stream 来带的性能提升</h3><p>上文分别用基本的文件操作 API 和 stream API 写了两个拷贝文件的程序，两者都能实现功能，但是性能上却有巨大的差异。这个程序并不是 web server ，因此我们不再用 ab 工具进行性能测试，而是看下两者对内存的占用情况，文件操作中内存往往是一个瓶颈。</p>
+<p>先介绍一个监控 node.js 内存的轻量级小工具 —— <code>memeye</code> ，它能很方便很直观的监控 node.js 内存占用的情况。安装和使用也都非常简单。</p>
+<p>找到之前 test2.js 的文件夹，命令行定位到这个文件夹，然后运行 <code>npm install memeye --save-dev</code> 等待安装完成。然后新建 test3.js ，在代码中写入：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> memeye = <span class="built_in">require</span>(<span class="string">'memeye'</span>)</span><br><span class="line">memeye()</span><br></pre></td></tr></table></figure>
+
+<p>命令行运行 node test3.js ，然后用浏览器打开 <a href="http://localhost:23333/" target="_blank" rel="noopener">http://localhost:23333/</a> 即可看到这个 node.js 进程的内存占用情况，如下图。其中我们最需要关心的就是页面中 Process Memory Usage 这部分的 heapUsed 内存大小，即 nodejs 的堆内存（可以简单理解为 JS 对象所占用的内存空间）。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121240.png" alt=""></p>
+<p>再继续完善一下 test3.js ，为了方便测试我们还需要做两个工作。第一，让拷贝操作延迟执行，程序运行之后还得切换到浏览器刷新统计界面。第二，连续执行 100 次拷贝操作，以便明显的看出差异。这样 test3.js 需要改进为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 开始监控内存</span></span><br><span class="line"><span class="keyword">var</span> memeye = <span class="built_in">require</span>(<span class="string">'memeye'</span>)</span><br><span class="line">memeye()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将拷贝操作封装到一个函数中</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">copy</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 这里自行补充上文的拷贝代码</span></span><br><span class="line">    <span class="comment">// 测试一，使用 readFile 和 writeFile 编写的拷贝代码</span></span><br><span class="line">    <span class="comment">// 测试二，使用 stream 编写的拷贝代码</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 延迟 5s 执行拷贝</span></span><br><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 连续执行 100 次拷贝</span></span><br><span class="line">    <span class="keyword">var</span> i</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">        copy()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="number">5000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>以上代码中，把上文使用 readFile 和 writeFile 编写的拷贝代码粘贴到 copy 函数中，然后运行 node test3.js ，立刻切换到浏览器刷新页面，结果如下图。图中 heapUsed 从 5M 左右一下子飙升到了 60M 左右。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121343.png" alt=""></p>
+<p>再把上文用 stream 编写的拷贝代码粘贴到 copy 函数中，然后重新运行 node test3.js 并立刻切换到浏览器刷新页面，结果如下图。图中 heapUsed 从 5M 左右仅仅增长到了 6M 左右。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421121354.png" alt=""></p>
+<p>对比两种情况，5M -&gt; 60M VS 5M -&gt; 6M 非常巨大的差异，而且文件体积越大、操作数量越多，这种差异就越明显。由此可见，使用 stream 操作文件对性能带来了非常大的提升，因此大家以后一旦遇到文件操作，应该第一时间想到 stream 并评估是否需要使用。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>所有执行文件操作的场景，都应该尝试使用 stream ，例如文件的读写、拷贝、压缩、解压、格式转换等。除非是体积很小的文件，而且读写次数很少，性能上被忽略。</p>
+<p>近几年前端的打包构建工具都是用 node.js 编写的，而打包和构建其实就是频繁的文件操作，这其中会用到大量的 stream 。其中靠 stream 上位的最著名就是 gulp ，一个非常轻量级的前端构建工具。</p>
+<h2 id="05-逐行读取的最佳方案-readline"><a href="#05-逐行读取的最佳方案-readline" class="headerlink" title="05 逐行读取的最佳方案 readline"></a>05 逐行读取的最佳方案 readline</h2><p>上一节讲解了用 stream 操作文件，会来带很大的性能提升。但是原生的 stream 却对“行”无能为力，它只是把文件当做一个数据流、简单粗暴的流动。很多文件格式都是分行的，例如 csv 文件、日志文件，以及其他一些自定义的文件格式。</p>
+<p>node.js 提供了非常简单的按行读取的 API —— readline ，它本质上也是 stream ，只不过是以“行”作为数据流动的单位。本节将结合一个分析日志文件的案例，讲解 readline 的使用。</p>
+<ul>
+<li>回顾 data end 自定义事件和 pipe 方法</li>
+<li>readline 的使用</li>
+<li>应用场景：日志文件的分析</li>
+</ul>
+<h3 id="回顾-data-end-和-pipe"><a href="#回顾-data-end-和-pipe" class="headerlink" title="回顾 data end 和 pipe"></a>回顾 data end 和 pipe</h3><p>通过学习以上的章节，我们知道 stream 对象有 data end 自定义事件和 pipe 方法。回顾一开始讲解的管道换水的图，即 source.pipe(dest) 这个模型。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>所有 source 类型的 stream 对象都可以监听它的 data end 自定义事件，例如 http 请求中的 request ，代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">req.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'chunk'</span>, chunk.toString().length);</span><br><span class="line">&#125;);</span><br><span class="line">req.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'end'</span>);</span><br><span class="line">    res.end(<span class="string">'OK'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>再例如读取文件的 stream 对象，代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)</span><br><span class="line"><span class="keyword">var</span> length = <span class="number">0</span></span><br><span class="line">readStream.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    length += chunk.toString().length</span><br><span class="line">&#125;)</span><br><span class="line">readStream.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(length)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>所有 source 类型的 stream 对象都有 pipe 方法，可以传入一个 dest 类型的 stream 对象，例如文件拷贝，代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(fileName1)</span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(fileName2)</span><br><span class="line">readStream.pipe(writeStream)</span><br></pre></td></tr></table></figure>
+
+<p>再例如 http 输入的内容直接输出，代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> method = req.method</span><br><span class="line"><span class="keyword">if</span> (method === <span class="string">'POST'</span>) &#123;</span><br><span class="line">    req.pipe(res)  <span class="comment">// 将 request 数据直接 response</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上都是 stream 的常用操作，而 readline 和 stream 类似，但是更加简单、易懂。</p>
+<h3 id="readline-的使用"><a href="#readline-的使用" class="headerlink" title="readline 的使用"></a>readline 的使用</h3><p>相比于 stream 的 data 和 end 自定义事件， readline 需要监听 line 和 close 两个自定义事件。readline 的基本使用示例如下：</p>
+<p>以上代码，需要先根据文件名，创建读取文件的 stream 对象，然后传入并生成一个 readline 对象，然后通过 line 事件监听逐行读取，通过 close 事件监听读取完成。</p>
+<p>如果 readline-data.txt 中的文件内容是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">访问时间：[2018-10-23 13:56:48.407]，访问地址：&quot;http:&#x2F;&#x2F;www.example.com&#x2F;oc&#x2F;v&#x2F;account&#x2F;login.html&quot;</span><br><span class="line">访问时间：[2018-10-23 14:00:10.618]，访问地址：&quot;http:&#x2F;&#x2F;www.example.com&#x2F;oc&#x2F;v&#x2F;account&#x2F;user.html&quot;</span><br><span class="line">访问时间：[2018-10-23 14:00:34.200]，访问地址：&quot;http:&#x2F;&#x2F;www.example.com&#x2F;oc&#x2F;v&#x2F;account&#x2F;user.html&quot;</span><br></pre></td></tr></table></figure>
+
+<p>那打印的内容将会是：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">访问时间：[<span class="number">2018</span><span class="number">-10</span><span class="number">-23</span> <span class="number">13</span>:<span class="number">56</span>:<span class="number">48.407</span>]，访问地址：<span class="string">"http://www.example.com/oc/v/account/login.html"</span></span><br><span class="line">----- <span class="keyword">this</span> line read -----</span><br><span class="line">访问时间：[<span class="number">2018</span><span class="number">-10</span><span class="number">-23</span> <span class="number">14</span>:<span class="number">00</span>:<span class="number">10.618</span>]，访问地址：<span class="string">"http://www.example.com/oc/v/account/user.html"</span></span><br><span class="line">----- <span class="keyword">this</span> line read -----</span><br><span class="line">访问时间：[<span class="number">2018</span><span class="number">-10</span><span class="number">-23</span> <span class="number">14</span>:<span class="number">00</span>:<span class="number">34.200</span>]，访问地址：<span class="string">"http://www.example.com/oc/v/account/user.html"</span></span><br><span class="line">----- <span class="keyword">this</span> line read -----</span><br><span class="line">readline end</span><br></pre></td></tr></table></figure>
+
+<h3 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a>应用场景</h3><p>对于处理按行为单位的文件，如日志文件，使用 readline 是最佳选择。接下来会使用 readline 演示一个日志文件的分析，最终得出在 2018-10-23 14:00 这一分钟内，访问 user.html 的日志数量。日志格式和上文的示例一样，但是日志的内容我制造了 10w 行（文件体积 11.4M ），为了能更加真实的演示效果。</p>
+<p>根据以上示例的代码改造一下即可完成这个需求，需要改造的就是 line 和 close 两个自定义事件，以及在上面再加一行 var num = 0 来记录最终的数量。需要改造的代码如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> num = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听逐行读取的内容</span></span><br><span class="line">rl.on(<span class="string">'line'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">lineData</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lineData.indexOf(<span class="string">'2018-10-30 14:00'</span>) &gt;= <span class="number">0</span> &amp;&amp; lineData.indexOf(<span class="string">'user.html'</span>) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        num++</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 监听读取完成</span></span><br><span class="line">rl.on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'num'</span>, num)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>修改 test4.js 然后重新运行 node test4.js ，得到如下结果。即统计得到一共有 23040 条日志满足要求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num 23040</span><br></pre></td></tr></table></figure>
+
+<p>使用上一节的方法看一下内存占用，发现统计这个 11.4M 的日志文件，堆内存占用从 5M 仅仅上升到了 8.78M ，内存占用非常少，如下图。如果是全部把文件读取再做分析，那内存就不会这么少了，具体可参考上一节的例子。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421122740.png" alt=""></p>
+<p>借用这个简单的例子来演示 readline 的使用以及使用场景，其实日常工作中情况会更加复杂，不过再复杂的场景选择 readline 做逐行分析一定是不会错的。方向选对了很重要，选择大于努力。</p>
+<p>最后，将这个示例所用的代码贴到下面，供大家参考。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"><span class="keyword">var</span> readline = <span class="built_in">require</span>(<span class="string">'readline'</span>) <span class="comment">// 引用 readline</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> memeye = <span class="built_in">require</span>(<span class="string">'memeye'</span>)</span><br><span class="line">memeye()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doReadLine</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 文件名</span></span><br><span class="line">    <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'readline-data.txt'</span>)</span><br><span class="line">    <span class="comment">// 创建读取文件的 stream 对象</span></span><br><span class="line">    <span class="keyword">var</span> readStream = fs.createReadStream(fileName)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建 readline 对象</span></span><br><span class="line">    <span class="keyword">var</span> rl = readline.createInterface(&#123;</span><br><span class="line">        <span class="comment">// 输入，依赖于 stream 对象</span></span><br><span class="line">        input: readStream</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> num = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 监听逐行读取的内容</span></span><br><span class="line">    rl.on(<span class="string">'line'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">lineData</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (lineData.indexOf(<span class="string">'2018-10-30 14:00'</span>) &gt;= <span class="number">0</span> &amp;&amp; lineData.indexOf(<span class="string">'user.html'</span>) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            num++</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// 监听读取完成</span></span><br><span class="line">    rl.on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'num'</span>, num)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">setTimeout(doReadLine, <span class="number">5000</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本节主要讲解了 readline 的使用和一个日志分析的示例，学完本节希望你能掌握：</p>
+<ul>
+<li>readline 本质也是 stream ，也是解决一次性 IO 操作的性能问题</li>
+<li>readline 是 node.js 按行读取文件的最佳选择</li>
+<li>readline 的使用，以及本节的分析日志的案例</li>
+</ul>
+<p>到这里已经讲完了 stream 在网络 IO 和文件 IO 的基本使用，就像一开始介绍的管道换水的例子，一点一点的将数据流出来。那么，每次流动的这一点数据到底是什么（即之前代码示例中的 chunk 变量）？下一节讲解。</p>
+<h2 id="06-stream-和-buffer"><a href="#06-stream-和-buffer" class="headerlink" title="06 stream 和 buffer"></a>06 stream 和 buffer</h2><p>以上章节已经介绍过了 stream 在网络 IO 和文件 IO 中的使用以及价值，但还有一个很重要的问题没有解决。本教程一开始就提到，stream 就是将数据一点一点的流动起来，那么每次流动的数据到底是什么？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)</span><br><span class="line">readStream.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>具体一点，就是以上代码中的 chunk 到底是什么？本节来讲解。</p>
+<ul>
+<li>二进制介绍</li>
+<li>node.js 如何表示二进制</li>
+<li>stream 中“流动”的二进制数据</li>
+<li>使用 Buffer 对性能的提升</li>
+</ul>
+<h3 id="二进制"><a href="#二进制" class="headerlink" title="二进制"></a>二进制</h3><p>首先得要普及一下二进制的知识，特别是对于前端的同学，相对于后端开发的同学，这些计算机基础知识都相对薄弱，更有必要了解一下。</p>
+<p>半个世纪之前，现代计算机之父 冯.诺依曼 提出了“冯.诺依曼结构”，其中最核心的内容之一就是：计算式使用二进制形式进行存储了计算。这种设计一直沿用至今，而且在未来也会一直用下去，除非真的出现了传说中的量子计算以颠覆现代计算机结构。</p>
+<p>计算机内存由若干个存储单元组成，每个存储单元只能存储 0 或者 1 （因为内存是硬件，计算机硬件本质上就是一个一个的电子元件，只能识别充电和放电的状态，充电代表 1 ，放电代表 0 ，可以先这么简单理解），即二进制单元（英文叫 bit）。但是这一个单元所能存储的信息太少，因此约定将 8 个二进制单元为一个基本存储单元，叫做字节（英文是 byte）。一个字节所能存储的最大整数就是 2^8 = 256 ，也正好是 16^2 ，因此也尝尝使用两位的 16 进制数代表一个字节。例如 CSS 中常见的颜色值 #CCCCCC 就是 6 位 16 进制数字，它占用 3 个字节的空间。</p>
+<p>二进制是计算机最底层的数据格式，也是一种通用格式。计算机中的任何数据格式，字符串、数字、视频、音频、程序、网络包等，在最底层都是用二进制来进行存储。这些高级格式和二进制之间，都可通过固定的编码格式进行相互转换。例如，C 语言中 int32 类型的十进制整数（无符号的），就占用 32 bit 即 4 byte ，十进制的 3 对应的二进制就是 00000000 00000000 00000000 00000011 。字符串也同理，可以根据 ASCII 编码规则或者 unicode 编码规则（如 utf-8）等和二进制进行相互转换。</p>
+<p>总之，计算机底层存储的数据都是二进制格式，各种高级类型都有对应的编码规则，和二进制进行相互转化。</p>
+<h3 id="nodejs-表示二进制"><a href="#nodejs-表示二进制" class="headerlink" title="nodejs 表示二进制"></a>nodejs 表示二进制</h3><p>Buffer 就是 nodejs 中二进制的表述形式。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">'学习 nodejs stream'</span></span><br><span class="line"><span class="keyword">var</span> buf = Buffer.from(str, <span class="string">'utf-8'</span>) <span class="comment">// 注意：node 版本 &lt; 6.0 的使用 var buf = new Buffer(str, 'utf-8')</span></span><br><span class="line"><span class="built_in">console</span>.log(buf) <span class="comment">// &lt;Buffer e5 ad a6 e4 b9 a0 20 6e 6f 64 65 6a 73 20 73 74 72 65 61 6d&gt;</span></span><br><span class="line"><span class="built_in">console</span>.log(buf.toString(<span class="string">'utf-8'</span>))  <span class="comment">// 学习 nodejs stream</span></span><br></pre></td></tr></table></figure>
+
+<p>以上代码中，先通过 Buffer.from 将一段字符串转换为二进制形式，其中 utf-8 是一个编码规则。二进制打印出来之后是一个类似数组的对象（但它不是数组），每个元素都是两位的 16 进制数字，即代表一个 byte ，打印出来的 buf 一共有 20 byte 。即根据 utf-8 的编码规则，这段字符串需要 20 byte 进行存储。最后，再通过 utf-8 规则将二进制转换为字符串并打印出来。</p>
+<h3 id="流动的数据是二进制格式"><a href="#流动的数据是二进制格式" class="headerlink" title="流动的数据是二进制格式"></a>流动的数据是二进制格式</h3><p>先在之前的示例中分别打印一下 chunk instanceof Buffer 和 chunk ，看看结果。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)</span><br><span class="line">readStream.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(chunk <span class="keyword">instanceof</span> Buffer)</span><br><span class="line">    <span class="built_in">console</span>.log(chunk)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>打印结果如下图。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421123223.png" alt=""></p>
+<p>可以看到 stream 中流动的数据就是 Buffer 类型，就是二进制。因此，在使用 stream chunk 的时候，需要将这些二进制数据转换为相应的格式。例如之前讲解 post 请求，从 request 中接收数据就是这样。再回归一下之前的代码，就能看明白了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> dataStr = <span class="string">''</span>;</span><br><span class="line">req.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> chunkStr = chunk.toString()  <span class="comment">// 这里，将二进制转换为字符串</span></span><br><span class="line">    dataStr += chunkStr</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>stream 中为何要“流动”二进制格式的数据呢？回答这个问题得再次考虑一下 stream 的设计目的 —— 为了优化 IO 操作。无论是文件 IO 还是网络 IO ，其中包含的数据格式是未可知的，如字符串、音频、视频、网络包等。即便都是字符串，其编码规则也是未可知的，如 ASC 编码、utf-8 编码。再这么多未可知的情况下，只能是以不变应万变，直接用最通用的二进制格式，谁都能认识。</p>
+<p>而且，用二进制格式进行流动和传输，是效率最高的。</p>
+<p>PS：补充一点，按照上面的说法，那无论是用 stream 读取文件还是 fs.readFile 读取文件，读出来的都应该是二进制格式？—— 答案是正确的，验证代码如下（下文正好会用到这段代码）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line">fs.readFile(fileName, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data <span class="keyword">instanceof</span> Buffer)  <span class="comment">// true</span></span><br><span class="line">    <span class="built_in">console</span>.log(data)  <span class="comment">// &lt;Buffer 7b 0a 20 20 22 72 65 71 75 69 72 65 ...&gt;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="07-stream-常用类型总结"><a href="#07-stream-常用类型总结" class="headerlink" title="07 stream 常用类型总结"></a>07 stream 常用类型总结</h2><p>再次回顾第一节中讲解的管道换水的图，source 通过一个管道流向了 dest ，如下图。</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421111143.png" alt=""></p>
+<p>通过之前的学习知道：这里的 source 可能是 http 请求中的 request ，也可能是读取文件的 stream 对象，也可能是 process.stdin ；这里的 dest 可能是 http 请求中的 response ，也可能是写入文件的 stream 对象，也可能是 process.stdout；这里的管道就是 pipe 函数。</p>
+<p>先不管 pipe 函数。source 和 dest 完全就是两个不同的类型，一个是读取数据的，叫做 readable stream ，一个是写入数据的，叫做 writeable stream ，下文会详细介绍这两种类型。</p>
+<p>除了这两种类型之外，还有一种类型叫做 duplex stream ，中文叫双工流，既有读取功能又有写入功能。例如下面的代码，readStream 读取的数据直接 pipe 到 zlib.createGzip() 这个 duplex stream 就是 gzip 压缩，然后再 pipe 到 writeStream 结束操作。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"><span class="keyword">var</span> zlib = <span class="built_in">require</span>(<span class="string">'zlib'</span>)</span><br><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./file1.txt'</span>)</span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(<span class="string">'./file1.txt.gz'</span>)</span><br><span class="line">readStream.pipe(zlib.createGzip())</span><br><span class="line">          .pipe(writeStream)</span><br></pre></td></tr></table></figure>
+<p>其他类型（transform classic）不常用，暂时可不关注。</p>
+<h3 id="readable-stream"><a href="#readable-stream" class="headerlink" title="readable stream"></a>readable stream</h3><p>根据本节一开始的分析，http 请求中的 request 和读取文件的 stream 对象都是 readable stream ，即可以从中读取数据。它有两种常用的操作方式，第一种是直接将数据 pipe 到一个 writeable stream ，例如之前讲解 get 请求时的代码示例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'data.txt'</span>);</span><br><span class="line"><span class="keyword">var</span> stream = fs.createReadStream(fileName);</span><br><span class="line">stream.pipe(res); <span class="comment">// 直接将数据 `pipe` 到一个 writeable stream</span></span><br></pre></td></tr></table></figure>
+<p>第二种是通过监听 on end 自定义事件来获取数据再手动处理，例如之前讲解 post 请求时的代码示例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> dataStr = <span class="string">''</span>;</span><br><span class="line">req.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 接收到数据，先存储起来</span></span><br><span class="line">    <span class="keyword">var</span> chunkStr = chunk.toString()</span><br><span class="line">    dataStr += chunkStr</span><br><span class="line">&#125;);</span><br><span class="line">req.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 接收数据完成，将数据写入文件</span></span><br><span class="line">    <span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'post.txt'</span>);</span><br><span class="line">    fs.writeFile(fileName, dataStr)</span><br><span class="line"></span><br><span class="line">    res.end(<span class="string">'OK'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>以上说的两个例子，都是已经封装好的 readable stream 。那么它的本来面目是怎样的？先看下面代码。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Readable = <span class="built_in">require</span>(<span class="string">'stream'</span>).Readable;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构造一个 readable stream 并往里“灌入”数据</span></span><br><span class="line"><span class="keyword">var</span> rs = <span class="keyword">new</span> Readable;</span><br><span class="line">rs.push(<span class="string">'学习 '</span>);</span><br><span class="line">rs.push(<span class="string">'nodejs '</span>);</span><br><span class="line">rs.push(<span class="string">'stream</span></span><br><span class="line"><span class="string">'</span>);</span><br><span class="line">rs.push(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// pipe 到一个 writable stream</span></span><br><span class="line">rs.pipe(process.stdout);</span><br></pre></td></tr></table></figure>
+<p>以上代码可以看出，node.js 提供了 readable stream 的构造函数，可以 new 出一个新的 readable stream 对象。然后通过 push 函数往里“灌入”数据，当传入的是 null 的时候表示“灌入”完成，即可输入了。最后 pipe 到了一个 writeable stream 。</p>
+<h3 id="writeable-stream"><a href="#writeable-stream" class="headerlink" title="writeable stream"></a>writeable stream</h3><p>根据本节一开始的分析，http 请求中的 response 和写入文件的 stream 对象都是 writable stream ，它可以作为参数传入 pipe 函数，以读取上游的数据。例如之前讲解文件操作时拷贝文件的代码示例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fileName = path.resolve(__dirname, <span class="string">'post.txt'</span>);</span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(fileName)</span><br><span class="line">req.pipe(writeStream) <span class="comment">// writeStream 作为参数传递到 pipe 函数中</span></span><br></pre></td></tr></table></figure>
+<p>以上代码中 writeStream 是已经封装好了的 writeable stream ，下面再看看它的本来面目。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Writable = <span class="built_in">require</span>(<span class="string">'stream'</span>).Writable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> ws = Writable();</span><br><span class="line">ws._write = <span class="function"><span class="keyword">function</span> (<span class="params">chunk, enc, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(chunk.toString());  <span class="comment">// 输出“流动”的数据</span></span><br><span class="line">    next();  <span class="comment">// 继续监听下一次输出</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">process.stdin.pipe(ws); <span class="comment">// 作为参数传递到 pipe 函数中</span></span><br></pre></td></tr></table></figure>
+<p>根据以上代码得知，node.js 提供了 Writable 构造函数可以 new 一个新的 writable stream 。通过实现它的 _write 方法即可监听到每次“流动”的数据，运行 next() 可继续监听。</p>
+<h3 id="再谈-pipe"><a href="#再谈-pipe" class="headerlink" title="再谈 pipe"></a>再谈 pipe</h3><p>之前的章节中一直是用 source.pipe(dest) 这种模式来使用 pipe 的，其实 pipe 可以链式调用。例如上文演示的 duplex stream 示例代码 readStream.pipe(zlib.createGzip()).pipe(writeStream) ，还有之前讲解文件操作的那一节最后列举的 gulp 配置文件的示例代码（可翻到那一节再回顾一下）。</p>
+<p>之前讲解 source.pipe(dest) 模式是为了方便理解和使用，现在我们更新一个更加严谨的 pipe 用法：</p>
+<ul>
+<li>调用 pipe 的对象必须是 readable stream 或者 duplex stream ，即具有读取数据的功能。如 req.pipe(..)</li>
+<li>传入 pipe 的参数必须是 writeable stream 或者 duplex stream ，即具有写入数据的功能。如 req.pipe(res)</li>
+<li>pipe 支持链式调用</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+              <a href="/tags/stream/" rel="tag"># stream</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/19/egret%E7%99%BD%E9%B9%AD%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B-3%E5%B0%8F%E6%97%B6%E5%BC%80%E5%8F%91%E4%B8%80%E6%AC%BE%E5%B0%8F%E6%B8%B8%E6%88%8F/" rel="prev" title="egret白鹭入门教程-3小时开发一款小游戏">
+      <i class="fa fa-chevron-left"></i> egret白鹭入门教程-3小时开发一款小游戏
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/21/%E6%9E%81%E9%80%9F%E5%85%A5%E9%97%A8Node%C2%B7Vue%C2%B7React%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2/" rel="next" title="极速入门Node·Vue·React服务器部署">
+      极速入门Node·Vue·React服务器部署 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#01-stream-的基本概念和常用-API-概述"><span class="nav-number">1.</span> <span class="nav-text">01 stream 的基本概念和常用 API 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-stream"><span class="nav-number">1.1.</span> <span class="nav-text">什么是 stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为何要使用-stream"><span class="nav-number">1.2.</span> <span class="nav-text">为何要使用 stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stream-流转的过程"><span class="nav-number">1.3.</span> <span class="nav-text">stream 流转的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#source-——-从哪里来"><span class="nav-number">1.3.1.</span> <span class="nav-text">source —— 从哪里来</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dest-——-到哪里去"><span class="nav-number">1.3.2.</span> <span class="nav-text">dest —— 到哪里去</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stream-的常见使用场景"><span class="nav-number">1.4.</span> <span class="nav-text">stream 的常见使用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#02-在-http-get-请求中使用-stream"><span class="nav-number">2.</span> <span class="nav-text">02 在 http get 请求中使用 stream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#node-js-实现-http-请求"><span class="nav-number">2.1.</span> <span class="nav-text">node.js 实现 http 请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-请求和-response"><span class="nav-number">2.2.</span> <span class="nav-text">get 请求和 response</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#response-和-stream"><span class="nav-number">2.3.</span> <span class="nav-text">response 和 stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实际应用"><span class="nav-number">2.4.</span> <span class="nav-text">实际应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#03-在-http-post-请求中使用stream"><span class="nav-number">3.</span> <span class="nav-text">03 在 http post 请求中使用stream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#node-js-处理-post-请求"><span class="nav-number">3.1.</span> <span class="nav-text">node.js 处理 post 请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#request-和-stream"><span class="nav-number">3.2.</span> <span class="nav-text">request 和 stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收到-post-请求的数据，然后将其写入文件。"><span class="nav-number">3.3.</span> <span class="nav-text">接收到 post 请求的数据，然后将其写入文件。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实际应用-1"><span class="nav-number">3.4.</span> <span class="nav-text">实际应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#04-node-js-文件操作中使用-stream"><span class="nav-number">4.</span> <span class="nav-text">04 node.js 文件操作中使用 stream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#node-js-读写文件"><span class="nav-number">4.1.</span> <span class="nav-text">node.js 读写文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-stream-读写文件"><span class="nav-number">4.2.</span> <span class="nav-text">使用 stream 读写文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-stream-来带的性能提升"><span class="nav-number">4.3.</span> <span class="nav-text">使用 stream 来带的性能提升</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景"><span class="nav-number">4.4.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#05-逐行读取的最佳方案-readline"><span class="nav-number">5.</span> <span class="nav-text">05 逐行读取的最佳方案 readline</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#回顾-data-end-和-pipe"><span class="nav-number">5.1.</span> <span class="nav-text">回顾 data end 和 pipe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readline-的使用"><span class="nav-number">5.2.</span> <span class="nav-text">readline 的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景-1"><span class="nav-number">5.3.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#06-stream-和-buffer"><span class="nav-number">6.</span> <span class="nav-text">06 stream 和 buffer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二进制"><span class="nav-number">6.1.</span> <span class="nav-text">二进制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nodejs-表示二进制"><span class="nav-number">6.2.</span> <span class="nav-text">nodejs 表示二进制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流动的数据是二进制格式"><span class="nav-number">6.3.</span> <span class="nav-text">流动的数据是二进制格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#07-stream-常用类型总结"><span class="nav-number">7.</span> <span class="nav-text">07 stream 常用类型总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#readable-stream"><span class="nav-number">7.1.</span> <span class="nav-text">readable stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#writeable-stream"><span class="nav-number">7.2.</span> <span class="nav-text">writeable stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再谈-pipe"><span class="nav-number">7.3.</span> <span class="nav-text">再谈 pipe</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

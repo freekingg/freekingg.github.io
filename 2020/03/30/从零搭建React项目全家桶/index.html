@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="React是近几年来前端项目开发非常火的一个框架，其背景是Facebook团队的技术支持，市场占有率也很高。很多初学者纠结一开始是学react还是vue。个人觉得，有时间的话，最好两个都掌握一下。从学习难度上来说，react要比vue稍难一些。万事开头难，但是掌握了react对于大幅提高前端技能还是非常有帮助的。本文一步步详细梳理了从创建react、精简项目、集成插件、初步优化等过程。对于reac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零搭建React项目全家桶">
+<meta property="og:url" content="http://yoursite.com/2020/03/30/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAReact%E9%A1%B9%E7%9B%AE%E5%85%A8%E5%AE%B6%E6%A1%B6/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="React是近几年来前端项目开发非常火的一个框架，其背景是Facebook团队的技术支持，市场占有率也很高。很多初学者纠结一开始是学react还是vue。个人觉得，有时间的话，最好两个都掌握一下。从学习难度上来说，react要比vue稍难一些。万事开头难，但是掌握了react对于大幅提高前端技能还是非常有帮助的。本文一步步详细梳理了从创建react、精简项目、集成插件、初步优化等过程。对于reac">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-30T05:15:11.000Z">
+<meta property="article:modified_time" content="2020-03-30T05:15:11.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="react">
+<meta property="article:tag" content="redux">
+<meta property="article:tag" content="react-router">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/30/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAReact%E9%A1%B9%E7%9B%AE%E5%85%A8%E5%AE%B6%E6%A1%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>从零搭建React项目全家桶 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/30/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAReact%E9%A1%B9%E7%9B%AE%E5%85%A8%E5%AE%B6%E6%A1%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从零搭建React项目全家桶
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-30 13:15:11" itemprop="dateCreated datePublished" datetime="2020-03-30T13:15:11+08:00">2020-03-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/react/" itemprop="url" rel="index"><span itemprop="name">react</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>17k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>16 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>React是近几年来前端项目开发非常火的一个框架，其背景是Facebook团队的技术支持，市场占有率也很高。很多初学者纠结一开始是学react还是vue。个人觉得，有时间的话，最好两个都掌握一下。从学习难度上来说，react要比vue稍难一些。万事开头难，但是掌握了react对于大幅提高前端技能还是非常有帮助的。本文一步步详细梳理了从创建react、精简项目、集成插件、初步优化等过程。对于react开发者来说，能够节省很多探索的时间。下面请跟着我来一步步操作。</p>
+<a id="more"></a>
+
+<h2 id="先睹为快"><a href="#先睹为快" class="headerlink" title="先睹为快"></a>先睹为快</h2><p>正式开始前，先看下通过本次分享，能掌握什么？</p>
+<ul>
+<li>从零创建React项目</li>
+<li>支持Sass/Scss/Less/Stylus</li>
+<li>路由使用：react-router-dom</li>
+<li>组件的创建与引用</li>
+<li>React Developer Tools浏览器插件</li>
+<li>redux、react-redux使用</li>
+<li>redux-thunk</li>
+<li>store的创建与使用</li>
+<li>Redux DevTools安装与使用</li>
+<li>immutable.js使用</li>
+<li>Mock.js使用</li>
+<li>解决本地跨域反向代理</li>
+<li>其他常用工具汇总</li>
+<li>超值附赠：集成Ant Design</li>
+</ul>
+<p>即使你是新手，跟着操作一遍以后，也可以快速上手React项目啦！</p>
+<blockquote>
+<p>※注：本文代码区域每行开头的“+”表示新增，“-”表示删除，“M”表示修改；代码中的“…”表示省略。</p>
+</blockquote>
+<h2 id="1-创建React-APP"><a href="#1-创建React-APP" class="headerlink" title="1 创建React-APP"></a>1 创建React-APP</h2><p>为了加速npm下载速度，先把npm设置为淘宝镜像地址。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm config <span class="keyword">set</span> registry http://registry.npm.taobao.org/</span><br></pre></td></tr></table></figure>
+<p>通过官方的create-react-app，找个喜欢的目录，执行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx create-react-app react-app</span><br></pre></td></tr></table></figure>
+<p>命令最后的react-app是项目的名称，可以自行更改。</p>
+<p>稍等片刻即可完成安装。安装完成后，可以使用npm或者yarn启动项目。</p>
+<p>进入项目目录，并启动项目：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd react-app</span><br><span class="line">yarn start  （或者使用npm start）</span><br></pre></td></tr></table></figure>
+<p>启动后，可以通过<code>http://localhost:3000/</code>地址访问项目：</p>
+<h2 id="2-精简项目"><a href="#2-精简项目" class="headerlink" title="2 精简项目"></a>2 精简项目</h2><h3 id="2-1-删除文件"><a href="#2-1-删除文件" class="headerlink" title="2.1 删除文件"></a>2.1 删除文件</h3><p>接下来，删除一般项目中用不到的文件，最简化项目。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    ├─ /node_modules</span><br><span class="line">    ├─ package.json</span><br><span class="line">    ├─ /public</span><br><span class="line">    |  ├─ favicon.ico</span><br><span class="line">    |  ├─ index.html</span><br><span class="line">-   |  ├─ logo192.png</span><br><span class="line">-   |  ├─ logo512.png</span><br><span class="line">-   |  ├─ mainfest.json</span><br><span class="line">-   |  └─ robots.txt</span><br><span class="line">    ├─ README.md</span><br><span class="line">    ├─ /src</span><br><span class="line">-   |  ├─ App.css</span><br><span class="line">    |  ├─ App.js</span><br><span class="line">-   |  ├─ App.test.js      (jTest自动化测试)</span><br><span class="line">-   |  ├─ index.css</span><br><span class="line">-   |  ├─ index.js</span><br><span class="line">-   |  ├─ logo.svg</span><br><span class="line">-   |  ├─ serviceWorker.js</span><br><span class="line">-   |  └─ setuoTests.js    (PWA)</span><br><span class="line">    └─ yarn.lock</span><br></pre></td></tr></table></figure>
+<p>以上文件删除后，页面会报错。这是因为相应的文件引用已不存在。需要继续修改代码。</p>
+<h3 id="2-2-简化代码"><a href="#2-2-简化代码" class="headerlink" title="2.2 简化代码"></a>2.2 简化代码</h3><p>现在目录结构如下，清爽许多：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">├─ /node_modules</span><br><span class="line">├─ package.json</span><br><span class="line">├─ /public</span><br><span class="line">|  ├─ favicon.ico</span><br><span class="line">|  └─ index.html</span><br><span class="line">├─ README.md</span><br><span class="line">├─ /src</span><br><span class="line">|  ├─ App.js</span><br><span class="line">|  └─ index.js</span><br><span class="line">└─ yarn.lock</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>记的删除文件中引用的代码</p>
+</blockquote>
+<h3 id="2-3-使用Fragment去掉组件外层标签"><a href="#2-3-使用Fragment去掉组件外层标签" class="headerlink" title="2.3 使用Fragment去掉组件外层标签"></a>2.3 使用Fragment去掉组件外层标签</h3><p>react要求每个组件HTML的最外层必须是由一个标签包裹，且不能存在并列的标签。例如，在src/App.js中，如果是这样就会报错：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// 以下代码将会报错，最外层不能存在并列的标签。</span></span><br><span class="line"> <span class="function"><span class="keyword">function</span> <span class="title">App</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div className=<span class="string">"App"</span>&gt;</span><br><span class="line">      &lt;h1&gt;This is React App.&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">    &lt;div className=<span class="string">"App-other"</span>&gt;</span><br><span class="line">      &lt;h1&gt;This is React App-other.&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果确实需要这样的HTML，并且不想再添加一个父级标签，可以使用Fragment作为最外层。代码修改如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">M   <span class="keyword">import</span> React, &#123; Fragment &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">App</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">+           <span class="xml"><span class="tag">&lt;<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line">                &lt;div className="App"&gt;</span><br><span class="line">                    &lt;h1&gt;This is React App.&lt;/h1&gt;</span><br><span class="line"><span class="xml">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">                &lt;div className="App-other"&gt;</span><br><span class="line">                    &lt;h1&gt;This is React App-ohter.&lt;/h1&gt;</span><br><span class="line"><span class="xml">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">+           <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> App</span><br></pre></td></tr></table></figure>
+<p>以上仅为了说明Fragment的使用效果。在某些组件嵌套的使用场景下，非常适合使用Fragment。例如父组件是<code>&lt;table&gt;</code>，而子组件可以用<code>&lt;Fragment&gt;</code>包裹多个<code>&lt;tr&gt;</code>。</p>
+<h2 id="3-项目目录结构"><a href="#3-项目目录结构" class="headerlink" title="3 项目目录结构"></a>3 项目目录结构</h2><p>项目目录结构可根据项目实际灵活制定。这里分享下我常用的结构，仅供参考。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">├─ /node_modules</span><br><span class="line">├─ package.json</span><br><span class="line">├─ /public</span><br><span class="line">|  ├─ favicon.ico        &lt;-- 网页图标</span><br><span class="line">|  └─ index.html         &lt;-- HTML页模板</span><br><span class="line">├─ README.md</span><br><span class="line">├─ /src</span><br><span class="line">|  ├─ /common            &lt;-- 全局公用目录</span><br><span class="line">|  |  ├─ /fonts          &lt;-- 字体文件目录</span><br><span class="line">|  |  ├─ /images         &lt;-- 图片文件目录</span><br><span class="line">|  |  ├─ /js             &lt;-- 公用js文件目录</span><br><span class="line">|  |  └─ /style          &lt;-- 公用样式文件目录</span><br><span class="line">|  |  |  ├─ frame.css    &lt;-- 全部公用样式（<span class="keyword">import</span>其他css）</span><br><span class="line">|  |  |  ├─ reset.css    &lt;-- 清零样式</span><br><span class="line">|  |  |  └─ global.css   &lt;-- 全局公用样式</span><br><span class="line">|  ├─ /components        &lt;-- 公共模块组件目录</span><br><span class="line">|  |  ├─ /header         &lt;-- 头部导航模块</span><br><span class="line">|  |  |  ├─ index.js     &lt;-- header主文件</span><br><span class="line">|  |  |  └─ header.css   &lt;-- header样式文件</span><br><span class="line">|  |  └─ ...             &lt;-- 其他模块</span><br><span class="line">|  ├─ /pages             &lt;-- 页面组件目录</span><br><span class="line">|  |  ├─ /home           &lt;-- home页目录</span><br><span class="line">|  |  |  ├─ index.js     &lt;-- home主文件</span><br><span class="line">|  |  |  └─ home.css     &lt;-- home样式文件</span><br><span class="line">|  |  ├─ /login          &lt;-- login页目录</span><br><span class="line">|  |  |  ├─ index.js     &lt;-- login主文件</span><br><span class="line">|  |  |  └─ login.css    &lt;-- login样式文件</span><br><span class="line">|  |  └─ ...             &lt;-- 其他页面</span><br><span class="line">|  ├─ App.js             &lt;-- 项目主模块</span><br><span class="line">|  └─ index.js           &lt;-- 项目入口文件</span><br><span class="line">└─ yarn.lock</span><br></pre></td></tr></table></figure>
+<h3 id="3-1-引入全局公用样式"><a href="#3-1-引入全局公用样式" class="headerlink" title="3.1 引入全局公用样式"></a>3.1 引入全局公用样式</h3><p>在frame.css里引入其他公用样式： src/common/style/frame.css</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@import</span> <span class="string">'./reset.css'</span>;</span><br><span class="line"><span class="keyword">@import</span> <span class="string">'./global.css'</span>;</span><br></pre></td></tr></table></figure>
+<p>然后在src/index.js里引入frame.css</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    import React from &#39;react&#39;</span><br><span class="line">    import ReactDOM from &#39;react-dom&#39;</span><br><span class="line">    import App from &#39;.&#x2F;App&#39;</span><br><span class="line">+   import &#39;.&#x2F;common&#x2F;style&#x2F;frame.css&#39;</span><br><span class="line"></span><br><span class="line">    ReactDOM.render(&lt;App &#x2F;&gt;, document.getElementById(&#39;root&#39;))</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-支持Sass-Less-Stylus"><a href="#3-2-支持Sass-Less-Stylus" class="headerlink" title="3.2 支持Sass/Less/Stylus"></a>3.2 支持Sass/Less/Stylus</h3><p>工欲善其事必先利其器，这么高大上的react怎能好意思用最原始的css搭配呢？create-react-app默认情况下未暴露配置文件。要更灵活配置项目，需要将配置文件暴露出来。</p>
+<p>执行以下命令，暴露配置文件：</p>
+<blockquote>
+<p>※注意：暴露配置的文件的操作不可逆！</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run eject</span><br></pre></td></tr></table></figure>
+<p>如果之前没有提及git的话，可能会报以下错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Remove untracked files, stash or commit any changes, and try again</span><br></pre></td></tr></table></figure>
+<p>需要先在项目根目录下执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m "初始化项目(备注)"</span><br></pre></td></tr></table></figure>
+<p>稍等片刻，eject成功，目录变化如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">+   ├─ /config</span><br><span class="line">+   |  ├─ /jest</span><br><span class="line">+   |  ├─ env.js</span><br><span class="line">+   |  ├─ <span class="built_in">module</span>.js</span><br><span class="line">+   |  ├─ paths.js</span><br><span class="line">+   |  ├─ pnpTs.js</span><br><span class="line">+   |  ├─ webpack.config.js   &lt;-- webpack配置文件</span><br><span class="line">+   |  └─ webpackDevServer.config.js</span><br><span class="line">    ├─ /node_modules</span><br><span class="line">    ├─ package.json</span><br><span class="line">    ├─ /public</span><br><span class="line">    |  ├─ favicon.ico</span><br><span class="line">    |  └─ index.html</span><br><span class="line">    ├─ README.md</span><br><span class="line">+   ├─ /scripts</span><br><span class="line">+   |  ├─ build.js</span><br><span class="line">+   |  ├─ start.js</span><br><span class="line">+   |  └─ test.js</span><br><span class="line">    ├─ /src</span><br><span class="line">    |  ├─ /common         &lt;-- 全局公用目录</span><br><span class="line">    |  ├─ /components     &lt;-- 公共模块组件目录</span><br><span class="line">    |  ├─ /pages          &lt;-- 页面组件目录</span><br><span class="line">    |  ├─ App.js          &lt;-- 项目主模块</span><br><span class="line">    |  └─ index.js        &lt;-- 项目入口文件</span><br><span class="line">    └─ yarn.lock</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-1-支持Sass-Scss"><a href="#3-2-1-支持Sass-Scss" class="headerlink" title="3.2.1 支持Sass/Scss"></a>3.2.1 支持Sass/Scss</h3><p>eject后，虽然package.json以及webpack.config.js里有了sass相关代码，但是要正确使用Sass/Scss，还要再安装node-sass。</p>
+<p>执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install node-sass -D</span><br><span class="line">  or</span><br><span class="line">yarn add node-sass -D</span><br></pre></td></tr></table></figure>
+<p>安装完成后，项目已支持Sass/Scss，可以将原css文件后缀名修改为sacc/scss，别忘了把src/index.js中引入的frame.css后缀名修改为sacc/scss。</p>
+<h3 id="3-2-2-支持Less"><a href="#3-2-2-支持Less" class="headerlink" title="3.2.2 支持Less"></a>3.2.2 支持Less</h3><p>支持Less稍微多一点步骤，首先安装less和less-loader：<br>执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install less-loader -D</span><br><span class="line">  or</span><br><span class="line">yarn add less-loader -D</span><br></pre></td></tr></table></figure>
+<p>然后修改config/webpack.config.js：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// style files regexes</span></span><br><span class="line">    <span class="keyword">const</span> cssRegex = <span class="regexp">/\.css$/</span>;</span><br><span class="line">    <span class="keyword">const</span> cssModuleRegex = <span class="regexp">/\.module\.css$/</span>;</span><br><span class="line">    <span class="keyword">const</span> sassRegex = <span class="regexp">/\.(scss|sass)$/</span>;</span><br><span class="line">    <span class="keyword">const</span> sassModuleRegex = <span class="regexp">/\.module\.(scss|sass)$/</span>;</span><br><span class="line">+   <span class="keyword">const</span> lessRegex = <span class="regexp">/\.less$/</span>;</span><br><span class="line">+   <span class="keyword">const</span> lessModuleRegex = <span class="regexp">/\.module\.less$/</span>;</span><br><span class="line">    ...(略)</span><br><span class="line">    <span class="comment">// Opt-in support for SASS (using .scss or .sass extensions).</span></span><br><span class="line">    <span class="comment">// By default we support SASS Modules with the</span></span><br><span class="line">    <span class="comment">// extensions .module.scss or .module.sass</span></span><br><span class="line">    &#123;</span><br><span class="line">        test: sassRegex,</span><br><span class="line">        exclude: sassModuleRegex,</span><br><span class="line">        use: getStyleLoaders(</span><br><span class="line">            &#123;</span><br><span class="line">                importLoaders: <span class="number">2</span>,</span><br><span class="line">                sourceMap: isEnvProduction &amp;&amp; shouldUseSourceMap,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">'sass-loader'</span></span><br><span class="line">        ),</span><br><span class="line">        <span class="comment">// Don't consider CSS imports dead code even if the</span></span><br><span class="line">        <span class="comment">// containing package claims to have no side effects.</span></span><br><span class="line">        <span class="comment">// Remove this when webpack adds a warning or an error for this.</span></span><br><span class="line">        <span class="comment">// See https://github.com/webpack/webpack/issues/6571</span></span><br><span class="line">        sideEffects: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// Adds support for CSS Modules, but using SASS</span></span><br><span class="line">    <span class="comment">// using the extension .module.scss or .module.sass</span></span><br><span class="line">    &#123;</span><br><span class="line">        test: sassModuleRegex,</span><br><span class="line">        use: getStyleLoaders(</span><br><span class="line">            &#123;</span><br><span class="line">                importLoaders: <span class="number">2</span>,</span><br><span class="line">                sourceMap: isEnvProduction &amp;&amp; shouldUseSourceMap,</span><br><span class="line">                modules: &#123;</span><br><span class="line">                    getLocalIdent: getCSSModuleLocalIdent,</span><br><span class="line">                  &#125;,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">'sass-loader'</span></span><br><span class="line">        ),</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 以下这里仿照上面sass的代码，配置下less。</span></span><br><span class="line">+   &#123;</span><br><span class="line">+       test: lessRegex,</span><br><span class="line">+           exclude: lessModuleRegex,</span><br><span class="line">+           use: getStyleLoaders(</span><br><span class="line">+               &#123;</span><br><span class="line">+                   importLoaders: <span class="number">2</span>,</span><br><span class="line">+                   sourceMap: isEnvProduction &amp;&amp; shouldUseSourceMap,</span><br><span class="line">+               &#125;,</span><br><span class="line">+               <span class="string">'less-loader'</span></span><br><span class="line">+            ),</span><br><span class="line">+           sideEffects: <span class="literal">true</span>,</span><br><span class="line">+   &#125;,</span><br><span class="line">+   &#123;</span><br><span class="line">+       test: lessModuleRegex,</span><br><span class="line">+       use: getStyleLoaders(</span><br><span class="line">+           &#123;</span><br><span class="line">+               importLoaders: <span class="number">2</span>,</span><br><span class="line">+               sourceMap: isEnvProduction &amp;&amp; shouldUseSourceMap,</span><br><span class="line">+               modules: &#123;</span><br><span class="line">+                   getLocalIdent: getCSSModuleLocalIdent,</span><br><span class="line">+               &#125;,</span><br><span class="line">+           &#125;,</span><br><span class="line">+           <span class="string">'less-loader'</span></span><br><span class="line">+       ),</span><br><span class="line">+   &#125;,</span><br></pre></td></tr></table></figure>
+<p>修改后需要执行yarn start重启项目。</p>
+<p>然后将原css文件的后缀名修改为less，src/index.js中引入的frame.less，页面已正常解析less。</p>
+<h3 id="3-2-3-支持Stylus"><a href="#3-2-3-支持Stylus" class="headerlink" title="3.2.3 支持Stylus"></a>3.2.3 支持Stylus</h3><p>支持Stylus跟Less完全一样，首先安装stylus和stylus-loader：</p>
+<p>执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install stylus-loader -D</span><br><span class="line">  or</span><br><span class="line">yarn add stylus-loader -D</span><br></pre></td></tr></table></figure>
+<p>安装完成后，按照上一小节介绍的支持less的方法，修改config/webpack.config.js。完成后重启项目，引入stylus文件可以正常解析了。</p>
+<p>我个人习惯使用Stylus，因此后续的讲解中使用Stylus。同时，把src/common/下的style目录也更名为stylus。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">    ├─ /config</span><br><span class="line">    ├─ /node_modules</span><br><span class="line">    ├─ package.json</span><br><span class="line">    ├─ /public</span><br><span class="line">    ├─ README.md</span><br><span class="line">    ├─ /scripts</span><br><span class="line">    ├─ /src</span><br><span class="line">    |  ├─ /common       &lt;-- 全局公用目录    </span><br><span class="line">    |  |  ├─ /fonts       </span><br><span class="line">    |  |  ├─ /images </span><br><span class="line">    |  |  ├─ /js </span><br><span class="line">M   |  |  └─ /stylus</span><br><span class="line">M   |  |  |  ├─ frame.styl</span><br><span class="line">M   |  |  |  ├─ reset.styl</span><br><span class="line">M   |  |  |  └─ global.styl  </span><br><span class="line">    |  ├─ /components   &lt;-- 公共模块组件目录</span><br><span class="line">    |  ├─ /pages        &lt;-- 页面组件目录</span><br><span class="line">    |  ├─ App.js        &lt;-- 项目主模块</span><br><span class="line">    |  └─ index.js      &lt;-- 项目入口文件</span><br><span class="line">    └─ yarn.lock</span><br></pre></td></tr></table></figure>
+<p>最基本的配置搞定了，接下来要开始引入页面（pages）了。页面的切换需要使用路由（Router），请继续阅读下面的章节。</p>
+<h2 id="4-路由"><a href="#4-路由" class="headerlink" title="4 路由"></a>4 路由</h2><h3 id="4-1-页面构建"><a href="#4-1-页面构建" class="headerlink" title="4.1 页面构建"></a>4.1 页面构建</h3><p>首先，构建home和login页面。</p>
+<p>src/pages/home/index.js代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./home.styl'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Home</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div className=<span class="string">"P-home"</span>&gt;</span><br><span class="line">                &lt;h1&gt;Home page&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> Home</span><br></pre></td></tr></table></figure>
+<p>src/pages/home/home.styl代码</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.P-home</span></span><br><span class="line">    <span class="selector-tag">h1</span></span><br><span class="line">        <span class="selector-tag">padding</span>: 20<span class="selector-tag">px</span> 0</span><br><span class="line">        <span class="selector-tag">font-size</span>: 30<span class="selector-tag">px</span></span><br><span class="line">        <span class="selector-tag">color</span>: <span class="selector-id">#fff</span></span><br><span class="line">        <span class="selector-tag">background</span>: <span class="selector-id">#67C23A</span></span><br><span class="line">        <span class="selector-tag">text-align</span>: <span class="selector-tag">center</span></span><br></pre></td></tr></table></figure>
+<p>src/pages/login/index.js代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./login.styl'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Login</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div className=<span class="string">"P-login"</span>&gt;</span><br><span class="line">                &lt;h1&gt;Login page&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> Login</span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们使用react-router-dom实现路由。</p>
+<h3 id="4-2-使用react-router-dom"><a href="#4-2-使用react-router-dom" class="headerlink" title="4.2 使用react-router-dom"></a>4.2 使用react-router-dom</h3><p>执行安装命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install react-router-dom --save</span><br><span class="line">  or</span><br><span class="line">yarn add react-router-dom</span><br></pre></td></tr></table></figure>
+<p>修改src/App.js，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Fragment &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> Login <span class="keyword">from</span> <span class="string">'./pages/login'</span></span><br><span class="line"><span class="keyword">import</span> Home <span class="keyword">from</span> <span class="string">'./pages/home'</span></span><br><span class="line"><span class="keyword">import</span> &#123; HashRouter, Route, Switch, Redirect &#125; <span class="keyword">from</span> <span class="string">'react-router-dom'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">App</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;Fragment&gt;</span><br><span class="line">      &lt;HashRouter&gt;</span><br><span class="line">        &lt;Switch&gt;</span><br><span class="line">          &lt;Route path=<span class="string">"/login"</span> component=&#123;Login&#125; /&gt;</span><br><span class="line">          &lt;Route path=<span class="string">"/home"</span> component=&#123;Home&#125; /&gt;</span><br><span class="line">          &lt;Route exact path=<span class="string">"/"</span> component=&#123;Home&#125; /&gt;</span><br><span class="line">          &lt;Redirect to=&#123;<span class="string">"/home"</span>&#125; /&gt;</span><br><span class="line">        &lt;<span class="regexp">/Switch&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>HashRouter&gt;</span><br><span class="line">    &lt;<span class="regexp">/Fragment&gt;</span></span><br><span class="line"><span class="regexp">  )</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">export default App</span></span><br></pre></td></tr></table></figure>
+<p>App.js引入了Home和Login两个页面级组件。然后使用react-router-dom分别设置了路径。</p>
+<p>import的机制是默认寻找index.js，所以每个组件的主文件名设为index.js，在引用的时候就可以省略文件名。</p>
+<p>这里说明一下<code>&lt;Route&gt;</code>的属性：</p>
+<ul>
+<li>path表示路径，这个很好理解。</li>
+<li>component表示绑定的组件。</li>
+<li>exact表示是否精确匹配。</li>
+</ul>
+<p>如果没有设置exact，那么：</p>
+<ul>
+<li>localhost:3000/会显示Home页，</li>
+<li>localhost:3000/abc也会显示Home页。</li>
+<li>因为匹配到了前面的”/“，路由就会成功。</li>
+</ul>
+<p>最后的<code>&lt;Redirect&gt;</code>表示以上都没有匹配成功的会，默认跳转的路由。</p>
+<h3 id="4-3-路由跳转"><a href="#4-3-路由跳转" class="headerlink" title="4.3 路由跳转"></a>4.3 路由跳转</h3><p>接下来，简单介绍下如果在页面之间进行路由跳转。</p>
+<p>在Login页面添加一个用于跳转至Home页的按钮，代码修改如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line">    <span class="keyword">import</span> <span class="string">'./login.styl'</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Login</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">        render() &#123;</span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">               &lt;div className=<span class="string">"P-login"</span>&gt;</span><br><span class="line">                    &lt;h1&gt;Login page&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">+                   &lt;button onClick=&#123;this.gotoHome.bind(this)&#125;&gt;跳转Home页&lt;/</span>button&gt;</span><br><span class="line">                &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            )</span></span><br><span class="line"><span class="regexp">        &#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">+       gotoHome() &#123;</span></span><br><span class="line"><span class="regexp">+           this.props.history.push('/</span>home<span class="string">')</span></span><br><span class="line"><span class="string">+       &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    export default Login</span></span><br></pre></td></tr></table></figure>
+<p>注意button的onClick里要bind(this)，否则，在gotoHome里的this是undefined。</p>
+<p>当然，也可以这么写：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button onClick=&#123;() =&gt; &#123;<span class="keyword">this</span>.gotoHome()&#125;&#125;&gt;跳转Home页&lt;<span class="regexp">/button&gt;</span></span><br></pre></td></tr></table></figure>
+<p>最终目的都是要让gotoHome中的this指向正确的作用域。</p>
+<h2 id="5-组件引入"><a href="#5-组件引入" class="headerlink" title="5 组件引入"></a>5 组件引入</h2><p>这章节内容也很容易，接触过vue的同学应该也很清楚，为了教程的完整性，还是简单说一下。下面来简单实现一个公用的头部组件。</p>
+<h3 id="5-1-创建header组件"><a href="#5-1-创建header组件" class="headerlink" title="5.1 创建header组件"></a>5.1 创建header组件</h3><p>目录结构如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    |  ├─ /components   &lt;-- 公共模块组件目录</span><br><span class="line">+   |  |  ├─ /header    &lt;-- 公用header组件</span><br><span class="line">+   |  |  |  ├─ index.js </span><br><span class="line">+   |  |  |  └─ header.styl</span><br></pre></td></tr></table></figure>
+<p>src/components/header/index.js代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./header.styl'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Header</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div className=<span class="string">"M-header"</span>&gt;</span><br><span class="line">                Header</span><br><span class="line">            &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        )</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">export default Header</span></span><br></pre></td></tr></table></figure>
+<p>src/components/header/header.styl代码：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.M-header</span></span><br><span class="line">    <span class="selector-tag">height</span>: 40<span class="selector-tag">px</span></span><br><span class="line">    <span class="selector-tag">line-height</span>: 40<span class="selector-tag">px</span></span><br><span class="line">    <span class="selector-tag">font-size</span>: 36<span class="selector-tag">px</span></span><br><span class="line">    <span class="selector-tag">color</span>: <span class="selector-id">#fff</span></span><br><span class="line">    <span class="selector-tag">background</span>: <span class="selector-id">#409EFF</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-2-引入Header组件"><a href="#5-2-引入Header组件" class="headerlink" title="5.2 引入Header组件"></a>5.2 引入Header组件</h3><p>然后，在Home和Login页面里引入Header组件。</p>
+<p>以Home页面为例，修改src/pages/home/index.js：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line">+   <span class="keyword">import</span> Header <span class="keyword">from</span> <span class="string">'../../components/header'</span></span><br><span class="line">    <span class="keyword">import</span> <span class="string">'./home.styl'</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Home</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">        render() &#123;</span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">                &lt;div className=<span class="string">"P-home"</span>&gt;</span><br><span class="line">+                   <span class="xml"><span class="tag">&lt;<span class="name">Header</span> /&gt;</span></span></span><br><span class="line">                    &lt;h1&gt;Home page&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">                &lt;/</span>div&gt;</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> Home</span><br></pre></td></tr></table></figure>
+<h3 id="5-3-组件传参"><a href="#5-3-组件传参" class="headerlink" title="5.3 组件传参"></a>5.3 组件传参</h3><p>使用过vue的同学都知道，vue组件有data和props。对应react的是state和props。</p>
+<p>react向子组件传参使用以下方式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;Header </span><br><span class="line">    param1=<span class="string">"abc"</span></span><br><span class="line">    param2=<span class="string">"c"</span></span><br><span class="line">    func1=&#123;()=&gt;&#123;<span class="built_in">console</span>.log(<span class="string">'func1'</span>)&#125;&#125;</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure>
+<p>在Header组件内部，直接使用this.props就可以接收。例如：this.props.param1。</p>
+<h2 id="6-React-Developer-Tools浏览器插件"><a href="#6-React-Developer-Tools浏览器插件" class="headerlink" title="6 React Developer Tools浏览器插件"></a>6 React Developer Tools浏览器插件</h2><p>为了更方便调试react项目，建议安装chrome插件。</p>
+<p>先科学上网，在chrome网上应用店里搜索“React Developer Tools”并安装。</p>
+<p>安装完成后，打开chrome调试工具，可以清晰的看到react项目代码结构。</p>
+<h2 id="7-Redux及相关插件"><a href="#7-Redux及相关插件" class="headerlink" title="7 Redux及相关插件"></a>7 Redux及相关插件</h2><p>做过vue开发的同学都知道vuex，react对应的工具就是Redux，当然还有一些附属工具，比如react-redux、redux-thunk、immutable。</p>
+<h3 id="7-1-安装redux"><a href="#7-1-安装redux" class="headerlink" title="7.1 安装redux"></a>7.1 安装redux</h3><p>执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install  redux --save</span><br><span class="line">or</span><br><span class="line">yarn add redux</span><br></pre></td></tr></table></figure>
+<p>仅安装redux也是可以使用的，但是比较麻烦。redux里更新store里的数据，需要手动订阅(subscribe)更新。可以借助另一个插件（react-redux）提高开发效率。</p>
+<h3 id="7-2-安装react-redux"><a href="#7-2-安装react-redux" class="headerlink" title="7.2 安装react-redux"></a>7.2 安装react-redux</h3><p>执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install  react-redux --save</span><br><span class="line">or</span><br><span class="line">yarn add react-redux</span><br></pre></td></tr></table></figure>
+
+<p>react-redux允许通过connect方法，将store中的数据映射到组件的props，省去了store订阅。原state中读取store的属性改用props读取。</p>
+<h3 id="7-3-安装redux-thunk"><a href="#7-3-安装redux-thunk" class="headerlink" title="7.3 安装redux-thunk"></a>7.3 安装redux-thunk</h3><p>执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install  redux-thunk --save</span><br><span class="line">or</span><br><span class="line">yarn add redux-thunk</span><br></pre></td></tr></table></figure>
+
+<p>redux-thunk允许在actionCreators里返回函函数。这样可以把业务逻辑（例如接口请求）集中写在actionCreator.js，方便复用的同时，可以使组件的主文件更简洁。</p>
+<h3 id="7-4-安装浏览器Redux插件"><a href="#7-4-安装浏览器Redux插件" class="headerlink" title="7.4 安装浏览器Redux插件"></a>7.4 安装浏览器Redux插件</h3><p>为了更方便跟踪redux状态，建议安装chrome插件。</p>
+<p>先科学上网，在chrome网上应用店里搜索“Redux DevTools”并安装。</p>
+<p>安装完成后还不能直接使用，需要在项目代码中进行配置。接下来进行说明。</p>
+<h3 id="7-5-创建store"><a href="#7-5-创建store" class="headerlink" title="7.5 创建store"></a>7.5 创建store</h3><p>安装以上各种插件后，可以store用来管理状态数据了。</p>
+<p>如果项目比较简单，只有一两个页面，可以只创建一个总store管理整体项目。目录结构参考如下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    ├─ /src   </span><br><span class="line">+   |  ├─ /store</span><br><span class="line">+   |  |  ├─ actionCreators.js</span><br><span class="line">+   |  |  ├─ contants.js       &lt;-- 定义方法的常量</span><br><span class="line">+   |  |  ├─ index.js</span><br><span class="line">+   |  |  └─ reducer.js</span><br></pre></td></tr></table></figure>
+<p>以下是各文件的代码示例：</p>
+<p>src/store/actionCreators.js:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import * as constans from &#39;.&#x2F;constants&#39;</span><br><span class="line"></span><br><span class="line">export const getData &#x3D; (data) &#x3D;&gt; (&#123;</span><br><span class="line">  type: constans.SET_DATA,</span><br><span class="line">  data</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>src/store/contants.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> SET_DATA = <span class="string">'SET_DATA'</span></span><br></pre></td></tr></table></figure>
+<p>src/store/index.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createStore, applyMiddleware, compose &#125; <span class="keyword">from</span> <span class="string">'redux'</span></span><br><span class="line"><span class="keyword">import</span> reducer <span class="keyword">from</span> <span class="string">'./reducer'</span></span><br><span class="line"><span class="keyword">import</span> thunk <span class="keyword">from</span> <span class="string">'redux-thunk'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里让项目支持浏览器插件Redux DevTools</span></span><br><span class="line"><span class="keyword">const</span> composeEnhancers = <span class="keyword">typeof</span> <span class="built_in">window</span> === <span class="string">'object'</span> &amp;&amp;</span><br><span class="line">  <span class="built_in">window</span>.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?</span><br><span class="line">  <span class="built_in">window</span>.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__(&#123;&#125;) : compose</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> enhancer = composeEnhancers(</span><br><span class="line">  applyMiddleware(thunk)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> store = createStore(</span><br><span class="line">  reducer,</span><br><span class="line">  enhancer</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> store</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>以上是store的核心代码，支持了Redux DevTools。同时，利用redux的集成中间件（applyMiddleware）功能将redux-thunk集成进来，最终创建了store。</p>
+</blockquote>
+<p>src/store/reducer.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> constants <span class="keyword">from</span> <span class="string">'./constants'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始默认的state</span></span><br><span class="line"><span class="keyword">const</span> defaultState = &#123;</span><br><span class="line">    myData: <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (state = defaultState, action) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 由于state是引用型，不能直接修改，否则是监测不到state发生变化的。因此需要先复制一份进行修改，然后再返回新的state。</span></span><br><span class="line">    <span class="keyword">let</span> newState = <span class="built_in">Object</span>.assign(&#123;&#125;, state)</span><br><span class="line">    <span class="keyword">switch</span>(action.type) &#123;</span><br><span class="line">        <span class="keyword">case</span> constants.SET_DATA:</span><br><span class="line">            newState.myData = action.data</span><br><span class="line">            <span class="keyword">return</span> newState</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> state</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码，我们在store设置了一个myData。如何更好地解决state修改问题</p>
+<h3 id="7-6-复杂项目store分解"><a href="#7-6-复杂项目store分解" class="headerlink" title="7.6 复杂项目store分解"></a>7.6 复杂项目store分解</h3><p>应对更多页面的项目，如果数据都集中放在一个store里，其维护成本非常高。接下来分享下如何将store分解到各个组件中。</p>
+<p>一般来说，每个组件有自己的store，再由src下的store作为总集，集成每个组件的store。</p>
+<p>以header和login两个组件为例，分别创建组件自己的store。</p>
+<p>header的store目录结构如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    |  |  ├─ /store</span><br><span class="line">    |  |  |  ├─ /modules</span><br><span class="line">+   |  |  |  |  ├─ /header</span><br><span class="line">+   |  |  |  |  |  ├─ actionCreators.js</span><br><span class="line">+   |  |  |  |  |  ├─ contants.js      </span><br><span class="line">+   |  |  |  |  |  ├─ index.js</span><br><span class="line">+   |  |  |  |  |  └─ reducer.js</span><br></pre></td></tr></table></figure>
+<p>module下store下的index.js代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> reducer <span class="keyword">from</span> <span class="string">'./reducer'</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> actionCreators <span class="keyword">from</span> <span class="string">'./actionCreators'</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> constants <span class="keyword">from</span> <span class="string">'./constants'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; reducer, actionCreators, constants&#125;</span><br></pre></td></tr></table></figure>
+<p>其实就是把组件store下的其他文件集中起来作为统一输出口。</p>
+<p>modules下store下的contants.js代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ZONE = <span class="string">'components/header/'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> SET_DATA = ZONE + <span class="string">'SET_DATA'</span></span><br></pre></td></tr></table></figure>
+<p>ZONE是用来避免与其他组件的contants重名。</p>
+<p>同样的方式，在login下进行创建store（不再赘述）</p>
+<p>然后修改项目src下的总store，目录结构变动如下：</p>
+<p>src/store/index.js重写如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; combineReducers &#125; <span class="keyword">from</span> <span class="string">'redux'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; reducer <span class="keyword">as</span> loginReducer &#125; <span class="keyword">from</span> <span class="string">'./modules/login'</span></span><br><span class="line"><span class="keyword">import</span> &#123; reducer <span class="keyword">as</span> headerReducer &#125; <span class="keyword">from</span> <span class="string">'./modules/header'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> reducer = combineReducers(&#123;</span><br><span class="line">    login: loginReducer,</span><br><span class="line">    header: headerReducer</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> reducer</span><br></pre></td></tr></table></figure>
+<p>以上代码的作用就是把login和header的store引入，然后通过combineReducers合并在一起，并分别加上唯一的对象key值。</p>
+<p>这样的好处非常明显：</p>
+<ul>
+<li>避免各组件的store数据互相污染</li>
+<li>组件独立维护自己的store，减少维护成本</li>
+</ul>
+<p>非常建议使用这种方式维护store。</p>
+<h3 id="7-7-对接react-redux与store"><a href="#7-7-对接react-redux与store" class="headerlink" title="7.7 对接react-redux与store"></a>7.7 对接react-redux与store</h3><p>为了方便每个组件都能使用store，而不用一遍一遍的引用store。下面来对接react-redux与store。</p>
+<p>修改src/index.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line">    <span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span></span><br><span class="line">    <span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line">+   <span class="keyword">import</span> &#123; Provider &#125; <span class="keyword">from</span> <span class="string">'react-redux'</span></span><br><span class="line">+   <span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">'./store'</span></span><br><span class="line">    <span class="keyword">import</span> <span class="string">'./common/style/frame.styl'</span></span><br><span class="line"></span><br><span class="line">+   <span class="keyword">const</span> Apps = (</span><br><span class="line">+       <span class="xml"><span class="tag">&lt;<span class="name">Provider</span> <span class="attr">store</span>=<span class="string">&#123;store&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">+           <span class="tag">&lt;<span class="name">App</span> /&gt;</span></span></span><br><span class="line"><span class="xml">+       <span class="tag">&lt;/<span class="name">Provider</span>&gt;</span></span></span><br><span class="line">+   )</span><br><span class="line"></span><br><span class="line">M   ReactDOM.render(Apps, <span class="built_in">document</span>.getElementById(<span class="string">'root'</span>))</span><br></pre></td></tr></table></figure>
+<p>以上代码就是用react-redux提供的Provider，把store传给了整个App。</p>
+<p>在需要使用store的组件中，要使用react-redux提供的connect方法对组件进行包装。</p>
+<p>以login为例，修改src/pages/login/index.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line">    <span class="keyword">import</span> Header <span class="keyword">from</span> <span class="string">'../../components/header'</span></span><br><span class="line">+   <span class="keyword">import</span> &#123; connect &#125; <span class="keyword">from</span> <span class="string">'react-redux'</span></span><br><span class="line">+   <span class="keyword">import</span> * <span class="keyword">as</span> actionCreators <span class="keyword">from</span> <span class="string">'./store/actionCreators'</span></span><br><span class="line">    <span class="keyword">import</span> <span class="string">'./login.styl'</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Login</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">        render() &#123;</span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">                &lt;div className=<span class="string">"P-login"</span>&gt;</span><br><span class="line">                    &lt;Header /&gt;</span><br><span class="line">                    &lt;h1&gt;Login page&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">+                   &lt;p&gt;login: myData = &#123;this.props.myData&#125;&lt;/</span>p&gt;</span><br><span class="line">+                   <span class="xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span>=&gt;</span> &#123;this.props.getData('123456')&#125;&#125;&gt;更改login的myData<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">                    &lt;button onClick=&#123;<span class="keyword">this</span>.gotoHome.bind(<span class="keyword">this</span>)&#125;&gt;跳转Home页&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">                &lt;/</span>div&gt;</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        gotoHome() &#123;</span><br><span class="line">            <span class="keyword">this</span>.props.history.push(<span class="string">'/home'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">+   <span class="comment">// 把store中的数据映射到组件的props</span></span><br><span class="line">+   <span class="keyword">const</span> mapStateToProps = <span class="function">(<span class="params">state</span>) =&gt;</span> (&#123;</span><br><span class="line">+       myData: state.getIn([<span class="string">'login'</span>, <span class="string">'myData'</span>]),</span><br><span class="line">+   &#125;)</span><br><span class="line"></span><br><span class="line">+   <span class="comment">// 把store的Dispatch映射到组件的props</span></span><br><span class="line">+   <span class="keyword">const</span> mapDispatchToProps = <span class="function">(<span class="params">dispatch</span>) =&gt;</span> (&#123;</span><br><span class="line">+       getData(data) &#123;</span><br><span class="line">+           <span class="keyword">const</span> action = actionCreators.getData(data)</span><br><span class="line">+           dispatch(action)</span><br><span class="line">+       &#125;</span><br><span class="line">+   &#125;)</span><br><span class="line"></span><br><span class="line">M   <span class="keyword">export</span> <span class="keyword">default</span> connect(mapStateToProps, mapDispatchToProps)(Login)</span><br></pre></td></tr></table></figure>
+<p>最大的变化就是代码最后一行，被connect方法包装了。</p>
+<p>然后把store里的state和dispatch都映射到了组件的props。这样可以直接通过props进行访问了，store中数据的变化会直接改变props从而触发组件的视图更新。</p>
+<h2 id="8-Mock-js安装与使用"><a href="#8-Mock-js安装与使用" class="headerlink" title="8 Mock.js安装与使用"></a>8 Mock.js安装与使用</h2><p>在开发过程中，为了方便前端独自调试接口，经常使用Mock.js拦截Ajax请求，并返回预置好的数据。本小节介绍下如何在react项目中使用Mock.js。</p>
+<p>执行安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install mockjs -D</span><br><span class="line">or</span><br><span class="line">yarn add mockjs -D</span><br></pre></td></tr></table></figure>
+
+<p>在src下新建mock.js，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Mock <span class="keyword">from</span> <span class="string">'mockjs'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> domain = <span class="string">'/api/'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 模拟getData接口</span></span><br><span class="line">Mock.mock(domain + <span class="string">'getData'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> result = &#123;</span><br><span class="line">      code: <span class="number">200</span>,</span><br><span class="line">      message: <span class="string">'OK'</span>,</span><br><span class="line">      data: <span class="string">'test'</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>然后在src/index.js中引入mock.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line">    <span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span></span><br><span class="line">    <span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line">    <span class="keyword">import</span> &#123; Provider &#125; <span class="keyword">from</span> <span class="string">'react-redux'</span></span><br><span class="line">    <span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">'./store'</span></span><br><span class="line">+   <span class="keyword">import</span> <span class="string">'./mock'</span></span><br><span class="line">    <span class="keyword">import</span> <span class="string">'./common/style/frame.styl'</span></span><br><span class="line"></span><br><span class="line">    ...（略）</span><br></pre></td></tr></table></figure>
+<p>如此简单。这样，在项目中请求/api/getData的时候，就会被Mock.js拦截，并返回mock.js中写好的数据</p>
+<h2 id="9-解决本地开发跨域问题"><a href="#9-解决本地开发跨域问题" class="headerlink" title="9 解决本地开发跨域问题"></a>9 解决本地开发跨域问题</h2><p>在react开发环境中，默认启动的是3000端口，而后端API服务可能在本机的80端口，这样在ajax请求的时候会出现跨域问题。可以借助http-proxy-middleware工具实现反向代理。<br>执行安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install http-proxy-middleware -D</span><br><span class="line">or</span><br><span class="line">yarn add http-proxy-middleware -D</span><br></pre></td></tr></table></figure>
+<p>在src下创建setupProxy.js，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> proxy = <span class="built_in">require</span>(<span class="string">'http-proxy-middleware'</span>);</span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">app</span>) </span>&#123;</span><br><span class="line">    app.use(</span><br><span class="line">        <span class="string">'^/api'</span>,</span><br><span class="line">        proxy(&#123;</span><br><span class="line">            target: <span class="string">'http://localhost:5000'</span>,</span><br><span class="line">            changeOrigin: <span class="literal">true</span></span><br><span class="line">        &#125;)</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意： 你无需在任何位置导入此文件。 它在启动开发服务器时会自动注册。</p>
+</blockquote>
+<blockquote>
+<p>注意： 此文件仅支持 Node 的 JavaScript 语法。 请务必仅使用支持的语言特性（即不支持 Flow ，ES Modules 等）</p>
+</blockquote>
+<h2 id="CSS-Modules"><a href="#CSS-Modules" class="headerlink" title="CSS Modules"></a>CSS Modules</h2><p>CSS Modules 的做法就是通过配置将.css文件进行编译，编译后在每个用到css的组件中的css类名都是独一无二的，从而实现CSS的局部作用域。</p>
+<p>create-react-app自从2.0.版本就已经开始支持CSS Modules了</p>
+<h3 id="局部样式"><a href="#局部样式" class="headerlink" title="局部样式"></a>局部样式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">命名规则: xxx.module.css     </span><br><span class="line"></span><br><span class="line">引入方式 <span class="keyword">import</span> xxx <span class="keyword">from</span> <span class="string">'xxx.module.css'</span></span><br><span class="line"></span><br><span class="line">用法：&lt;div className=&#123;xxx.styleName&#125;&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="全局样式"><a href="#全局样式" class="headerlink" title="全局样式"></a>全局样式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">命名规则: xxx.css   </span><br><span class="line"></span><br><span class="line">引入方式 <span class="keyword">import</span> ‘xxx.css’</span><br><span class="line"></span><br><span class="line">用法：&lt;div className=<span class="string">'styleName'</span>&gt;</span><br><span class="line"><span class="string">``</span><span class="string">` </span></span><br><span class="line"><span class="string">### 案例：</span></span><br><span class="line"><span class="string">`</span>person.module.css<span class="string">`</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span> css</span><br><span class="line"></span><br><span class="line">.person&#123;</span><br><span class="line">    width: <span class="number">60</span>%;</span><br><span class="line">    margin:<span class="number">16</span>px auto;</span><br><span class="line">    border: 1px solid #eee;</span><br><span class="line">    box-shadow: 0 2px 3px #ccc;</span><br><span class="line">    padding:<span class="number">16</span>px;</span><br><span class="line">    text-align: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>person.js</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//局部样式</span></span><br><span class="line"><span class="keyword">import</span> styles <span class="keyword">from</span> <span class="string">'./Person.module.css'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//全局样式</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'../App.css'</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">  render() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=&#123;styles.person&#125;&gt;</span><br><span class="line">        &lt;p className=<span class="string">'fz'</span>&gt;person:Hello world&lt;<span class="regexp">/p&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt; </span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> App;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/react/" rel="tag"># react</a>
+              <a href="/tags/redux/" rel="tag"># redux</a>
+              <a href="/tags/react-router/" rel="tag"># react-router</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/29/reactjs%E4%B8%AD%E4%BD%BF%E7%94%A8css%E7%9A%84%E6%96%B9%E5%BC%8F/" rel="prev" title="reactjs中使用css的方式">
+      <i class="fa fa-chevron-left"></i> reactjs中使用css的方式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/30/axios-%E5%A4%A7%E4%BC%97%E7%89%88%E5%B0%81%E8%A3%85/" rel="next" title="axios-大众版封装">
+      axios-大众版封装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#先睹为快"><span class="nav-number">1.</span> <span class="nav-text">先睹为快</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-创建React-APP"><span class="nav-number">2.</span> <span class="nav-text">1 创建React-APP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-精简项目"><span class="nav-number">3.</span> <span class="nav-text">2 精简项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-删除文件"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 删除文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-简化代码"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 简化代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-使用Fragment去掉组件外层标签"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 使用Fragment去掉组件外层标签</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-项目目录结构"><span class="nav-number">4.</span> <span class="nav-text">3 项目目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-引入全局公用样式"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 引入全局公用样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-支持Sass-Less-Stylus"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 支持Sass&#x2F;Less&#x2F;Stylus</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-支持Sass-Scss"><span class="nav-number">4.3.</span> <span class="nav-text">3.2.1 支持Sass&#x2F;Scss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-支持Less"><span class="nav-number">4.4.</span> <span class="nav-text">3.2.2 支持Less</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-支持Stylus"><span class="nav-number">4.5.</span> <span class="nav-text">3.2.3 支持Stylus</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-路由"><span class="nav-number">5.</span> <span class="nav-text">4 路由</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-页面构建"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 页面构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-使用react-router-dom"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 使用react-router-dom</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-路由跳转"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 路由跳转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-组件引入"><span class="nav-number">6.</span> <span class="nav-text">5 组件引入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-创建header组件"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 创建header组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-引入Header组件"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 引入Header组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-组件传参"><span class="nav-number">6.3.</span> <span class="nav-text">5.3 组件传参</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-React-Developer-Tools浏览器插件"><span class="nav-number">7.</span> <span class="nav-text">6 React Developer Tools浏览器插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Redux及相关插件"><span class="nav-number">8.</span> <span class="nav-text">7 Redux及相关插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-安装redux"><span class="nav-number">8.1.</span> <span class="nav-text">7.1 安装redux</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-安装react-redux"><span class="nav-number">8.2.</span> <span class="nav-text">7.2 安装react-redux</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-安装redux-thunk"><span class="nav-number">8.3.</span> <span class="nav-text">7.3 安装redux-thunk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4-安装浏览器Redux插件"><span class="nav-number">8.4.</span> <span class="nav-text">7.4 安装浏览器Redux插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-创建store"><span class="nav-number">8.5.</span> <span class="nav-text">7.5 创建store</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-6-复杂项目store分解"><span class="nav-number">8.6.</span> <span class="nav-text">7.6 复杂项目store分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-7-对接react-redux与store"><span class="nav-number">8.7.</span> <span class="nav-text">7.7 对接react-redux与store</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Mock-js安装与使用"><span class="nav-number">9.</span> <span class="nav-text">8 Mock.js安装与使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-解决本地开发跨域问题"><span class="nav-number">10.</span> <span class="nav-text">9 解决本地开发跨域问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-Modules"><span class="nav-number">11.</span> <span class="nav-text">CSS Modules</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部样式"><span class="nav-number">11.1.</span> <span class="nav-text">局部样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全局样式"><span class="nav-number">11.2.</span> <span class="nav-text">全局样式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

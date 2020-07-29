@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1、Puppeteer 简介Puppeteer 是一个node库，他提供了一组用来操纵Chrome的API, 通俗来说就是一个 headless chrome浏览器 (当然你也可以配置成有UI的，默认是没有的)。既然是浏览器，那么我们手工可以在浏览器上做的事情 Puppeteer 都能胜任, 另外，Puppeteer 翻译成中文是”木偶”意思，所以听名字就知道，操纵起来很方便，你可以很方便的操纵她">
+<meta property="og:type" content="article">
+<meta property="og:title" content="puppeteer实践-qq音乐自动购买的ui自动化测试">
+<meta property="og:url" content="http://yoursite.com/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-qq%E9%9F%B3%E4%B9%90%E8%87%AA%E5%8A%A8%E8%B4%AD%E4%B9%B0%E7%9A%84ui%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="1、Puppeteer 简介Puppeteer 是一个node库，他提供了一组用来操纵Chrome的API, 通俗来说就是一个 headless chrome浏览器 (当然你也可以配置成有UI的，默认是没有的)。既然是浏览器，那么我们手工可以在浏览器上做的事情 Puppeteer 都能胜任, 另外，Puppeteer 翻译成中文是”木偶”意思，所以听名字就知道，操纵起来很方便，你可以很方便的操纵她">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170216.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170315.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170416.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170600.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170733.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170840.png">
+<meta property="article:published_time" content="2020-04-03T08:51:12.000Z">
+<meta property="article:modified_time" content="2020-04-03T08:51:12.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="puppeteer">
+<meta property="article:tag" content="自动化测试">
+<meta property="article:tag" content="案例">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170216.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-qq%E9%9F%B3%E4%B9%90%E8%87%AA%E5%8A%A8%E8%B4%AD%E4%B9%B0%E7%9A%84ui%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>puppeteer实践-qq音乐自动购买的ui自动化测试 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-qq%E9%9F%B3%E4%B9%90%E8%87%AA%E5%8A%A8%E8%B4%AD%E4%B9%B0%E7%9A%84ui%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          puppeteer实践-qq音乐自动购买的ui自动化测试
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 16:51:12" itemprop="dateCreated datePublished" datetime="2020-04-03T16:51:12+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%88%E4%BE%8B/" itemprop="url" rel="index"><span itemprop="name">案例</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1、Puppeteer-简介"><a href="#1、Puppeteer-简介" class="headerlink" title="1、Puppeteer 简介"></a>1、Puppeteer 简介</h2><p>Puppeteer 是一个node库，他提供了一组用来操纵Chrome的API, 通俗来说就是一个 headless chrome浏览器 (当然你也可以配置成有UI的，默认是没有的)。既然是浏览器，那么我们手工可以在浏览器上做的事情 Puppeteer 都能胜任, 另外，Puppeteer 翻译成中文是”木偶”意思，所以听名字就知道，操纵起来很方便，你可以很方便的操纵她去实现：</p>
+<p><strong>Puppeteer能做什么</strong></p>
+<ul>
+<li>对网页进行截图保存为图片或 pdf</li>
+<li>抓取单页应用(SPA)执行并渲染(解决传统 HTTP 爬虫抓取单页应用难以处理异步请求的问题)</li>
+<li>做表单的自动提交、UI的自动化测试、模拟键盘输入等</li>
+<li>用浏览器自带的一些调试工具和性能分析工具帮助我们分析问题</li>
+<li>写爬虫做你想做的事情~<a id="more"></a>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yarn add puppeteer</span><br><span class="line"># or "npm i puppeteer"</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>建立 index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>);</span><br><span class="line"></span><br><span class="line">(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">      <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch();</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    <span class="keyword">await</span> page.goto(<span class="string">'https://y.qq.com'</span>);</span><br><span class="line">    <span class="keyword">await</span> page.screenshot(&#123;<span class="attr">path</span>: <span class="string">'yqq.png'</span>&#125;);</span><br><span class="line">    browser.close();</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node  index.js</span><br></pre></td></tr></table></figure>
+<p>这段代码会打开 <a href="https://y.qq.com" target="_blank" rel="noopener">https://y.qq.com</a> 并截图，我们运行</p>
+<p>如果看到目录下有生成图片y.qq.png的话，恭喜你，我们可以开始继续往下</p>
+<p><strong>这里测试的功能是自动拉登录购买一张数字专辑，并在购买成功后跳转到铭牌页，先看下整个流程吧。</strong></p>
+<p>首先我们先创建一个设备，文档中(<a href="https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js" target="_blank" rel="noopener">https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js</a>)</p>
+<p>我们能看到，默认支持的设备数量还是很多的，除了这些默认的设备之外，我们还可以自定义自己的设备，后面在调用emulate方法时会提到：</p>
+<p>我们这里暂时先创建系统提供的iphone6设备，完了我们定义一个延时的timeout函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>);</span><br><span class="line"><span class="keyword">const</span> devices = <span class="built_in">require</span>(<span class="string">'puppeteer/DeviceDescriptors'</span>);</span><br><span class="line"><span class="keyword">const</span> iPhone = devices[<span class="string">'iPhone 6'</span>];</span><br><span class="line"><span class="keyword">let</span> timeout = <span class="function"><span class="keyword">function</span> (<span class="params">delay</span>) </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;   </span><br><span class="line">           setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;   </span><br><span class="line">                  <span class="keyword">try</span> &#123;</span><br><span class="line">                      resolve(<span class="number">1</span>)</span><br><span class="line">                  &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                      reject(<span class="number">0</span>)</span><br><span class="line">                   &#125;</span><br><span class="line">           &#125;, delay);</span><br><span class="line">     &#125;)</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p> 接下来我们创建一个浏览器实例，并打开一个页面</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch(&#123;</span><br><span class="line">     headless:<span class="literal">false</span> <span class="comment">//设置为true就不会打开浏览器</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试步骤"><a href="#测试步骤" class="headerlink" title="测试步骤"></a>测试步骤</h2><p> 1、<strong>第一步:我们打开页面，考虑到有数据需要异步加载，我们在延迟1000ms后调用screenshot方法截图留作日志。</strong><br> <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">console</span>.log(<span class="string">"进入页面"</span>);</span><br><span class="line"><span class="keyword">await</span> page.goto(<span class="string">'https://y.qq.com/m/digitalbum/gold/index.html?_video=true&amp;id=2210323&amp;g_f=tuijiannewupload#index/fans'</span>);</span><br><span class="line"><span class="keyword">await</span> timeout(<span class="number">1000</span>);</span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">     path: <span class="string">'1.png'</span></span><br><span class="line"> &#125;);</span><br></pre></td></tr></table></figure></p>
+<p> 2、<strong>第二步: 模拟触发点击 立即购买按钮，这时候会因为没有登录态而打开QQ登录。</strong><br> <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="built_in">console</span>.log(<span class="string">"点击立即购买按钮"</span>);</span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">'.js_sale_buyalbum'</span>);</span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">    path: <span class="string">'2.png'</span></span><br><span class="line"> &#125;);</span><br></pre></td></tr></table></figure><br><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170216.png" alt=""></p>
+<p>3、<strong>在输入框中输入帐号密码</strong><br>模拟输入需要我们先调用tap方法模拟点击输入框，tap参数就是元素selector,再用type方法进行输入,输入完了之后在模拟点击登录按钮，登录完了之后我们延迟一段时间截图，顺利的话我们就能重新回到之前的售卖页首页，而底下usrbar因为有了登录态也展示了出来。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">"登录"</span>);</span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">"#u"</span>); <span class="comment">//直接操作dom选择器，是不是很方便</span></span><br><span class="line"><span class="keyword">await</span> page.type(<span class="string">"521017853"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">"#p"</span>);</span><br><span class="line"><span class="keyword">await</span> page.type(<span class="string">"*********"</span>);<span class="comment">//这里密码就不展示了哈</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">"#go"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> timeout(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">     path: <span class="string">'3.png'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"登录成功"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170315.png" alt=""></p>
+<p>4、<strong>点击立即购买按钮</strong><br>这里会出现一个购买选择浮层,然后我们点击立即支付之后需要加载米大师，故这里我们延迟5000ms。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//点击购买</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"点击立即购买按钮"</span>);</span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">'.js_sale_buyalbum'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">    path: <span class="string">'4.png'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"点击支付浮层上的立即支付"</span>);</span><br><span class="line"><span class="keyword">await</span> page.tap(<span class="string">".js_buyalbum_pay"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> timeout(<span class="number">5000</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170416.png" alt=""></p>
+<p>5、<strong>点击提示中的确定按钮</strong><br>由于米大师是在iframe中打开的，所以我们需要先获取到我们当前页frame,这个可以调用刚创建的页面实例page的mainFrame()方法即可获得,如果我们需要获取子frame的话也只需要调用childFrames来进行获取。在获取到米大师对应的frame之后就可以调用midas_frame.$(selector)类jquery的方法进行元素的获取，之后再模拟点击。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">"进入 米大师支付浮层"</span>)</span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">     path: <span class="string">'5.png'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> $frame = page.mainFrame();</span><br><span class="line"><span class="keyword">let</span> midas_frame = $frame.childFrames()[<span class="number">0</span>];<span class="comment">//获取到midas对应的frame</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"点击确定 米大师支付浮层测试环境提示 的确认按钮"</span>);</span><br><span class="line"><span class="keyword">let</span> $dom = <span class="keyword">await</span> midas_frame.$(<span class="string">".fusion-pm-fl-wrapper .fpm-default"</span>);</span><br><span class="line"><span class="keyword">await</span> $dom.tap();</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">    path: <span class="string">'6.png'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170600.png" alt=""></p>
+<p>6、<strong>点击Q币支付</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">"点击 米大师支付浮层 确认支付按钮"</span>);</span><br><span class="line">$dom = <span class="keyword">await</span> midas_frame.$(<span class="string">"#wrap .fpm-default"</span>);</span><br><span class="line"><span class="keyword">await</span> $dom.tap();</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> timeout(<span class="number">5000</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">    path: <span class="string">'7.png'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170733.png" alt=""></p>
+<p>7、<strong>测试完毕，关闭浏览器实例</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">"点击 米大师支付浮层 支付完成"</span>);</span><br><span class="line">$dom = <span class="keyword">await</span> midas_frame.$(<span class="string">"#wrap .btn-primary"</span>);</span><br><span class="line"><span class="keyword">await</span> $dom.tap();</span><br><span class="line"></span><br><span class="line"><span class="keyword">await</span> timeout(<span class="number">2000</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"已购铭牌页"</span>);</span><br><span class="line"><span class="keyword">await</span> page.screenshot(&#123;</span><br><span class="line">     path: <span class="string">'8.png'</span></span><br><span class="line">&#125;);</span><br><span class="line">browser.close();</span><br></pre></td></tr></table></figure>
+
+<p><strong>最后在项目目录中，我们看到，各个步骤的截图都已生成。</strong><br><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403170840.png" alt=""></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/puppeteer/" rel="tag"># puppeteer</a>
+              <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/" rel="tag"># 自动化测试</a>
+              <a href="/tags/%E6%A1%88%E4%BE%8B/" rel="tag"># 案例</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-%E6%A8%A1%E6%8B%9F%E9%A5%BF%E4%BA%86%E4%B9%88%E5%A4%96%E5%8D%96%E4%B8%8B%E5%8D%95/" rel="prev" title="puppeteer实践-模拟饿了么外卖下单">
+      <i class="fa fa-chevron-left"></i> puppeteer实践-模拟饿了么外卖下单
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-%E8%87%AA%E5%8A%A8%E6%8E%A8%E8%8D%90%E6%80%9D%E5%90%A6%E7%9A%84%E7%83%AD%E9%97%A8%E6%96%87%E7%AB%A0%E5%88%B0%E6%8E%98%E9%87%91-ui%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/" rel="next" title="puppeteer实践-自动推荐思否的热门文章到掘金-ui自动化测试">
+      puppeteer实践-自动推荐思否的热门文章到掘金-ui自动化测试 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、Puppeteer-简介"><span class="nav-number">1.</span> <span class="nav-text">1、Puppeteer 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">3.1.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试步骤"><span class="nav-number">4.</span> <span class="nav-text">测试步骤</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

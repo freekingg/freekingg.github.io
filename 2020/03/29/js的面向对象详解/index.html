@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="对象的创建： 创建一个面向对象123456var obj &#x3D; new Object(); obj.name &#x3D; &#39;haha&#39;;obj.showName &#x3D; function()&amp;#123;   alert(obj.name);&amp;#125;obj.showName(); 缺点：当我们想创建多个面向对象的时候，重复代码过多，需要封装，所以有了工厂方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js的面向对象详解">
+<meta property="og:url" content="http://yoursite.com/2020/03/29/js%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="对象的创建： 创建一个面向对象123456var obj &#x3D; new Object(); obj.name &#x3D; &#39;haha&#39;;obj.showName &#x3D; function()&amp;#123;   alert(obj.name);&amp;#125;obj.showName(); 缺点：当我们想创建多个面向对象的时候，重复代码过多，需要封装，所以有了工厂方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-29T08:04:20.000Z">
+<meta property="article:modified_time" content="2020-03-29T08:04:20.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="知识点">
+<meta property="article:tag" content="面向对象">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/29/js%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AF%A6%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>js的面向对象详解 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/29/js%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          js的面向对象详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-29 16:04:20" itemprop="dateCreated datePublished" datetime="2020-03-29T16:04:20+08:00">2020-03-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="对象的创建："><a href="#对象的创建：" class="headerlink" title="对象的创建："></a>对象的创建：</h2><ul>
+<li>创建一个面向对象<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>(); </span><br><span class="line">obj.name = <span class="string">'haha'</span>;</span><br><span class="line">obj.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; </span><br><span class="line">  alert(obj.name);</span><br><span class="line">&#125;</span><br><span class="line">obj.showName();</span><br></pre></td></tr></table></figure>
+缺点：当我们想创建多个面向对象的时候，重复代码过多，需要封装，所以有了工厂方法。</li>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li><p>工厂方式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreatePerson</span>(<span class="params">name</span>)</span>&#123; </span><br><span class="line">   <span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();   <span class="comment">//原料</span></span><br><span class="line">   obj.name = name;         <span class="comment">//加工</span></span><br><span class="line">   obj.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">     alert(<span class="keyword">this</span>.name);</span><br><span class="line"> &#125; </span><br><span class="line">   <span class="keyword">return</span> obj;<span class="comment">//出厂</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p1 = CreatePerson(<span class="string">'haha'</span>);</span><br><span class="line">p1.showName();</span><br><span class="line"><span class="keyword">var</span> p2 = CreatePerson(<span class="string">'hehe'</span>);</span><br><span class="line">p2.showName();</span><br><span class="line"><span class="comment">//其实就是简单的封装函数，整个过程像工厂的流水线，所以叫工厂方式</span></span><br></pre></td></tr></table></figure>
+<p>缺点：无法识别创建的对象的类型。因为全部都是Object，没有区分度，不像Date、Array等，因此出现了构造函数模式。</p>
+</li>
+<li><p>构造函数模式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreatePerson</span>(<span class="params">name</span>)</span>&#123; </span><br><span class="line">   <span class="keyword">this</span>.name = name; </span><br><span class="line">   <span class="keyword">this</span>.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; </span><br><span class="line">     alert(<span class="keyword">this</span>.name);</span><br><span class="line">   &#125; </span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">var</span> p1 =<span class="keyword">new</span> CreatePerson(<span class="string">'haha'</span>); </span><br><span class="line">p1.showName();</span><br><span class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> CreatePerson(<span class="string">'hehe'</span>); </span><br><span class="line">p2.showName();</span><br></pre></td></tr></table></figure>
+<p>我们通过这二个方面来改变：</p>
+</li>
+<li><p>1 函数名首字母大写<br>这是为了区别于普通的函数，构造函数本身其实就是普通的函数，只是我们专门用它来实现了构造的功能，所以专门起了一个名字叫构造函数，任何函数都可以成为构造函数，这取决于你调用函数的方式，当使用了New的方式调用就成了构造函数。</p>
+</li>
+<li><p>2 New 关键字调用<br>调用函数的时候用了 New关键字，那么New到底做了什么？用不用New有什么区别？再来看下面的例子</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreatePerson</span>(<span class="params">name</span>)</span>&#123;</span><br><span class="line">   <span class="keyword">this</span>.name = name;</span><br><span class="line">   <span class="keyword">this</span>.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">     alert(<span class="keyword">this</span>.name); </span><br><span class="line">   &#125;; </span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">new</span> CreatePerson(<span class="string">'haha'</span>); <span class="comment">//CreatePerson 指向了当前构造函数</span></span><br><span class="line">CreatePerson(<span class="string">'haha'</span>);  <span class="comment">//window 指向了window</span></span><br></pre></td></tr></table></figure>
+<p>我们会发现当用New去调用一个函数的时候，this的指向会不一样。其实New主要做了下面这些事，不过下面写的只是大概的行为，并不是内部源码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreatePerson</span>(<span class="params">name</span>)</span>&#123; </span><br><span class="line">   <span class="keyword">var</span> obj = &#123;&#125;; <span class="comment">//声明一个空对象obj </span></span><br><span class="line">   obj._proto_= CreatePerson.prototype;</span><br><span class="line">   <span class="comment">//把这个对象的_proto_属性指向构造函数的原型对象,这样obj就可以调用CreatePerson原型对象下的所有方法 ，这里原型先知道结论，下面会讲。</span></span><br><span class="line">    CreatePerson.apply(obj);   <span class="comment">//用apply方法让this指向obj对象</span></span><br><span class="line">    <span class="keyword">this</span>.name = name;   <span class="comment">//obj对象添加属性，方法</span></span><br><span class="line">    <span class="keyword">this</span>.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; </span><br><span class="line">       alert(<span class="keyword">this</span>.name);</span><br><span class="line">      &#125;; </span><br><span class="line">    <span class="keyword">return</span> obj;<span class="comment">//返回这个对象</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>函数构造模式存在的问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert(p1.showName==p2.showName);<span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+<p>缺点：可见这两个对象并不是共用一个方法，每new一次，系统都会新创建一个内存，这两个对象各自有各自的地盘，但他们具有相同的功能，还不共用，肯定不是我们所希望的。所以就有了下一种方法，原型+构造模式</p>
+<ul>
+<li>原型+构造模式<br>原型：每个函数都有一个prototype属性，它是一个对象，也称作原型对象，我们可以把方法和属性写在它上面（不过原型对象不仅仅有我们写的属性和方法，还有别的，下面会介绍），而通过这个函数创建出来的实例对象，都能共享这个原型对象下的方法和属性。所以我们只需要把想要共享的东西放在函数的prototype下，不想共享的东西通过构造函数来创建就可以了。<br>看个栗子（原型+构造）<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">CreatePerson</span>(<span class="params">name</span>)</span>&#123; </span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;</span><br><span class="line">CreatePerson.prototype.showName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; </span><br><span class="line">   alert(<span class="keyword">this</span>.name);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p1 =<span class="keyword">new</span> CreatePerson(<span class="string">'haha'</span>);</span><br><span class="line">p1.showName();</span><br><span class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> CreatePerson(<span class="string">'hehe'</span>);</span><br><span class="line">p2.showName();</span><br><span class="line">alert(p1.showName==p2.showName);<span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+测试为true，可见showName()方法是共享的，也就是说他们共用一个内存，更进一步的说它们存在引用关系，也就是说你更改了p1的showName也会影响p2的showName。</li>
+</ul>
+<p>_proto_属性:<br>同一个函数造出来的实例对象能共享这个函数的prototype下的方法和属性，但是它是如何做到的呢？这里要出场的就是_proto_属性.<br>每个实例化对象都有_proto_属性，它是一个指针，指向函数的prototype，也就是保存了它的地址。（JS中任何对象的值都是保存在堆内存中，我们声明的变量只是一个指针，保存了这个对象的实际地址，所以有了地址就能找到对象），<br>所以总得来说，每个实例化对象都有_proto_属性，保存了构造函数的原型对象的地址，通过这个属性就可以拥有原型对象下的所有属性和方法，_proto_属性实际就是实例化对象和原型对象之间的连接</p>
+<p>原型链：<br>每个函数都可以成为构造函数，每个函数都有原型对象，每个原型对象也可以是一个实例化对象，比如，你创建了一个函数fun,它是构造函数function的实例化对象，而function的原型对象，又是Object的实例对象。所以fun有个_proto_属性可以访问到function的原型对象,function原型对象也是个实例对象，也有个_proto_属性,可以访问到Object的原型对象，所以通过_proto_属性，就形成了一条原型链。每个实例化对象都可以访问到链子上方的方法和属性，所以fun是可以访问Object原型对象下的方法和属性的。实际上所有对象都可以访问到Object的原型对象。</p>
+<p>原型链的访问规则：先在自身的下面寻找，再去一级一级的往原型链上找。<br>如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Aaa</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">Aaa.prototype.num = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">var</span> a1 = <span class="keyword">new</span> Aaa();</span><br><span class="line">a1.num =<span class="number">10</span>;</span><br><span class="line">alert(a1.num); <span class="comment">//10</span></span><br></pre></td></tr></table></figure>
+<p>![image_1clisr95k1r2a857e9ii3oqc9.png-15.3kB][1]<br>[1]: <a href="http://static.zybuluo.com/wp0214/l00axuifrvo7bvpqfeiz8pfa/image_1clisr95k1r2a857e9ii3oqc9.png" target="_blank" rel="noopener">http://static.zybuluo.com/wp0214/l00axuifrvo7bvpqfeiz8pfa/image_1clisr95k1r2a857e9ii3oqc9.png</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+              <a href="/tags/%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="tag"># 知识点</a>
+              <a href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" rel="tag"># 面向对象</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/20/%E5%B0%8F%E7%99%BD%E8%A6%81%E6%8E%8C%E6%8F%A1%E7%9A%84%E5%B8%B8%E7%94%A8Git%E5%91%BD%E4%BB%A4%E6%B8%85%E5%8D%95/" rel="prev" title="小白要掌握的常用Git命令清单">
+      <i class="fa fa-chevron-left"></i> 小白要掌握的常用Git命令清单
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/29/js%E7%9A%84%E9%97%AD%E5%8C%85%E8%AF%A6%E8%A7%A3/" rel="next" title="js的闭包详解">
+      js的闭包详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#对象的创建："><span class="nav-number">1.</span> <span class="nav-text">对象的创建：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="fs文件系统用于对系统文件及目录进行读写操作  文件读取普通读取同步读取 123456789var fs &#x3D; require(&#39;fs&#39;);var data;try&amp;#123;    data &#x3D; fs.readFileSync(&#39;.&#x2F;fileForRead.txt&#39;, &#39;utf8&#39;);    console.log(&#39;文件内容: &#39; + data);&amp;#125;catch(err)&amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs之fs模块">
+<meta property="og:url" content="http://yoursite.com/2020/04/02/nodejs%E4%B9%8Bfs%E6%A8%A1%E5%9D%97/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="fs文件系统用于对系统文件及目录进行读写操作  文件读取普通读取同步读取 123456789var fs &#x3D; require(&#39;fs&#39;);var data;try&amp;#123;    data &#x3D; fs.readFileSync(&#39;.&#x2F;fileForRead.txt&#39;, &#39;utf8&#39;);    console.log(&#39;文件内容: &#39; + data);&amp;#125;catch(err)&amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-02T09:52:42.000Z">
+<meta property="article:modified_time" content="2020-04-02T09:52:42.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="nodejs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/02/nodejs%E4%B9%8Bfs%E6%A8%A1%E5%9D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>nodejs之fs模块 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/02/nodejs%E4%B9%8Bfs%E6%A8%A1%E5%9D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nodejs之fs模块
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-02 17:52:42" itemprop="dateCreated datePublished" datetime="2020-04-02T17:52:42+08:00">2020-04-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nodejs/" itemprop="url" rel="index"><span itemprop="name">nodejs</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p><strong>fs文件系统用于对系统文件及目录进行读写操作</strong></p>
+</blockquote>
+<h3 id="文件读取"><a href="#文件读取" class="headerlink" title="文件读取"></a>文件读取</h3><h4 id="普通读取"><a href="#普通读取" class="headerlink" title="普通读取"></a>普通读取</h4><p>同步读取</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    data = fs.readFileSync(<span class="string">'./fileForRead.txt'</span>, <span class="string">'utf8'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'文件内容: '</span> + data);</span><br><span class="line">&#125;<span class="keyword">catch</span>(err)&#123;</span><br><span class="line">    <span class="built_in">console</span>.error(<span class="string">'读取文件出错: '</span> + err.message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>输出如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node readFileSync.js</span><br><span class="line">文件内容: hello world</span><br></pre></td></tr></table></figure>
+
+<p>异步读取</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.readFile(<span class="string">'./fileForRead.txt'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">console</span>.error(<span class="string">'读取文件出错: '</span> + err.message);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'文件内容: '</span> + data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出如下</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node readFile.js</span><br><span class="line">文件内容: hello world</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过文件流读取"><a href="#通过文件流读取" class="headerlink" title="通过文件流读取"></a>通过文件流读取</h4><p>适合读取大文件</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> readStream = fs.createReadStream(<span class="string">'./fileForRead.txt'</span>, <span class="string">'utf8'</span>);</span><br><span class="line"></span><br><span class="line">readStream</span><br><span class="line">    .on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'读取数据: '</span> + chunk);</span><br><span class="line">    &#125;)</span><br><span class="line">    .on(<span class="string">'error'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'出错: '</span> + err.message);</span><br><span class="line">    &#125;)</span><br><span class="line">    .on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;  <span class="comment">// 没有数据了</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'没有数据了'</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">    .on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;  <span class="comment">// 已经关闭，不会再有事件抛出</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'已经关闭'</span>);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出如下</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node createReadStream.js</span><br><span class="line">读取数据: hello world</span><br><span class="line">没有数据了</span><br><span class="line">已经关闭</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="comment">### 文件写入</span></span><br><span class="line"></span><br><span class="line">备注：以下代码，如果文件不存在，则创建文件；如果文件存在，则覆盖文件内容；</span><br><span class="line"></span><br><span class="line">异步写入</span><br><span class="line"></span><br><span class="line">```javascript</span><br><span class="line">var fs = require(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.writeFile(<span class="string">'./fileForWrite.txt'</span>, <span class="string">'hello world'</span>, <span class="string">'utf8'</span>, function(err)&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    console.log(<span class="string">'文件写入成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>同步写入</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    fs.writeFileSync(<span class="string">'./fileForWrite1.txt'</span>, <span class="string">'hello world'</span>, <span class="string">'utf8'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'文件写入成功'</span>);</span><br><span class="line">&#125;<span class="keyword">catch</span>(err)&#123;</span><br><span class="line">    <span class="keyword">throw</span> err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过文件流写入"><a href="#通过文件流写入" class="headerlink" title="通过文件流写入"></a>通过文件流写入</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> writeStream = fs.createWriteStream(<span class="string">'./fileForWrite1.txt'</span>, <span class="string">'utf8'</span>);</span><br><span class="line"></span><br><span class="line">writeStream</span><br><span class="line">    .on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;  <span class="comment">// 已经关闭，不会再有事件抛出</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'已经关闭'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">writeStream.write(<span class="string">'hello'</span>);</span><br><span class="line">writeStream.write(<span class="string">'world'</span>);</span><br><span class="line">writeStream.end(<span class="string">''</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="相对底层的接口"><a href="#相对底层的接口" class="headerlink" title="相对底层的接口"></a>相对底层的接口</h4><blockquote>
+<p>fs.write(fd, buffer, offset, length[, position], callback)<br>fs.write(fd, data[, position[, encoding]], callback)<br>fs.writeSync(fd, buffer, offset, length[, position])<br>fs.writeSync(fd, data[, position[, encoding]])</p>
+</blockquote>
+<ul>
+<li>fd：写入的文件句柄。</li>
+<li>buffer：写入的内容。</li>
+<li>offset：将buffer从offset位置开始，长度为length的内容写入。</li>
+<li>length：写入的buffer内容的长度。</li>
+<li>position：从打开文件的position处写入。</li>
+<li>callback：参数为 <code>(err, written, buffer)</code>。<code>written</code>表示有xx字节的buffer被写入。</li>
+</ul>
+<p>备注：<code>fs.write(fd, buffer, offset, length[, position], callback)</code>跟<code>fs.write(fd, data[, position[, encoding]], callback)</code>的区别在于：后面的只能把所有的data写入，而前面的可以写入指定的data子串？</p>
+<h3 id="文件是否存在"><a href="#文件是否存在" class="headerlink" title="文件是否存在"></a>文件是否存在</h3><p><code>fs.exists()</code>已经是<code>deprecated</code>状态，现在可以通过下面代码判断文件是否存在。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.access(<span class="string">'./fileForRead.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'fileForRead.txt存在'</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">fs.access(<span class="string">'./fileForRead2.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'fileForRead2.txt存在'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>fs.access()</code>除了判断文件是否存在（默认模式），还可以用来判断文件的权限。</p>
+<p>备忘：<code>fs.constants.F_OK</code>等常量无法获取（node v6.1，mac 10.11.4下，<code>fs.constants</code>是<code>undefined</code>）</p>
+<h3 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h3><p>异步版本（如果目录已存在，会报错）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.mkdir(<span class="string">'./hello'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'目录创建成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>同步版本</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.mkdirSync(<span class="string">'./hello'</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.unlink(<span class="string">'./fileForUnlink.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'文件删除成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.unlinkSync(<span class="string">'./fileForUnlink.txt'</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建目录-1"><a href="#创建目录-1" class="headerlink" title="创建目录"></a>创建目录</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.mkdir(path[, mode], callback)</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.mkdir(<span class="string">'sub'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'创建目录成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.mkdirSync(path[, mode])</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    fs.mkdirSync(<span class="string">'hello'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'创建目录成功'</span>);</span><br><span class="line">&#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="遍历目录"><a href="#遍历目录" class="headerlink" title="遍历目录"></a>遍历目录</h3><p>同步版本，注意：<code>fs.readdirSync()</code>只会读一层，所以需要判断文件类型是否目录，如果是，则进行递归遍历。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.readdirSync(path[, options])</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getFilesInDir = <span class="function"><span class="keyword">function</span>(<span class="params">dir</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> results = [ path.resolve(dir) ];</span><br><span class="line">    <span class="keyword">var</span> files = fs.readdirSync(dir, <span class="string">'utf8'</span>);</span><br><span class="line"></span><br><span class="line">    files.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">file</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">        file = path.resolve(dir, file);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> stats = fs.statSync(file);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(stats.isFile())&#123;</span><br><span class="line">            results.push(file);</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(stats.isDirectory())&#123;</span><br><span class="line">            results = results.concat( getFilesInDir(file) );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> results;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> files = getFilesInDir(<span class="string">'../'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(files);</span><br></pre></td></tr></table></figure>
+
+<p>异步版本：（TODO）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="文件重命名"><a href="#文件重命名" class="headerlink" title="文件重命名"></a>文件重命名</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.rename(oldPath, newPath, callback)</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.rename(<span class="string">'./hello'</span>, <span class="string">'./world'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'重命名成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fs.renameSync(oldPath, newPath)</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.renameSync(<span class="string">'./world'</span>, <span class="string">'./hello'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="移动文件"><a href="#移动文件" class="headerlink" title="移动文件"></a>移动文件</h3><p>移动文件也是我们经常会遇见的，可是fs没有专门移动文件的函数，但是我们可以通过rename函数来达到移动文件的目的，示例如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var fs &#x3D; require(&#39;fs&#39;);</span><br><span class="line"></span><br><span class="line">fs.rename(oldPath,newPath,function (err) &#123;</span><br><span class="line">   if (err) throw err;</span><br><span class="line">   console.log(&#39;renamed complete&#39;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听文件修改"><a href="#监听文件修改" class="headerlink" title="监听文件修改"></a>监听文件修改</h3><p><code>fs.watch()</code>比<code>fs.watchFile()</code>高效很多（why）</p>
+<h4 id="fs-watchFile"><a href="#fs-watchFile" class="headerlink" title="fs.watchFile()"></a>fs.watchFile()</h4><p>实现原理：轮询。每隔一段时间检查文件是否发生变化。所以在不同平台上表现基本是一致的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> options = &#123;</span><br><span class="line">    persistent: <span class="literal">true</span>,  <span class="comment">// 默认就是true</span></span><br><span class="line">    interval: <span class="number">2000</span>  <span class="comment">// 多久检查一次</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// curr, prev 是被监听文件的状态, fs.Stat实例</span></span><br><span class="line"><span class="comment">// 可以通过 fs.unwatch() 移除监听</span></span><br><span class="line">fs.watchFile(<span class="string">'./fileForWatch.txt'</span>, options, <span class="function"><span class="keyword">function</span>(<span class="params">curr, prev</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'修改时间为: '</span> + curr.mtime);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>修改<code>fileForWatch.txt</code>，可以看到控制台下打印出日志</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node watchFile.js</span><br><span class="line">修改时间为: Sat Jul <span class="number">16</span> <span class="number">2016</span> <span class="number">19</span>:<span class="number">03</span>:<span class="number">57</span> GMT+<span class="number">0800</span> (CST)</span><br><span class="line">修改时间为: Sat Jul <span class="number">16</span> <span class="number">2016</span> <span class="number">19</span>:<span class="number">04</span>:<span class="number">05</span> GMT+<span class="number">0800</span> (CST)</span><br></pre></td></tr></table></figure>
+
+<p>为啥子？莫非单纯访问文件也会触发回调？</p>
+<blockquote>
+<p>If you want to be notified when the file was modified, not just accessed, you need to compare curr.mtime and prev.mtime.</p>
+</blockquote>
+<p>在 <strong>v0.10</strong> 之后的改动。如果监听的文件不存在，会怎么处理。如下</p>
+<blockquote>
+<p>Note: when an fs.watchFile operation results in an ENOENT error, it will invoke the listener once, with all the fields zeroed (or, for dates, the Unix Epoch). In Windows, blksize and blocks fields will be undefined, instead of zero. If the file is created later on, the listener will be called again, with the latest stat objects. This is a change in functionality since v0.10.</p>
+</blockquote>
+<h4 id="fs-watch"><a href="#fs-watch" class="headerlink" title="fs.watch()"></a>fs.watch()</h4><blockquote>
+<p>fs.watch(filename[, options][, listener])<br>fs.unwatchFile(filename[, listener])</p>
+</blockquote>
+<p>这接口非常不靠谱（当前测试用的v6.1.0），参考 <a href="https://github.com/nodejs/node/issues/7420" target="_blank" rel="noopener">https://github.com/nodejs/node/issues/7420</a></p>
+<blockquote>
+<p>fs.watch(filename[, options][, listener])#</p>
+</blockquote>
+<p>注意：<code>fs.watch()</code>这个接口并不是在所有的平台行为都一致，并且在某些情况下是不可用的。<code>recursive</code>这个选项只在<code>mac</code>、<code>windows</code>下可用。</p>
+<p>问题来了：</p>
+<ol>
+<li>不一致的表现。</li>
+<li>不可用的场景。</li>
+<li>linux上要recursive咋整。</li>
+</ol>
+<blockquote>
+<p>The fs.watch API is not 100% consistent across platforms, and is unavailable in some situations.<br>The recursive option is only supported on OS X and Windows.</p>
+</blockquote>
+<p>备忘，不可用的场景。比如网络文件系统等。</p>
+<blockquote>
+<p>For example, watching files or directories can be unreliable, and in some cases impossible, on network file systems (NFS, SMB, etc), or host file systems when using virtualization software such as Vagrant, Docker, etc.</p>
+</blockquote>
+<p>另外，listener回调有两个参数，分别是<code>event</code>、<code>filename</code>。其中，<code>filename</code>仅在linux、windows上会提供，并且不是100%提供，所以，尽量不要依赖<code>filename</code>。</p>
+<p>在linux、osx上，<code>fs.watch()</code>监听的是inode。如果文件被删除，并重新创建，那么删除事件会触发。同时，<code>fs.watch()</code>监听的还是最初的inode。（API的设计就是这样的）</p>
+<p>结论：怎么看都感觉这个API很不靠谱，虽然性能比fs.watchFile()要高很多。</p>
+<p>先来个例子，在osx下测试了一下，简直令人绝望。。。无论是创建、修改、删除文件，<code>evt</code>都是<code>rename</code>。。。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> options = &#123;</span><br><span class="line">    persistent: <span class="literal">true</span>,</span><br><span class="line">    recursive: <span class="literal">true</span>,</span><br><span class="line">    encoding: <span class="string">'utf8'</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">fs.watch(<span class="string">'../'</span>, options, <span class="function"><span class="keyword">function</span>(<span class="params">event, filename</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'触发事件:'</span> + event);</span><br><span class="line">    <span class="keyword">if</span>(filename)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'文件名是: '</span> + filename);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'文件名是没有提供'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>修改下<code>fileForWatch.txt</code>，看到下面输出。。。感觉打死也不想用这个API。。。</p>
+<p>贴下环境：osx 10.11.4, node v6.1.0。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">触发事件:rename</span><br><span class="line">文件名是: fs/fileForWatch.txt___jb_bak___</span><br><span class="line">触发事件:rename</span><br><span class="line">文件名是: fs/fileForWatch.txt</span><br><span class="line">触发事件:rename</span><br><span class="line">文件名是: fs/fileForWatch.txt___jb_old___</span><br><span class="line">触发事件:rename</span><br><span class="line">文件名是: .idea/workspace.xml___jb_bak___</span><br><span class="line">触发事件:rename</span><br><span class="line">文件名是: .idea/workspace.xml</span><br><span class="line">触发事件:rename</span><br><span class="line">文件名是: .idea/workspace.xml___jb_old___</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改所有者"><a href="#修改所有者" class="headerlink" title="修改所有者"></a>修改所有者</h3><p>参考linux命令行，不举例子了。。。</p>
+<blockquote>
+<p>fs.chown(path, uid, gid, callback)<br>fs.chownSync(path, uid, gid)<br>fs.fchown(fd, uid, gid, callback)<br>fs.fchownSync(fd, uid, gid)</p>
+</blockquote>
+<h3 id="修改权限"><a href="#修改权限" class="headerlink" title="修改权限"></a>修改权限</h3><p>可以用<code>fs.chmod()</code>，也可以用<code>fs.fchmod()</code>。两者的区别在于，前面传的是文件路径，后面传的的文件句柄。</p>
+<ol>
+<li><code>fs.chmod)</code>、<code>fs.fchmod()</code>区别：传的是文件路径，还是文件句柄。</li>
+<li><code>fs.chmod()</code>、<code>fs.lchmod()</code>区别：如果文件是软连接，那么<code>fs.chmod()</code>修改的是软连接指向的目标文件；<code>fs.lchmod()</code>修改的是软连接。</li>
+</ol>
+<blockquote>
+<p>fs.chmod(path, mode, callback)<br>fs.chmodSync(path, mode)</p>
+</blockquote>
+<blockquote>
+<p>fs.fchmod(fd, mode, callback)<br>fs.fchmodSync(fd, mode)</p>
+</blockquote>
+<blockquote>
+<p>fs.lchmod(path, mode, callback)#<br>fs.lchmodSync(path, mode)</p>
+</blockquote>
+<p>例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.chmod(<span class="string">'./fileForChown.txt'</span>, <span class="string">'777'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="built_in">console</span>.log(err);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'权限修改成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>同步版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var fs &#x3D; require(&#39;fs&#39;);</span><br><span class="line"></span><br><span class="line">fs.chmodSync(&#39;.&#x2F;fileForChown.txt&#39;, &#39;777&#39;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取文件状态"><a href="#获取文件状态" class="headerlink" title="获取文件状态"></a>获取文件状态</h3><p>区别：</p>
+<ul>
+<li><code>fs.stat()</code> vs <code>fs.fstat()</code>：传文件路径 vs 文件句柄。</li>
+<li><code>fs.stat()</code> vs <code>fs.lstat()</code>：如果文件是软链接，那么<code>fs.stat()</code>返回目标文件的状态，<code>fs.lstat()</code>返回软链接本身的状态。</li>
+</ul>
+<blockquote>
+<p>fs.stat(path, callback)<br>fs.statSync(path)</p>
+</blockquote>
+<blockquote>
+<p>fs.fstat(fd, callback)<br>fs.fstatSync(fd)</p>
+</blockquote>
+<blockquote>
+<p>fs.lstat(path, callback)<br>fs.lstatSync(path)</p>
+</blockquote>
+<p>主要关注<code>Class: fs.Stats</code>。</p>
+<p>首先是方法</p>
+<ul>
+<li>stats.isFile()  – 是否文件</li>
+<li>stats.isDirectory() – 是否目录</li>
+<li>stats.isBlockDevice() – 什么鬼</li>
+<li>stats.isCharacterDevice() – 什么鬼</li>
+<li>stats.isSymbolicLink() (only valid with fs.lstat()) – 什么鬼</li>
+<li>stats.isFIFO() – 什么鬼</li>
+<li>stats.isSocket() – 是不是socket文件</li>
+</ul>
+<p>官网例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  dev: <span class="number">2114</span>,</span><br><span class="line">  ino: <span class="number">48064969</span>,</span><br><span class="line">  mode: <span class="number">33188</span>,</span><br><span class="line">  nlink: <span class="number">1</span>,</span><br><span class="line">  uid: <span class="number">85</span>,</span><br><span class="line">  gid: <span class="number">100</span>,</span><br><span class="line">  rdev: <span class="number">0</span>,</span><br><span class="line">  size: <span class="number">527</span>,</span><br><span class="line">  blksize: <span class="number">4096</span>,</span><br><span class="line">  blocks: <span class="number">8</span>,</span><br><span class="line">  atime: Mon, <span class="number">10</span> Oct <span class="number">2011</span> <span class="number">23</span>:<span class="number">24</span>:<span class="number">11</span> GMT, <span class="comment">// 访问时间</span></span><br><span class="line">  mtime: Mon, <span class="number">10</span> Oct <span class="number">2011</span> <span class="number">23</span>:<span class="number">24</span>:<span class="number">11</span> GMT,  <span class="comment">// 文件内容修改时间</span></span><br><span class="line">  ctime: Mon, <span class="number">10</span> Oct <span class="number">2011</span> <span class="number">23</span>:<span class="number">24</span>:<span class="number">11</span> GMT,  <span class="comment">// 文件状态修改时间</span></span><br><span class="line">  birthtime: Mon, <span class="number">10</span> Oct <span class="number">2011</span> <span class="number">23</span>:<span class="number">24</span>:<span class="number">11</span> GMT  <span class="comment">// 创建时间</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>atime：Access Time // 访问时间</li>
+<li>mtime:: Modified Time  // 文件内容修改时间</li>
+<li>ctime: Changed Time.  // 文件状态修改时间，比如修改文件所有者、修改权限、重命名等</li>
+<li>birthtime: Birth Time // 创建时间。在某些系统上是不可靠的，因为拿不到。</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getTimeDesc = <span class="function"><span class="keyword">function</span>(<span class="params">d</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [d.getFullYear(), d.getMonth()+<span class="number">1</span>, d.getDate()].join(<span class="string">'-'</span>) + <span class="string">' '</span> + [d.getHours(), d.getMinutes(), d.getSeconds()].join(<span class="string">':'</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">fs.stat(<span class="string">'./fileForStat.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, stats</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'文件大小: '</span> + stats.size);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'创建时间: '</span> + getTimeDesc(stats.birthtime));</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'访问时间: '</span> + getTimeDesc(stats.atime));</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'修改时间: '</span> + getTimeDesc(stats.mtime));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node stat.js</span><br><span class="line">文件大小: <span class="number">3613</span></span><br><span class="line">创建时间: <span class="number">2016</span><span class="literal">-7</span><span class="literal">-16</span> <span class="number">12</span>:<span class="number">40</span>:<span class="number">49</span></span><br><span class="line">访问时间: <span class="number">2016</span><span class="literal">-7</span><span class="literal">-16</span> <span class="number">12</span>:<span class="number">40</span>:<span class="number">49</span></span><br><span class="line">修改时间: <span class="number">2016</span><span class="literal">-7</span><span class="literal">-16</span> <span class="number">12</span>:<span class="number">40</span>:<span class="number">49</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Process</span> finished with <span class="keyword">exit</span> code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>同步的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> getTimeDesc = <span class="function"><span class="keyword">function</span>(<span class="params">d</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [d.getFullYear(), d.getMonth()+<span class="number">1</span>, d.getDate()].join(<span class="string">'-'</span>) + <span class="string">' '</span> + [d.getHours(), d.getMinutes(), d.getSeconds()].join(<span class="string">':'</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stats = fs.statSync(<span class="string">'./fileForStat.txt'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'文件大小: '</span> + stats.size);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'创建时间: '</span> + getTimeDesc(stats.birthtime));</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'访问时间: '</span> + getTimeDesc(stats.atime));</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'修改时间: '</span> + getTimeDesc(stats.mtime));</span><br></pre></td></tr></table></figure>
+
+<h3 id="访问-权限检测"><a href="#访问-权限检测" class="headerlink" title="访问/权限检测"></a>访问/权限检测</h3><p>例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.access(path[, mode], callback)</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.access(<span class="string">'./fileForAccess.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'可以访问'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>同步版本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fs.accessSync(path[, mode])</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果成功，则返回undefined，如果失败，则抛出错误（什么鬼）</span></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    fs.accessSync(<span class="string">'./fileForAccess.txt'</span>);</span><br><span class="line">&#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">    <span class="keyword">throw</span>(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="文件打开-关闭"><a href="#文件打开-关闭" class="headerlink" title="文件打开/关闭"></a>文件打开/关闭</h3><p>比较底层的接口，实际需要用到的机会不多。需要用到的时候看下<a href="https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback" target="_blank" rel="noopener">文档</a>就行。</p>
+<ul>
+<li>flags：文件打开模式，比如<code>r</code>、<code>r+</code>、<code>w</code>、<code>w+</code>等。可选模式非常多。</li>
+<li>mode：默认是<code>666</code>，可读+可写。</li>
+</ul>
+<blockquote>
+<p>fs.open(path, flags[, mode], callback)<br>fs.openSync(path, flags[, mode])<br>fs.close(fd, callback)<br>fs.closeSync(fd)</p>
+</blockquote>
+<h3 id="文件读取（底层）"><a href="#文件读取（底层）" class="headerlink" title="文件读取（底层）"></a>文件读取（底层）</h3><p>相对底层的读取接口，参数如下</p>
+<ul>
+<li>fd：文件句柄。</li>
+<li>buffer：将读取的文件内容写到buffer里。</li>
+<li>offset：buffer开始写入的位置。（在offset开始写入，还是offset+1？）</li>
+<li>length：要读取的字节数。</li>
+<li>position：文件从哪个位置开始读取。如果是null，那么就从当前位置开始读取。（读取操作会记录下上一个位置）</li>
+</ul>
+<p>此外，<code>callback</code>的回调参数为<code>(err, bytesRead, buffer)</code></p>
+<blockquote>
+<p>fs.read(fd, buffer, offset, length, position, callback)</p>
+</blockquote>
+<h3 id="追加文件内容"><a href="#追加文件内容" class="headerlink" title="追加文件内容"></a>追加文件内容</h3><blockquote>
+<p>fs.appendFile(file, data[, options], callback)</p>
+</blockquote>
+<ul>
+<li>file：可以是文件路径，也可以是文件句柄。（还可以是buffer？）</li>
+<li>data：要追加的内容。string或者buffer。</li>
+<li>options<ul>
+<li>encoding：编码，默认是<code>utf8</code></li>
+<li>mode：默认是<code>0o666</code></li>
+<li>flag：默认是<code>a</code></li>
+</ul>
+</li>
+</ul>
+<p>注意：如果<code>file</code>是文件句柄，那么</p>
+<ul>
+<li>开始追加数据前，file需要已经打开。</li>
+<li>file需要手动关闭。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.appendFile(<span class="string">'./extra/fileForAppend.txt'</span>, <span class="string">'helo'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'append成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="文件内容截取"><a href="#文件内容截取" class="headerlink" title="文件内容截取"></a>文件内容截取</h3><blockquote>
+<p>fs.truncate(path, len, callback)<br>fs.truncateSync(path, len)</p>
+<p>fs.ftruncate(fd, len, callback)<br>fs.ftruncateSync(fd, len)</p>
+</blockquote>
+<p>用途参考<a href="http://man7.org/linux/man-pages/man2/ftruncate.2.html" target="_blank" rel="noopener">linux说明文档</a>。</p>
+<p>要点：</p>
+<ul>
+<li><code>offset</code>不会变化。比如通过<code>fs.read()</code>读取文件内容，就需要特别注意。</li>
+<li>如果<code>len</code>小于文件内容长度，剩余文件内容部分会丢失；如果<code>len</code>大于文件内容长度，那么超出的部分，会用<code>\0</code>进行填充。</li>
+<li>如果传的是文件路径，需要确保文件是可写的；如果传的是文件句柄，需要确保文件句柄已经打开并且可写入。</li>
+</ul>
+<blockquote>
+<p>The truncate() and ftruncate() functions cause the regular file named<br>by path or referenced by fd to be truncated to a size of precisely<br>length bytes.</p>
+</blockquote>
+<blockquote>
+<p>If the file previously was larger than this size, the extra data is<br>lost.  If the file previously was shorter, it is extended, and the<br>extended part reads as null bytes (‘\0’).</p>
+</blockquote>
+<blockquote>
+<p>The file offset is not changed.</p>
+</blockquote>
+<blockquote>
+<p>With ftruncate(), the file must be open for writing; with truncate(), the file must be writable.</p>
+</blockquote>
+<h3 id="修改文件属性（时间）"><a href="#修改文件属性（时间）" class="headerlink" title="修改文件属性（时间）"></a>修改文件属性（时间）</h3><ul>
+<li>path/fd：文件路径/文件句柄</li>
+<li>atime：Access Time。上一次访问文件数据的时间。</li>
+<li>mtime：Modified Time。修改时间。</li>
+</ul>
+<blockquote>
+<p>fs.utimes(path, atime, mtime, callback)<br>fs.utimesSync(path, atime, mtime)</p>
+</blockquote>
+<blockquote>
+<p>fs.futimes(fd, atime, mtime, callback)<br>fs.futimesSync(fd, atime, mtime)</p>
+</blockquote>
+<p>备注，在命令行下可以</p>
+<ul>
+<li>通过<code>stat</code>查看文件的状态信息，包括了上面的atime、mtime。</li>
+<li>通过<code>touch</code>修改这几个时间。</li>
+</ul>
+<h3 id="创建文件链接"><a href="#创建文件链接" class="headerlink" title="创建文件链接"></a>创建文件链接</h3><blockquote>
+<p>fs.symlink(target, path[, type], callback)<br>fs.symlinkSync(target, path[, type])</p>
+<p>fs.link(srcpath, dstpath, callback)<br>fs.linkSync(srcpath, dstpath)</p>
+</blockquote>
+<blockquote>
+<p> link() creates a new link (also known as a hard link) to an existing file.</p>
+</blockquote>
+<p>软链接、硬链接区别：<a href="https://www.ibm.com/developerworks/cn/linux/l-cn-hardandsymb-links/" target="_blank" rel="noopener">参考</a> 或者 [这个]。(<a href="http://www.cnblogs.com/itech/archive/2009/04/10/1433052.html" target="_blank" rel="noopener">http://www.cnblogs.com/itech/archive/2009/04/10/1433052.html</a>)</p>
+<ul>
+<li>硬链接：inode相同，多个别名。删除一个硬链接文件，不会影响其他有相同inode的文件。</li>
+<li>软链接：有自己的inode，用户数据块存放指向文件的inode。</li>
+</ul>
+<p>参考<a href="http://man7.org/linux/man-pages/man2/link.2.html" target="_blank" rel="noopener">这里</a>。</p>
+<h3 id="创建临时目录"><a href="#创建临时目录" class="headerlink" title="创建临时目录"></a>创建临时目录</h3><blockquote>
+<p>fs.mkdtemp(prefix, callback)<br>fs.mkdtempSync(prefix)</p>
+</blockquote>
+<p>备忘：跟普通的随便找个目录，创建个随机名字的文件夹，有什么区别？</p>
+<p>代码示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.mkdtemp(<span class="string">'/tmp/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, folder</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'创建临时目录: '</span> + folder);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/node mkdtemp.js</span><br><span class="line">创建临时目录: /tmp/Cxw51O</span><br></pre></td></tr></table></figure>
+
+<h3 id="找出软连接指向的真实路径"><a href="#找出软连接指向的真实路径" class="headerlink" title="找出软连接指向的真实路径"></a>找出软连接指向的真实路径</h3><blockquote>
+<p>fs.readlink(path[, options], callback)<br>fs.readlinkSync(path[, options])</p>
+</blockquote>
+<p>如下面例子，创建了个软链接指向<code>fileForReadLink.txt</code>，通过<code>fs.readlink()</code>就可以找出原始的路径。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> randomFileName = <span class="string">'./extra/fileForReadLink-'</span> + <span class="built_in">String</span>(<span class="built_in">Math</span>.random()).slice(<span class="number">2</span>, <span class="number">6</span>) + <span class="string">'.txt'</span>;</span><br><span class="line"></span><br><span class="line">fs.symlinkSync(<span class="string">'./extra/fileForReadLink.txt'</span>, randomFileName);</span><br><span class="line">fs.readlink(randomFileName, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, linkString</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'链接文件内容: '</span> + linkString);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>类似终端下直接运行<code>readlink</code>。对于软链接文件，效果同上面代码。对于硬链接，没有输出。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  extra git:(master) ✗ readlink fileForReadLink<span class="literal">-9827</span>.txt</span><br><span class="line">./extra/fileForReadLink.txt</span><br><span class="line">➜  extra git:(master) ✗ readlink fileForLinkHard.txt </span><br><span class="line">➜  extra git:(master) ✗ readlink fileForLinkSoft.txt</span><br><span class="line">./extra/fileForLink.txt</span><br></pre></td></tr></table></figure>
+
+<h3 id="真实路径"><a href="#真实路径" class="headerlink" title="真实路径"></a>真实路径</h3><blockquote>
+<p>fs.realpath(path[, options], callback)<br>fs.realpathSync(path[, options])</p>
+</blockquote>
+<p>例子：（不能作用于软链接？）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// fileForRealPath1.txt 是普通文件,正常运行</span></span><br><span class="line">fs.realpath(<span class="string">'./extra/inner/fileForRealPath1.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, resolvedPath</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'fs.realpath: '</span> + resolvedPath);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// fileForRealPath.txt 是软链接, 会报错,提示找不到文件</span></span><br><span class="line">fs.realpath(<span class="string">'./extra/inner/fileForRealPath.txt'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, resolvedPath</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'fs.realpath: '</span> + resolvedPath);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log( <span class="string">'path.resolve: '</span> + path.resolve(<span class="string">'./extra/inner/fileForRealpath.txt'</span>) );</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">path.resolve: /Users/a/Documents/git<span class="literal">-code</span>/git<span class="literal">-blog</span>/demo/<span class="number">2015.05</span>.<span class="number">21</span><span class="literal">-node</span><span class="literal">-basic</span>/fs/extra/inner/fileForRealpath.txt</span><br><span class="line">fs.realpath: /Users/a/Documents/git<span class="literal">-code</span>/git<span class="literal">-blog</span>/demo/<span class="number">2015.05</span>.<span class="number">21</span><span class="literal">-node</span><span class="literal">-basic</span>/fs/extra/inner/fileForRealPath1.txt</span><br><span class="line">/Users/a/Documents/git<span class="literal">-code</span>/git<span class="literal">-blog</span>/demo/<span class="number">2015.05</span>.<span class="number">21</span><span class="literal">-node</span><span class="literal">-basic</span>/fs/realpath.js:<span class="number">12</span></span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">            ^</span><br><span class="line"></span><br><span class="line">Error: ENOENT: no such file or directory, realpath <span class="string">'./extra/inner/fileForRealPath.txt'</span></span><br><span class="line">    at Error (native)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Process</span> finished with <span class="keyword">exit</span> code <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除目录"><a href="#删除目录" class="headerlink" title="删除目录"></a>删除目录</h3><blockquote>
+<p>fs.rmdir(path, callback)<br>fs.rmdirSync(path)</p>
+</blockquote>
+<p>例子如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.rmdir(<span class="string">'./dirForRemove'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'目录删除成功'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="不常用"><a href="#不常用" class="headerlink" title="不常用"></a>不常用</h3><h4 id="缓冲区内容写到磁盘"><a href="#缓冲区内容写到磁盘" class="headerlink" title="缓冲区内容写到磁盘"></a>缓冲区内容写到磁盘</h4><blockquote>
+<p>fs.fdatasync(fd, callback)<br>fs.fdatasyncSync(fd)</p>
+</blockquote>
+<p>可以参考这里：</p>
+<blockquote>
+<p>1、sync函数<br>sync函数只是将所有修改过的块缓冲区排入写队列，然后就返回，它并不等待实际写磁盘操作结束。<br>通常称为update的系统守护进程会周期性地（一般每隔30秒）调用sync函数。这就保证了定期冲洗内核的块缓冲区。命令sync(1)也调用sync函数。<br>2、fsync函数<br>fsync函数只对由文件描述符filedes指定的单一文件起作用，并且等待写磁盘操作结束，然后返回。<br>fsync可用于数据库这样的应用程序，这种应用程序需要确保将修改过的块立即写到磁盘上。<br>3、fdatasync函数<br>fdatasync函数类似于fsync，但它只影响文件的数据部分。而除数据外，fsync还会同步更新文件的属性。<br>对于提供事务支持的数据库，在事务提交时，都要确保事务日志（包含该事务所有的修改操作以及一个提交记录）完全写到硬盘上，才认定事务提交成功并返回给应用层。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/02/mongoDB%E5%85%A5%E9%97%A8/" rel="prev" title="mongoDB入门">
+      <i class="fa fa-chevron-left"></i> mongoDB入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/02/%E4%BD%BF%E7%94%A8nodeJS%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%BD%91%E9%A1%B5%E7%88%AC%E8%99%AB%E5%8A%9F%E8%83%BD/" rel="next" title="使用nodeJS+cheerio实现一个简单的网页爬虫功能">
+      使用nodeJS+cheerio实现一个简单的网页爬虫功能 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件读取"><span class="nav-number">1.</span> <span class="nav-text">文件读取</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#普通读取"><span class="nav-number">1.1.</span> <span class="nav-text">普通读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过文件流读取"><span class="nav-number">1.2.</span> <span class="nav-text">通过文件流读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过文件流写入"><span class="nav-number">1.3.</span> <span class="nav-text">通过文件流写入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相对底层的接口"><span class="nav-number">1.4.</span> <span class="nav-text">相对底层的接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件是否存在"><span class="nav-number">2.</span> <span class="nav-text">文件是否存在</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建目录"><span class="nav-number">3.</span> <span class="nav-text">创建目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除文件"><span class="nav-number">4.</span> <span class="nav-text">删除文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建目录-1"><span class="nav-number">5.</span> <span class="nav-text">创建目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历目录"><span class="nav-number">6.</span> <span class="nav-text">遍历目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件重命名"><span class="nav-number">7.</span> <span class="nav-text">文件重命名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#移动文件"><span class="nav-number">8.</span> <span class="nav-text">移动文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#监听文件修改"><span class="nav-number">9.</span> <span class="nav-text">监听文件修改</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fs-watchFile"><span class="nav-number">9.1.</span> <span class="nav-text">fs.watchFile()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fs-watch"><span class="nav-number">9.2.</span> <span class="nav-text">fs.watch()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改所有者"><span class="nav-number">10.</span> <span class="nav-text">修改所有者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改权限"><span class="nav-number">11.</span> <span class="nav-text">修改权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取文件状态"><span class="nav-number">12.</span> <span class="nav-text">获取文件状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问-权限检测"><span class="nav-number">13.</span> <span class="nav-text">访问&#x2F;权限检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件打开-关闭"><span class="nav-number">14.</span> <span class="nav-text">文件打开&#x2F;关闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件读取（底层）"><span class="nav-number">15.</span> <span class="nav-text">文件读取（底层）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追加文件内容"><span class="nav-number">16.</span> <span class="nav-text">追加文件内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件内容截取"><span class="nav-number">17.</span> <span class="nav-text">文件内容截取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改文件属性（时间）"><span class="nav-number">18.</span> <span class="nav-text">修改文件属性（时间）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建文件链接"><span class="nav-number">19.</span> <span class="nav-text">创建文件链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建临时目录"><span class="nav-number">20.</span> <span class="nav-text">创建临时目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#找出软连接指向的真实路径"><span class="nav-number">21.</span> <span class="nav-text">找出软连接指向的真实路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#真实路径"><span class="nav-number">22.</span> <span class="nav-text">真实路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除目录"><span class="nav-number">23.</span> <span class="nav-text">删除目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不常用"><span class="nav-number">24.</span> <span class="nav-text">不常用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓冲区内容写到磁盘"><span class="nav-number">24.1.</span> <span class="nav-text">缓冲区内容写到磁盘</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

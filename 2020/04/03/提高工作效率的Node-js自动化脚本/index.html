@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="写在前面真正的大牛都是习惯于使用脚本来实现自动化操作。随着 Node.js 的出现，前端开发工程师也可以通过 Node.js 来编写一些日常的工作脚本，从而减少手工操作，提高工作效率，从而节省出更多的时间花在核心的技术学习上。也使得我们的工作时刻保持新鲜。在这我会和大家分享我日常工作中的 Node.js 脚本。  自动备份 自动执行命令 自动修改文件内容 文件的压缩与解压 服务器文件上传下载 邮件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日常提高工作效率的Node.js自动化脚本">
+<meta property="og:url" content="http://yoursite.com/2020/04/03/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E7%9A%84Node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="写在前面真正的大牛都是习惯于使用脚本来实现自动化操作。随着 Node.js 的出现，前端开发工程师也可以通过 Node.js 来编写一些日常的工作脚本，从而减少手工操作，提高工作效率，从而节省出更多的时间花在核心的技术学习上。也使得我们的工作时刻保持新鲜。在这我会和大家分享我日常工作中的 Node.js 脚本。  自动备份 自动执行命令 自动修改文件内容 文件的压缩与解压 服务器文件上传下载 邮件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403122034.png">
+<meta property="article:published_time" content="2020-04-03T03:48:52.000Z">
+<meta property="article:modified_time" content="2020-04-03T03:48:52.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="nodejs">
+<meta property="article:tag" content="案例">
+<meta property="article:tag" content="自动化">
+<meta property="article:tag" content="脚本">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403122034.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/03/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E7%9A%84Node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>日常提高工作效率的Node.js自动化脚本 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/%E6%8F%90%E9%AB%98%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E7%9A%84Node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E8%84%9A%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          日常提高工作效率的Node.js自动化脚本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 11:48:52" itemprop="dateCreated datePublished" datetime="2020-04-03T11:48:52+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nodejs/" itemprop="url" rel="index"><span itemprop="name">nodejs</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%88%E4%BE%8B/" itemprop="url" rel="index"><span itemprop="name">案例</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>8.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>真正的大牛都是习惯于使用脚本来实现自动化操作。随着 Node.js 的出现，前端开发工程师也可以通过 Node.js 来编写一些日常的工作脚本，从而减少手工操作，提高工作效率，从而节省出更多的时间花在核心的技术学习上。也使得我们的工作时刻保持新鲜。在这我会和大家分享我日常工作中的 Node.js 脚本。</p>
+<ul>
+<li>自动备份</li>
+<li>自动执行命令</li>
+<li>自动修改文件内容</li>
+<li>文件的压缩与解压</li>
+<li>服务器文件上传下载</li>
+<li>邮件发送</li>
+<li>处理 Excel</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>使用 Node.js 搭建环境超级简单。只需要下载 Node.js 即可。自己电脑再下载一个好用的编辑器即可。这里推荐使用 VS Cod` 编辑器。无需 Java 那样配置环境、安装 JDK，还有各种工作区等，因为我只是想写个脚本而已。</p>
+<p>安装好 Node.js 之后，新建一个文件夹 node-script 来存放所有的脚本，在命令提示符下进入该目录，执行以下命令快速生成 package.json：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm init -y</span><br></pre></td></tr></table></figure>
+
+<p>下面开始编写 Node.js 脚本。</p>
+<h2 id="代码备份脚本"><a href="#代码备份脚本" class="headerlink" title="代码备份脚本"></a>代码备份脚本</h2><p>在 node-script 文件夹下新建文件 bak.js：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">### node-script项目结构：</span><br><span class="line">─node-script</span><br><span class="line">  └─node_modules</span><br><span class="line">  └─bak.js</span><br><span class="line">  └─package.json</span><br></pre></td></tr></table></figure>
+<p>代码备份无非就是将文件夹自动存放于电脑某个文件夹下，代码备份一般来说可以有两种：</p>
+<ul>
+<li>需要备份时手动执行一次，一般用于代码需要大改前保留一份原有数据</li>
+<li>每天定时备份一次，例如一些重要的数据</li>
+</ul>
+<p>代码备份需要使用 Node.js 的 fs 模块来实现。但是我们使用 fs 模块来写代码量会很大，而且一点都不简洁。很多的开源库和 CLI 工具都使用了第三方模块 <a href="https://www.npmjs.com/package/shelljs" target="_blank" rel="noopener">ShellJS</a>。</p>
+<p>ShellJS 简单来说就是，可以执行它提供的方法来实现文件增删改查、复制、执行系统命令等操作。官网示例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> shell = <span class="built_in">require</span>(<span class="string">'shelljs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!shell.which(<span class="string">'git'</span>)) &#123;</span><br><span class="line">  shell.echo(<span class="string">'Sorry, this script requires git'</span>);</span><br><span class="line">  shell.exit(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Copy files to release dir</span></span><br><span class="line">shell.rm(<span class="string">'-rf'</span>, <span class="string">'out/Release'</span>);</span><br><span class="line">shell.cp(<span class="string">'-R'</span>, <span class="string">'stuff/'</span>, <span class="string">'out/Release'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Replace macros in each .js file</span></span><br><span class="line">shell.cd(<span class="string">'lib'</span>);</span><br><span class="line">shell.ls(<span class="string">'*.js'</span>).forEach(<span class="function"><span class="keyword">function</span> (<span class="params">file</span>) </span>&#123;</span><br><span class="line">  shell.sed(<span class="string">'-i'</span>, <span class="string">'BUILD_VERSION'</span>, <span class="string">'v0.1.2'</span>, file);</span><br><span class="line">  shell.sed(<span class="string">'-i'</span>, /^.*REMOVE_THIS_LINE.*$/, <span class="string">''</span>, file);</span><br><span class="line">  shell.sed(<span class="string">'-i'</span>, /.*REPLACE_LINE_WITH_MACRO.*\n/, shell.cat(<span class="string">'macro.js'</span>), file);</span><br><span class="line">&#125;);</span><br><span class="line">shell.cd(<span class="string">'..'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Run external tool synchronously</span></span><br><span class="line"><span class="keyword">if</span> (shell.exec(<span class="string">'git commit -am "Auto-commit"'</span>).code !== <span class="number">0</span>) &#123;</span><br><span class="line">  shell.echo(<span class="string">'Error: Git commit failed'</span>);</span><br><span class="line">  shell.exit(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 ShellJS 前需要安装它：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i shelljs -D</span><br></pre></td></tr></table></figure>
+
+<p><strong>文件夹备份代码如下。</strong><br>bak.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shell = <span class="built_in">require</span>(<span class="string">"shelljs"</span>)</span><br><span class="line"><span class="keyword">const</span> moment = <span class="built_in">require</span>(<span class="string">"moment"</span>)</span><br><span class="line"><span class="keyword">const</span> current = moment().format(<span class="string">"YYYYMMDDhhmmss"</span>) <span class="comment">// 20191101101426格式</span></span><br><span class="line"><span class="keyword">const</span> folder = <span class="string">`src_<span class="subst">$&#123;current&#125;</span>`</span></span><br><span class="line"><span class="comment">// 先创建一个时间信息的文件夹，防止覆盖同一个文件夹</span></span><br><span class="line">shell.mkdir(<span class="string">'-p'</span>,<span class="string">"./bak/"</span>+folder)</span><br><span class="line"><span class="comment">// shelljs 复制文件或者文件夹方法。-rf表示强制和递归方式复制。</span></span><br><span class="line">shell.cp(<span class="string">"-rf"</span>,<span class="string">'./test'</span>,<span class="string">'./bak/'</span>+folder)</span><br></pre></td></tr></table></figure>
+<p>上述代码主要使用了 ShellJS 提供的新建文件夹方法 mkdir 和复制方法 cp 来实现。还用到了 JavaScript 中一个著名的处理时间模块 moment 来实现。</p>
+<p>每次执行上述代码都需要使用命令 node bak.js 来执行这个脚本。当然我们也可以使用 npm script 方式来执行。只需要在 package.json 中加入自定义的 script 字段：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"script"</span>:&#123;</span><br><span class="line">    <span class="string">"bak"</span>:<span class="string">"node ./bak.js"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行脚本时只需要：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run bak</span><br></pre></td></tr></table></figure>
+<p>下面我将这个脚本升级一下，可以让其每天 0 时自动执行一次，即定时任务，这里我使用了 Node 定时任务的一个第三方模块 node-schedule。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i node-schedule --save</span><br></pre></td></tr></table></figure>
+<p>每天 0 时执行一次：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> schedule = <span class="built_in">require</span>(<span class="string">"node-schedule"</span>)</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">copy</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="keyword">const</span> current = moment().format(<span class="string">"YYYYMMDDhhmmss"</span>) <span class="comment">// 20191101101426格式</span></span><br><span class="line">  <span class="keyword">const</span> folder = <span class="string">`src_<span class="subst">$&#123;current&#125;</span>`</span></span><br><span class="line">  shell.mkdir(<span class="string">'-p'</span>,<span class="string">"./bak/"</span>+folder)</span><br><span class="line">  shell.cp(<span class="string">"-rf"</span>,<span class="string">'./test'</span>,<span class="string">'./bak/'</span>+folder)</span><br><span class="line">  shell.echo(<span class="string">"备份完成！"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 每天的0时执行回调函数</span></span><br><span class="line">schedule.scheduleJob(<span class="string">'00 00 00 * * *'</span>,()=&gt;&#123;</span><br><span class="line">  copy()</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>schedule.scheduleJob() 函数第一个参数为通配符表示时间，一般有六个 * 号。从左到右边依次为秒、分、时、日期、月份、星期。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">*  *  *  *  *  *</span><br><span class="line">┬ ┬ ┬ ┬ ┬ ┬</span><br><span class="line">│ │ │ │ │ |</span><br><span class="line">│ │ │ │ │ └ day <span class="keyword">of</span> week (<span class="number">0</span> - <span class="number">7</span>) (<span class="number">0</span> or <span class="number">7</span> is Sun)</span><br><span class="line">│ │ │ │ └───── month (<span class="number">1</span> - <span class="number">12</span>)</span><br><span class="line">│ │ │ └────────── day <span class="keyword">of</span> month (<span class="number">1</span> - <span class="number">31</span>)</span><br><span class="line">│ │ └─────────────── hour (<span class="number">0</span> - <span class="number">23</span>)</span><br><span class="line">│ └──────────────────── minute (<span class="number">0</span> - <span class="number">59</span>)</span><br><span class="line">└───────────────────────── second (<span class="number">0</span> - <span class="number">59</span>, OPTIONAL)</span><br><span class="line">每分钟的第 <span class="number">01</span> 秒触发： <span class="string">'01 * * * * *'</span></span><br><span class="line">每小时的 <span class="number">1</span> 分 <span class="number">01</span> 秒触发 ：<span class="string">'01 1 * * * *'</span></span><br><span class="line">每天的凌晨 <span class="number">1</span>点<span class="number">1</span>分<span class="number">30</span>秒触发 ：<span class="string">'30 1 1 * * *'</span></span><br><span class="line">每月的 <span class="number">1</span> 日<span class="number">1</span>点<span class="number">1</span>分<span class="number">30</span>秒触发 ：<span class="string">'30 1 1 1 * *'</span></span><br><span class="line"><span class="number">2019</span> 年的 <span class="number">1</span> 月 <span class="number">1</span> 日<span class="number">1</span> 点 <span class="number">1</span> 分<span class="number">30</span>秒触发 ：<span class="string">'30 1 1 1 2019 *'</span></span><br><span class="line">每周<span class="number">1</span>的<span class="number">1</span>点<span class="number">1</span>分<span class="number">30</span>秒触发 ：<span class="string">'30 1 1 * * 1'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="自动执行命令"><a href="#自动执行命令" class="headerlink" title="自动执行命令"></a>自动执行命令</h2><p>使用 ShellJS 的 exec 方法可以执行程序命令，例如:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shell = <span class="built_in">require</span>(<span class="string">"shelljs"</span>)</span><br><span class="line">shell.exec(<span class="string">"cls"</span>) <span class="comment">// 执行windows下的清空显示命令</span></span><br><span class="line">shell.exec(<span class="string">"npm run dev"</span>) <span class="comment">// 执行npm script命令</span></span><br></pre></td></tr></table></figure>
+<p>一般来说在执行命令时可能一个命令执行完毕后可能会退出 Node 程序，例如下面情形：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shell = <span class="built_in">require</span>(<span class="string">"shelljs"</span>)</span><br><span class="line">shell.exec(<span class="string">""</span>npm run build)</span><br><span class="line">shell.cp(<span class="string">"-rf"</span>,<span class="string">"./dist"</span>,<span class="string">"../resource"</span>)</span><br></pre></td></tr></table></figure>
+<p>上面的 npm run build 被执行完毕后可能会退出程序，使得 cp 命令不被执行。其实 ShellJS 提供的 exec() 方法还可以接收参数和回调函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shell = <span class="built_in">require</span>(<span class="string">"shelljs"</span>)</span><br><span class="line"></span><br><span class="line">shell.exec(<span class="string">'node --version'</span>, &#123;</span><br><span class="line">  silent:<span class="literal">true</span>, <span class="comment">// 执行过程中命令提示符不会显示过程信息</span></span><br><span class="line">  <span class="keyword">async</span>:<span class="literal">false</span>  <span class="comment">// 是否异步执行</span></span><br><span class="line">&#125;,(code, stdout, stderr)=&gt;&#123;</span><br><span class="line"> <span class="comment">// 执行完毕后继续执行这个回调函数 code表示状态码，0成功，1失败 。stdout表示上一步输入</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>将下一步操作放在回调函数内就可以使得程序继续执行下去了。</p>
+<h2 id="自动修改文件内容"><a href="#自动修改文件内容" class="headerlink" title="自动修改文件内容"></a>自动修改文件内容</h2><p>在进行复制代码包的过程中，总少不了各种文件参数的修改。例如程序包在复制到服务器上去之后需要修改里面的一个版本文件 version.js。每替换一次版本号需要自动加 1：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">version = <span class="string">"v1.1.0"</span></span><br></pre></td></tr></table></figure>
+<p>利用 ShellJS 的 sed 方法可以很方便地实现文件内容替换。</p>
+<p><strong>sed([options,] search_regex, replacement, file [, file …])</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 替换文件内容，-i表示不创建备份，第二个参数为需要替换的内容，第三个参数为替换成的新内容，最后一个参数为文件路径</span></span><br><span class="line">shell.sed(<span class="string">"-i"</span>,<span class="string">"version"</span>,<span class="string">"aa"</span>,<span class="string">"./version.txt"</span>) <span class="comment">// 将version 替换成 aa</span></span><br><span class="line"><span class="comment">// 正则表达式方式,将version-替换成v-</span></span><br><span class="line">shell.sed(<span class="string">"-i"</span>,/version\s=<span class="regexp">/,"v =","./</span>version.txt<span class="string">")</span></span><br></pre></td></tr></table></figure>
+<p>版本最后一位每次打包时自动加 1：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> shell = <span class="built_in">require</span>(<span class="string">"shelljs"</span>)</span><br><span class="line"><span class="keyword">const</span> content = shell.cat(<span class="string">'./version.txt'</span>)</span><br><span class="line"><span class="keyword">const</span> rep = content.stdout.split(<span class="string">'.'</span>)</span><br><span class="line">rep[rep.length<span class="number">-1</span>] = <span class="built_in">Number</span>(rep[rep.length<span class="number">-1</span>])+<span class="number">1</span></span><br><span class="line">shell.sed(<span class="string">"-i"</span>,content,rep.join(<span class="string">'.'</span>),<span class="string">"./version.txt"</span>)</span><br></pre></td></tr></table></figure>
+<p>如果需要实现复杂的字符串替换，可以使用正则表达式的方式。</p>
+<h2 id="接收控制台输入"><a href="#接收控制台输入" class="headerlink" title="接收控制台输入"></a>接收控制台输入</h2><p>有时候执行脚本时需要和使用者进行交互和对话，用户输入 YES 或者 NO 来执行不同代码分支，例如上述的自动变更版本号的脚本，有时候并不想每次打包都更新版本（例如一个小小的改动而已），实现接收控制台输入可以使用 node 的 process 模块。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">process.stdout.write(<span class="string">"需要变更版本号吗(y/n)？"</span>);</span><br><span class="line">process.stdin.on(<span class="string">'data'</span>,(input)=&gt;&#123;</span><br><span class="line">  input = input.toString().trim();</span><br><span class="line">  <span class="keyword">if</span> ([<span class="string">'Y'</span>, <span class="string">'y'</span>, <span class="string">'YES'</span>, <span class="string">'yes'</span>].indexOf(input) &gt; <span class="number">-1</span>)&#123;</span><br><span class="line">    <span class="comment">// 选择了yes Y时执行这里</span></span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">if</span> ([<span class="string">'N'</span>, <span class="string">'n'</span>, <span class="string">'NO'</span>, <span class="string">'no'</span>].indexOf(input) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">    process.exit(<span class="number">0</span>); <span class="comment">// 退出</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件的压缩与解压"><a href="#文件的压缩与解压" class="headerlink" title="文件的压缩与解压"></a>文件的压缩与解压</h2><p>很多时候程序包上传到服务器上去很少是文件夹的方式，而是先将其压缩成特定的格式，再上传到服务器，上传之后再执行解压操作。一般来说压缩格式主要有 ZIP 和 GZIP 两种格式。这里我目前使用的 Node 文件压缩与解压的库是<a href="https://github.com/node-modules/compressing" target="_blank" rel="noopener">compressing</a></p>
+<p>使用 compressing 可以支持文件压缩、文件夹压缩，并且可以压缩成 ZIP、GZ 等多种格式。按照惯例，使用它需要手动安装一下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i compressing --save</span><br></pre></td></tr></table></figure>
+
+<p>压缩 dist 文件夹成 ZIP 格式例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">onst compressing = <span class="built_in">require</span>(<span class="string">"compressing"</span>)</span><br><span class="line">compressing.zip.compressDir(resolve(<span class="string">"dist/"</span>), resolve(zipName)).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"压缩成功！"</span>);</span><br><span class="line">&#125;).catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"压缩失败"</span>);</span><br><span class="line">  <span class="built_in">console</span>.error(err);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>压缩文件官方例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> compressing = <span class="built_in">require</span>(<span class="string">'compressing'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// compress a file 压缩一个文件</span></span><br><span class="line">compressing.gzip.compressFile(<span class="string">'file/path/to/compress'</span>, <span class="string">'path/to/destination.gz'</span>)</span><br><span class="line">.then(compressDone)</span><br><span class="line">.catch(handleError);</span><br><span class="line"></span><br><span class="line"><span class="comment">// compress a file buffer 二进制方式</span></span><br><span class="line">compressing.gzip.compressFile(buffer, <span class="string">'path/to/destination.gz'</span>)</span><br><span class="line">.then(compressDone)</span><br><span class="line">.catch(handleError);</span><br><span class="line"></span><br><span class="line"><span class="comment">// compress a stream 使用流的方式</span></span><br><span class="line">compressing.gzip.compressFile(stream, <span class="string">'path/to/destination.gz'</span>)</span><br><span class="line">.then(compressDone)</span><br><span class="line">.catch(handleError);</span><br></pre></td></tr></table></figure>
+
+<h2 id="服务器文件上传下载"><a href="#服务器文件上传下载" class="headerlink" title="服务器文件上传下载"></a>服务器文件上传下载</h2><p>处理好文件后，在很多时候往往还需要上传到服务器上实现自动部署，而不需要再使用一些 SFTP 工具来手动操作。我目前在实际工作中使用的是第三方模块 node-ssh，先进行安装：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i node-ssh --save</span><br></pre></td></tr></table></figure>
+<p>连接服务器执行服务器命令例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> node_ssh = <span class="built_in">require</span>(<span class="string">"node-ssh"</span>)</span><br><span class="line"><span class="keyword">const</span> ssh = <span class="keyword">new</span> node_ssh()</span><br><span class="line"></span><br><span class="line">ssh.connect(&#123;</span><br><span class="line">    host:<span class="string">'182.11.18.14'</span>,</span><br><span class="line">    username:<span class="string">'admin'</span>,</span><br><span class="line">    password:<span class="string">'admin'</span></span><br><span class="line">&#125;).then(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"连接成功！"</span>)</span><br><span class="line">    <span class="comment">// 可以执行linux上的命令</span></span><br><span class="line">    ssh.execCommand(<span class="string">"node -v"</span>).then(<span class="function">(<span class="params">res</span>)=&gt;</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res.stdout)</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// 将本地文件上传到服务器文件中。如果没有bak.js则会新建。</span></span><br><span class="line">    ssh.putFile(<span class="string">'./bak.js'</span>,<span class="string">'/home/demo/bak.js'</span>).then(<span class="function">(<span class="params">res</span>)=&gt;</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"上传成功！"</span>)</span><br><span class="line">    &#125;,(err)=&gt;&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err)</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// 多个文件上传方式 需要local和remote属性</span></span><br><span class="line">    ssh.putFiles([</span><br><span class="line">       &#123; <span class="attr">local</span>:<span class="string">'./bak.js'</span>,<span class="attr">remote</span>:<span class="string">'/home/dist/bak.js'</span>&#125;,</span><br><span class="line">       &#123; <span class="attr">local</span>:<span class="string">'./index.js'</span>,<span class="attr">remote</span>:<span class="string">'/home/dist/index.js'</span>&#125;</span><br><span class="line">    ]).then(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"上传完成啦！"</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="comment">// 文件夹上传</span></span><br><span class="line">    ssh.putDirectory(<span class="string">"./test"</span>,<span class="string">'/home/demo/test'</span>,&#123;</span><br><span class="line">      recursive: <span class="literal">true</span>, <span class="comment">// 递归方式</span></span><br><span class="line">      concurrency: <span class="number">10</span>,</span><br><span class="line">    &#125;).then(<span class="function">(<span class="params">status</span>)=&gt;</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"文件夹上传成功！"</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;).catch(<span class="function">(<span class="params">err</span>)=&gt;</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"连接失败！"</span>,err)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="邮件发送"><a href="#邮件发送" class="headerlink" title="邮件发送"></a>邮件发送</h2><p>使用脚本来自动发送一些简单而重复的邮件信息显得很方便。例如一些监控系统，出现异常时自动触发发送邮件的 API，邮件还可以给用户推送一些实用的信息等。我们先安装第三方模块</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install nodemailer --save</span><br></pre></td></tr></table></figure>
+
+<p>发送邮件程序：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> nodemailer =<span class="built_in">require</span>(<span class="string">'nodemailer'</span>)</span><br><span class="line"><span class="keyword">var</span> transporter = nodemailer.createTransport(&#123;</span><br><span class="line">    service:<span class="string">'163'</span>, <span class="comment">// 以163邮箱为例</span></span><br><span class="line">    auth: &#123;</span><br><span class="line">      user:<span class="string">'123456@163.com'</span>,</span><br><span class="line">      pass: <span class="string">'admin'</span> <span class="comment">// 163邮箱授权密码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> mailOptions = &#123;</span><br><span class="line">    <span class="keyword">from</span>:<span class="string">'123456@163.com'</span>, <span class="comment">// 发送邮件的邮箱</span></span><br><span class="line">    to: <span class="string">'123456@qq.com'</span>,   <span class="comment">// 给谁发送</span></span><br><span class="line">    subject: <span class="string">'每日程序员新闻'</span>, <span class="comment">// 右键主题</span></span><br><span class="line">    text:<span class="string">'测试数据'</span>  <span class="comment">// 右键内容</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendMail</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    transporter.sendMail(mailOptions, <span class="function"><span class="keyword">function</span>(<span class="params">error, info</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (error) &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(error);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'邮件发送成功！'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line">sendMail()</span><br></pre></td></tr></table></figure>
+<p>上面就是一个基本简单的邮件发送功能，我们还可以将其封装成一个模块。在需要时调用发送邮件接口即可。如果要发送带 HTML 格式的内容只需要在 mailOptions 对象中加入一个属性 html 即可。</p>
+<p>当然也可以发送附件，只需要加入字段 attachments 即可。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mailOptions = &#123;</span><br><span class="line">    <span class="keyword">from</span>:<span class="string">'123456@163.com'</span>,</span><br><span class="line">    to: <span class="string">'123456@qq.com'</span>,</span><br><span class="line">    subject: <span class="string">'每日新闻'</span>,</span><br><span class="line">    text:<span class="string">'1.this words was sent by mch'</span>,</span><br><span class="line">    attachments:[</span><br><span class="line">      &#123;<span class="attr">filename</span>:<span class="string">'data.xlsx'</span>,<span class="attr">path</span>:<span class="string">'./data.xlsx'</span>&#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有两点要注意：</p>
+<ul>
+<li>attachemts 附件在 path 字段在条件允许下尽量使用英文名，不然可能会有难以意料错误；</li>
+<li>进行邮件发送测试时最好不要随便和简单地填写一些无意义的文字，不然很多邮箱会检测出是垃圾邮件，导致发送失败！</li>
+</ul>
+<h2 id="处理-Excel"><a href="#处理-Excel" class="headerlink" title="处理 Excel"></a>处理 Excel</h2><p>在 JavaScript 领域也有许多好用且流行的处理 Excel 的包，例如在 GitHub 上有着上万 Star 的 <a href="https://sheetjs.com/" target="_blank" rel="noopener">sheetjs</a>，虽然还有许多类似于 node-excel 这样的库，但是很多还是依赖了 SheetJS。下面我来介绍 SheetJS 的用法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i xlsx --save</span><br></pre></td></tr></table></figure>
+<p>使用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> XLSX = <span class="built_in">require</span>(<span class="string">"xlsx"</span>) <span class="comment">// 纯前端也可以使用，使用import语法也可以</span></span><br><span class="line"><span class="keyword">const</span> wb = XLSX.readFile(<span class="string">"./json.xlsx"</span>)</span><br><span class="line"><span class="keyword">const</span> sheets = wb.SheetNames <span class="comment">// sheet数组</span></span><br><span class="line"><span class="keyword">const</span> worksheet = wb.Sheets[sheets[<span class="number">0</span>]] <span class="comment">// 第一张工作表对象</span></span><br><span class="line"><span class="built_in">console</span>.log(worksheet)</span><br></pre></td></tr></table></figure>
+<p>worksheet 返回一个 JSON 对象：<br><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403122034.png" alt=""></p>
+<p>单元格对象含义：</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th align="left">-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>属性</td>
+<td align="left">描述</td>
+</tr>
+<tr>
+<td>w</td>
+<td align="left">内容</td>
+</tr>
+<tr>
+<td>t</td>
+<td align="left">类型: b Boolean, n Number, e error, s String, d Date</td>
+</tr>
+<tr>
+<td>f</td>
+<td align="left">单元格样式</td>
+</tr>
+<tr>
+<td>F</td>
+<td align="left">排序样式</td>
+</tr>
+<tr>
+<td>r</td>
+<td align="left">富媒体编码</td>
+</tr>
+<tr>
+<td>h</td>
+<td align="left">HTML 绘制富媒体</td>
+</tr>
+<tr>
+<td>c</td>
+<td align="left">单元格描述</td>
+</tr>
+<tr>
+<td>z</td>
+<td align="left">样式个数</td>
+</tr>
+<tr>
+<td>l</td>
+<td align="left">单元格链接</td>
+</tr>
+<tr>
+<td>s</td>
+<td align="left">单元格主题</td>
+</tr>
+</tbody></table>
+<p>例如现在要修改 demo.xlsx A1 单元格的内容为“hello,world”：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> XLSX = <span class="built_in">require</span>(<span class="string">"xlsx"</span>)</span><br><span class="line"><span class="keyword">const</span> wb = XLSX.readFile(<span class="string">"./json.xlsx"</span>)</span><br><span class="line"><span class="keyword">const</span> sheets = wb.SheetNames <span class="comment">// sheet数组</span></span><br><span class="line"><span class="keyword">const</span> worksheet = wb.Sheets[sheets[<span class="number">0</span>]] <span class="comment">// 第一张工作表对象</span></span><br><span class="line"><span class="built_in">console</span>.log(worksheet)</span><br><span class="line">worksheet[<span class="string">'A1'</span>][<span class="string">'v'</span>] =<span class="string">"hello,world"</span></span><br><span class="line">XLSX.writeFile(wb,<span class="string">'./demo.xlsx'</span>)</span><br></pre></td></tr></table></figure>
+<p>可以准备好一份 Excel 模版，每次操作就覆盖指定单元格的内容。这种方式很适合写工作周报。</p>
+<p>也可以根据数据生成一份新的 Excel 文件（导出）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> XLSX = <span class="built_in">require</span>(<span class="string">"xlsx"</span>)</span><br><span class="line"><span class="keyword">const</span> arr=[</span><br><span class="line">    [<span class="string">"姓名"</span>,<span class="string">"年龄"</span>,<span class="string">'性别'</span>],</span><br><span class="line">    [<span class="string">"jack"</span>,<span class="string">"12"</span>,<span class="string">'男'</span>]</span><br><span class="line">    [<span class="string">"rose"</span>,<span class="string">"23"</span>,<span class="string">'女'</span>]</span><br><span class="line">]</span><br><span class="line"><span class="keyword">const</span> wb = &#123;</span><br><span class="line">    SheetNames:[<span class="string">'hello'</span>],</span><br><span class="line">    Sheets:&#123;</span><br><span class="line">        <span class="string">'hello'</span>:XLSX.utils.aoa_to_sheet(arr)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">XLSX.writeFile(wb,<span class="string">'test4.xlsx'</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+              <a href="/tags/%E6%A1%88%E4%BE%8B/" rel="tag"># 案例</a>
+              <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/" rel="tag"># 自动化</a>
+              <a href="/tags/%E8%84%9A%E6%9C%AC/" rel="tag"># 脚本</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/02/%E4%BD%BF%E7%94%A8nodeJS%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%BD%91%E9%A1%B5%E7%88%AC%E8%99%AB%E5%8A%9F%E8%83%BD/" rel="prev" title="使用nodeJS+cheerio实现一个简单的网页爬虫功能">
+      <i class="fa fa-chevron-left"></i> 使用nodeJS+cheerio实现一个简单的网页爬虫功能
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-01puppeteer%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="next" title="puppeteer系列教程-Puppeteer 初探">
+      puppeteer系列教程-Puppeteer 初探 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码备份脚本"><span class="nav-number">3.</span> <span class="nav-text">代码备份脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动执行命令"><span class="nav-number">4.</span> <span class="nav-text">自动执行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动修改文件内容"><span class="nav-number">5.</span> <span class="nav-text">自动修改文件内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接收控制台输入"><span class="nav-number">6.</span> <span class="nav-text">接收控制台输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件的压缩与解压"><span class="nav-number">7.</span> <span class="nav-text">文件的压缩与解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器文件上传下载"><span class="nav-number">8.</span> <span class="nav-text">服务器文件上传下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#邮件发送"><span class="nav-number">9.</span> <span class="nav-text">邮件发送</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理-Excel"><span class="nav-number">10.</span> <span class="nav-text">处理 Excel</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一、 JSON是什么？ JSON，全称“JavaScript Object Notation（JavaScript对象表示法）”，起源于JavaScript的对象和数组。JSON，说白了就是JavaScript用来处理数据的一种格式，这种格式非常简单易用。  JSON，大部分都是用来处理JavaScript和web服务器端之间的数据交换，把后台web服务器的数据传递到前台，然后使用JavaScri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Json最强攻略">
+<meta property="og:url" content="http://yoursite.com/2019/03/30/Json%E6%9C%80%E5%BC%BA%E6%94%BB%E7%95%A5/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="一、 JSON是什么？ JSON，全称“JavaScript Object Notation（JavaScript对象表示法）”，起源于JavaScript的对象和数组。JSON，说白了就是JavaScript用来处理数据的一种格式，这种格式非常简单易用。  JSON，大部分都是用来处理JavaScript和web服务器端之间的数据交换，把后台web服务器的数据传递到前台，然后使用JavaScri">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/28qkfqjnwfg8zsx8oq9k72x1/image_1c1ui3ugh1q3g1lr8118f1i121dd519.png">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/qef8saddse2xv8wbu98mefnu/image_1c1ui96k610351uq31ck91e3b1ts51m.png">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/kmgposdk24gulgwfq745g4mq/image_1c1uid74elbi1s21nut1o8e1q6g23.png">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/iy624bkzch2rlev5jrz60z6j/image_1c1uimc401hkdk8a2qq14nn1ude2g.png">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/v26g4p99j9m67jhbmaqh3xu6/image_1c1uitq791nva1egmvbs1jqhnh2t.png">
+<meta property="og:image" content="http://static.zybuluo.com/wp0214/8r04wc4v20xqb8p05yfnmzh4/image_1c1ujb7d81fui9hhuk19sp89p3a.png">
+<meta property="article:published_time" content="2019-03-30T08:25:19.000Z">
+<meta property="article:modified_time" content="2019-03-30T08:25:19.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="知识点">
+<meta property="article:tag" content="json">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://static.zybuluo.com/wp0214/28qkfqjnwfg8zsx8oq9k72x1/image_1c1ui3ugh1q3g1lr8118f1i121dd519.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/03/30/Json%E6%9C%80%E5%BC%BA%E6%94%BB%E7%95%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Json最强攻略 | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/30/Json%E6%9C%80%E5%BC%BA%E6%94%BB%E7%95%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Json最强攻略
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-30 16:25:19" itemprop="dateCreated datePublished" datetime="2019-03-30T16:25:19+08:00">2019-03-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>6.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="一、-JSON是什么？"><a href="#一、-JSON是什么？" class="headerlink" title="一、 JSON是什么？"></a>一、 JSON是什么？</h2><ul>
+<li><p>JSON，全称“JavaScript Object Notation（JavaScript对象表示法）”，起源于JavaScript的对象和数组。JSON，说白了就是JavaScript用来处理数据的一种格式，这种格式非常简单易用。</p>
+</li>
+<li><p>JSON，大部分都是用来处理JavaScript和web服务器端之间的数据交换，把后台web服务器的数据传递到前台，然后使用JavaScript进行处理，例如ajax等。</p>
+</li>
+<li><p>JSON支持的语言非常多，包括JavaScript、C#、PHP、Java等等，这是由于JSON独立于语言的轻量级的数据交换格式，这个特点有点类似于SQL语言。</p>
+</li>
+<li><p>JSON，就是一种数据传输格式而已，无它，非常容易掌握。但是大家不要误以为JSON最大的用处是在前端，其实JSON最大的用处是处理JavaScript和web服务器端之间数据交换。</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="二、JSON对象结构"><a href="#二、JSON对象结构" class="headerlink" title="二、JSON对象结构"></a>二、JSON对象结构</h2><blockquote>
+<p>JSON结构共有2种：<br>（1）对象结构；<br>（2）数组结构；</p>
+</blockquote>
+<h3 id="1、对象结构"><a href="#1、对象结构" class="headerlink" title="1、对象结构"></a>1、对象结构</h3><p>JSON，简单来说就是JavaScript中的对象或数组，所以这两种结构就是对象和数组。通过这两种结构就可以表示各种复杂的结构。</p>
+<blockquote>
+<p>对象结构是使用大括号“{}”括起来的，大括号内是由0个或多个用英文逗号分隔的“关键字:值”对（key:value）构成的。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> jsonObj =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"键名1"</span>:值<span class="number">1</span>,</span><br><span class="line">    <span class="string">"键名2"</span>:值<span class="number">2</span>,</span><br><span class="line">    ……</span><br><span class="line">    <span class="string">"键名n"</span>:值n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：<br>jsonObj指的是json对象。对象结构是以“{”开始，到“}”结束。其中“键名”和“值”之间用英文冒号构成对，两个“键名:值”之间用英文逗号分隔。</p>
+<p>注意，这里的键名是字符串，但是值可以是数值、字符串、对象、数组或逻辑true和false。</p>
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var obj =</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            "</span>name<span class="string">":"</span>helicopter<span class="string">",</span></span><br><span class="line"><span class="string">            "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">            //JSON对象内部也有一个JSON对象</span></span><br><span class="line"><span class="string">            hobby:</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>first<span class="string">":"</span>swimming<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>second<span class="string">":"</span>singing<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>third<span class="string">":"</span>dancing<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        //读取JSON数据</span></span><br><span class="line"><span class="string">        document.write("</span>名字是：<span class="string">"+obj.name+"</span>&lt;br&gt;<span class="string">");</span></span><br><span class="line"><span class="string">        document.write("</span>第一项爱好是：<span class="string">"+obj.hobby.first);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：</p>
+<p><img src="http://static.zybuluo.com/wp0214/28qkfqjnwfg8zsx8oq9k72x1/image_1c1ui3ugh1q3g1lr8118f1i121dd519.png" alt="image_1c1ui3ugh1q3g1lr8118f1i121dd519.png-19.7kB"></p>
+<p>  <strong>1、从JSON中读数据</strong></p>
+<blockquote>
+<p>对于JSON对象结构，读取JSON非常简单，获取JSON中的数据共有2种方式。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">	</span><br><span class="line">jsonObj.key</span><br><span class="line">jsonObj[<span class="string">"key"</span>]</span><br></pre></td></tr></table></figure>
+<p><code>说明：</code><br>jsonObj指的是JSON对象，key指的是键名。读取JSON数据使用的是“.”操作符，这个跟JavaScript对象读取属性值是差不多的。</p>
+<p>实际例子请看上面举例。</p>
+<p><strong>2、向JSON写数据</strong></p>
+<blockquote>
+<p>对于JSON对象结构，要往JSON中增加一条数据，也是使用“.”操作符。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jsonObj.key = 值;</span><br><span class="line">jsonObj[<span class="string">"key"</span>] = 值;</span><br></pre></td></tr></table></figure>
+<p><code>说明：</code><br>jsonObj指的是JSON对象，key指的是键名。</p>
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var obj =</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            "</span>name<span class="string">":"</span>helicopter<span class="string">",</span></span><br><span class="line"><span class="string">            "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">            //JSON对象内部也有一个JSON对象</span></span><br><span class="line"><span class="string">            hobby:</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>first<span class="string">":"</span>swimming<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>second<span class="string">":"</span>singing<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>third<span class="string">":"</span>dancing<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        obj.gender = "</span>男<span class="string">";  //或者obj["</span>gender<span class="string">"]="</span>男<span class="string">";</span></span><br><span class="line"><span class="string">        document.write("</span>性别是：<span class="string">"+obj.gender);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：</p>
+<p><img src="http://static.zybuluo.com/wp0214/qef8saddse2xv8wbu98mefnu/image_1c1ui96k610351uq31ck91e3b1ts51m.png" alt="在浏览器预览效果如下："></p>
+<p> <strong>3、修改JSON中的数据</strong></p>
+<blockquote>
+<p>对于JSON对象结构，要修改JSON中的数据，也是使用“.”操作符。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsonObj.key = 新值;</span><br></pre></td></tr></table></figure>
+<p>举例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var obj =</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            "</span>name<span class="string">":"</span>helicopter<span class="string">",</span></span><br><span class="line"><span class="string">            "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">            "</span>gender<span class="string">":"</span>男<span class="string">",</span></span><br><span class="line"><span class="string">            //JSON对象内部也有一个JSON对象</span></span><br><span class="line"><span class="string">            hobby:</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>first<span class="string">":"</span>swimming<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>second<span class="string">":"</span>singing<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>third<span class="string">":"</span>dancing<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        obj.name = "</span>小杰<span class="string">";  //或者obj["</span>name<span class="string">"]="</span>小杰<span class="string">";</span></span><br><span class="line"><span class="string">        document.write("</span>姓名是：<span class="string">"+obj.name);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：<br><img src="http://static.zybuluo.com/wp0214/kmgposdk24gulgwfq745g4mq/image_1c1uid74elbi1s21nut1o8e1q6g23.png" alt="image_1c1uid74elbi1s21nut1o8e1q6g23.png-15kB"></p>
+<p><strong>4、删除JSON中的数据</strong></p>
+<blockquote>
+<p>对于JSON对象结构，我们使用delete关键字来删除JSON中的数据。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight plain"><figcaption><span>jsonObj.key;```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#96;说明：&#96;</span><br><span class="line">删除JSON中数据非常简单，只需要使用delete关键字即可。</span><br><span class="line"></span><br><span class="line">&#96;举例：&#96;</span><br><span class="line">&#96;&#96;&#96; javascript</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;1999&#x2F;xhtml&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;&#x2F;title&gt;</span><br><span class="line">    &lt;script type&#x3D;&quot;text&#x2F;javascript&quot;&gt;</span><br><span class="line">        var obj &#x3D;</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;name&quot;:&quot;helicopter&quot;,</span><br><span class="line">            &quot;age&quot;:23,</span><br><span class="line">            &quot;gender&quot;:&quot;男&quot;,</span><br><span class="line">            &#x2F;&#x2F;JSON对象内部也有一个JSON对象</span><br><span class="line">            hobby:</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;first&quot;:&quot;swimming&quot;,</span><br><span class="line">                &quot;second&quot;:&quot;singing&quot;,</span><br><span class="line">                &quot;third&quot;:&quot;dancing&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        delete obj.age;</span><br><span class="line">        if(obj.age&#x3D;&#x3D;null)</span><br><span class="line">        &#123;</span><br><span class="line">            console(&quot;JSON中的年龄项已经被删除！&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>5、遍历JSON对象</strong></p>
+<blockquote>
+<p>对于JSON对象结构，可以使用for…in…循环来遍历JSON对象中的数据。</p>
+</blockquote>
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var obj =</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            "</span>name<span class="string">":"</span>helicopter<span class="string">",</span></span><br><span class="line"><span class="string">            "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">            "</span>gender<span class="string">":"</span>男<span class="string">",</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        for(var c in obj)</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            if(c=="</span>name<span class="string">")</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                document.write("</span>姓名是：<span class="string">"+obj[c]);</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：<br><img src="http://static.zybuluo.com/wp0214/iy624bkzch2rlev5jrz60z6j/image_1c1uimc401hkdk8a2qq14nn1ude2g.png" alt="image_1c1uimc401hkdk8a2qq14nn1ude2g.png-15.5kB"></p>
+<h3 id="2、数组结构"><a href="#2、数组结构" class="headerlink" title="2、数组结构"></a>2、数组结构</h3><blockquote>
+<p>JSON数组结构是用中括号“[]”括起来，中括号内部由0个或多个以英文逗号“,”分隔的值列表组成。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr =</span><br><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"键名1"</span>:值<span class="number">1</span>,</span><br><span class="line">        <span class="string">"键名2"</span>:值<span class="number">2</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">"键名3"</span>:值<span class="number">3</span>,</span><br><span class="line">        <span class="string">"键名4"</span>:值<span class="number">4</span></span><br><span class="line">    &#125;,</span><br><span class="line">    ……</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><code>说明：</code><br>arr指的是json数组。数组结构是以“[”开始，到“]”结束，这一点跟JSON对象不同。不过在JSON数组结构中，每一对“{}”相当于一个JSON对象，大家看看像不像？而且语法都非常类似。</p>
+<p>注意，这里的键名是字符串，但是值可以是数值、字符串、对象、数组或逻辑true和false。</p>
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var arr =</span></span><br><span class="line"><span class="string">        [</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>name<span class="string">":"</span>小明<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">                "</span>gender<span class="string">":"</span>男<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>name<span class="string">":"</span>小红<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>age<span class="string">":21,</span></span><br><span class="line"><span class="string">                "</span>gender<span class="string">":"</span>女<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        ]</span></span><br><span class="line"><span class="string">        //读取JSON数据</span></span><br><span class="line"><span class="string">        document.write("</span>第一个学生的名字是：<span class="string">"+arr[0].name+"</span>&lt;br&gt;<span class="string">");</span></span><br><span class="line"><span class="string">        document.write("</span>第二个学生的性别是：<span class="string">"+arr[1].gender+"</span>&lt;br&gt;<span class="string">");</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：</p>
+<p><img src="http://static.zybuluo.com/wp0214/v26g4p99j9m67jhbmaqh3xu6/image_1c1uitq791nva1egmvbs1jqhnh2t.png" alt="image_1c1uitq791nva1egmvbs1jqhnh2t.png-16.5kB"></p>
+<p>JSON数组结构也是非常简单的，只需要通过数组下标来获取哪一个数组元素（一个“{}”的内容就类似一个数组元素），然后再配合使用“.”操作符就可以获取相应数组元素的内部数据。</p>
+<p>对于获取、写入、修改、删除、遍历JSON数组结构中的数据，跟JSON对象结构的数据操作类似，大家对比琢磨一下基本就懂了，在此不再累赘讲解。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var arr =</span></span><br><span class="line"><span class="string">        [</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>name<span class="string">":"</span>小明<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">                "</span>gender<span class="string">":"</span>男<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>name<span class="string">":"</span>小红<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>age<span class="string">":21,</span></span><br><span class="line"><span class="string">                "</span>gender<span class="string">":"</span>女<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        ]</span></span><br><span class="line"><span class="string">        delete arr[0];</span></span><br><span class="line"><span class="string">        arr[1].name="</span>小兰<span class="string">";</span></span><br><span class="line"><span class="string">        document.write("</span>第<span class="number">2</span>个学生的姓名是：<span class="string">"+arr[1].name);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="三、JSON对象和JSON字符串"><a href="#三、JSON对象和JSON字符串" class="headerlink" title="三、JSON对象和JSON字符串"></a>三、JSON对象和JSON字符串</h2><p><strong>普通字符串、JSON字符串和JSON对象</strong><br>初学者经常有一个困惑，就是分不清普通字符串、JSON字符串和JSON对象。其实这3者是非常容易区分的。</p>
+<p>1、普通字符串<br>    字符串嘛，大家都知道是使用单引号或双引号括起来的一串字符。<br><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str = <span class="string">"学习json教程"</span>;</span><br></pre></td></tr></table></figure>
+<p>2、JSON对象<br>JSON对象我们在“JSON对象结构”这一节已经详细为大家讲解了。JSON对象，指的是符合JSON格式要求的JavaScript对象。<br><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> jsonObj = &#123;<span class="string">"name"</span>:<span class="string">"helicopter"</span>,<span class="string">"age"</span>:<span class="number">23</span>,<span class="string">"gender"</span>:<span class="string">"男"</span>&#125;;</span><br></pre></td></tr></table></figure>
+<p>3、JSON字符串<br>JSON字符串，指的是符合“JSON格式”的字符串。<br>JSON字符串要求两点：</p>
+<p>（1）必须是字符串，也就是要用单引号或双引号括起来；</p>
+<p>（2）必须符合“JSON”格式。<br><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> jsonStr = <span class="string">'&#123;"name": "helicopter", "age":23, "gender": "男"&#125;'</span>;</span><br></pre></td></tr></table></figure>
+<p>JSON字符串说白了就是在JSON对象外面加一对单引号。</p>
+<p>大家好好对比一下，就知道普通字符串、JSON对象和JSON字符串的区别了。</p>
+<p>###JSON对象转换为JSON字符串</p>
+<blockquote>
+<p>在JSON中，可以使用JSON.stringify()方法将JSON对象转换为JSON字符串。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">JSON</span>.stringify(<span class="built_in">JSON</span>对象名);</span><br></pre></td></tr></table></figure>
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var obj =</span></span><br><span class="line"><span class="string">        &#123;</span></span><br><span class="line"><span class="string">            "</span>name<span class="string">":"</span>helicopter<span class="string">",</span></span><br><span class="line"><span class="string">            "</span>age<span class="string">":23,</span></span><br><span class="line"><span class="string">            //JSON对象内部也有一个JSON对象</span></span><br><span class="line"><span class="string">            hobby:</span></span><br><span class="line"><span class="string">            &#123;</span></span><br><span class="line"><span class="string">                "</span>first<span class="string">":"</span>swimming<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>second<span class="string">":"</span>singing<span class="string">",</span></span><br><span class="line"><span class="string">                "</span>third<span class="string">":"</span>dancing<span class="string">"</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">        var jsonStr=JSON.stringify(obj);</span></span><br><span class="line"><span class="string">        document.write(jsonStr);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在浏览器预览效果如下：<br><img src="http://static.zybuluo.com/wp0214/8r04wc4v20xqb8p05yfnmzh4/image_1c1ujb7d81fui9hhuk19sp89p3a.png" alt="image_1c1ujb7d81fui9hhuk19sp89p3a.png-34.5kB"></p>
+<h3 id="JSON字符串转换为JSON对象"><a href="#JSON字符串转换为JSON对象" class="headerlink" title="JSON字符串转换为JSON对象"></a>JSON字符串转换为JSON对象</h3><p> 在JavaScript中，将JSON字符串转换为JSON对象非常有用。一般，在Web服务器后台向前台传输数据的过程中，往往都是用字符串形式来传输JSON数据。如果我们在前台想要获取JSON数据，就必须将JSON字符串转换为JSON对象才能操作。</p>
+<blockquote>
+<p>现在大多数浏览器（IE8及以上，Chrome和Firefox差不多全部）自带原生JSON对象，提供JSON.parse()方法来将JSON字符串转换为JSON对象。</p>
+</blockquote>
+<p><code>语法：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">JSON</span>.parse(字符串名);</span><br></pre></td></tr></table></figure>
+
+<p><code>举例：</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html xmlns=<span class="string">"http://www.w3.org/1999/xhtml"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">    &lt;script type="text/</span>javascript<span class="string">"&gt;</span></span><br><span class="line"><span class="string">        var jsonStr = '&#123;"</span>name<span class="string">": "</span>helicopter<span class="string">", "</span>age<span class="string">":23, "</span>gender<span class="string">": "</span>男<span class="string">"&#125;';</span></span><br><span class="line"><span class="string">        var jsonObj=JSON.parse(jsonStr);</span></span><br><span class="line"><span class="string">        document.write("</span>姓名是：<span class="string">"+jsonObj.name);</span></span><br><span class="line"><span class="string">    &lt;/script&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="tag"># 知识点</a>
+              <a href="/tags/json/" rel="tag"># json</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/02/js%E5%AF%BC%E5%87%BAExcel%E8%A1%A8%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/" rel="prev" title="js导出Excel表格的方法">
+      <i class="fa fa-chevron-left"></i> js导出Excel表格的方法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/30/css%E5%A4%9A%E8%A1%8C%E6%96%87%E6%9C%AC%E6%BA%A2%E5%87%BA%E6%98%BE%E7%A4%BA%E7%9C%81%E7%95%A5%E5%8F%B7/" rel="next" title="css多行文本溢出显示省略号...">
+      css多行文本溢出显示省略号... <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、-JSON是什么？"><span class="nav-number">1.</span> <span class="nav-text">一、 JSON是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、JSON对象结构"><span class="nav-number">2.</span> <span class="nav-text">二、JSON对象结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、对象结构"><span class="nav-number">2.1.</span> <span class="nav-text">1、对象结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、数组结构"><span class="nav-number">2.2.</span> <span class="nav-text">2、数组结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、JSON对象和JSON字符串"><span class="nav-number">3.</span> <span class="nav-text">三、JSON对象和JSON字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSON字符串转换为JSON对象"><span class="nav-number">3.1.</span> <span class="nav-text">JSON字符串转换为JSON对象</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

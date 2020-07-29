@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="我们在开发中广泛使用的axios调用接口，为了更好地调用，做一些全局的拦截，我们通常会对其进行一下封装，本小节我们就来看下如何使用TypeScript对它进行封装，使其同时能够有很好的类型支持。 首先我们需要安装axios 1npm install axios">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用typescript封装axios">
+<meta property="og:url" content="http://yoursite.com/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/index.html">
+<meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="我们在开发中广泛使用的axios调用接口，为了更好地调用，做一些全局的拦截，我们通常会对其进行一下封装，本小节我们就来看下如何使用TypeScript对它进行封装，使其同时能够有很好的类型支持。 首先我们需要安装axios 1npm install axios">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-22T04:25:51.000Z">
+<meta property="article:modified_time" content="2020-04-22T04:25:51.000Z">
+<meta property="article:author" content="king">
+<meta property="article:tag" content="axios">
+<meta property="article:tag" content="typescript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>使用typescript封装axios | 记忆的时间差</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">记忆的时间差</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">实践是检验真理的唯一标准</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-作品">
+
+    <a href="/project/" rel="section"><i class="fa fa-fw fa-th"></i>作品</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用typescript封装axios
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-22 12:25:51" itemprop="dateCreated datePublished" datetime="2020-04-22T12:25:51+08:00">2020-04-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/typescript/" itemprop="url" rel="index"><span itemprop="name">typescript</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>7.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我们在开发中广泛使用的axios调用接口，为了更好地调用，做一些全局的拦截，我们通常会对其进行一下封装，本小节我们就来看下如何使用TypeScript对它进行封装，使其同时能够有很好的类型支持。</p>
+<p>首先我们需要安装axios</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install axios</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>我们在src文件夹下创建utils文件夹，然后在utils文件夹创建*axios.ts文件，axios这个插件自带声明文件，所以我们不需要另外安装了。先来看下最基础的封装：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 引入axios和定义在node_modules/axios/index.ts文件里的类型声明</span></span><br><span class="line"><span class="keyword">import</span> axios, &#123; AxiosInstance, AxiosRequestConfig, AxiosPromise,AxiosResponse &#125; <span class="keyword">from</span> <span class="string">'axios'</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个接口请求类，用于创建一个axios请求实例</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HttpRequest</span> </span>&#123; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这个类接收一个字符串参数，是接口请求的基本路径</span></span><br><span class="line">  <span class="keyword">constructor</span>(public baseUrl: string) &#123; </span><br><span class="line">    <span class="keyword">this</span>.baseUrl = baseUrl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public request(options: AxiosRequestConfig): AxiosPromise &#123; <span class="comment">// 我们实际调用接口的时候调用实例的这个方法，他返回一个AxiosPromise</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这里使用axios.create方法创建一个axios实例，他是一个函数，同时这个函数包含多个属性</span></span><br><span class="line">    <span class="keyword">const</span> instance: AxiosInstance = axios.create() </span><br><span class="line"></span><br><span class="line"><span class="comment">// 合并基础路径和每个接口单独传入的配置，比如url、参数等</span></span><br><span class="line">    options = <span class="keyword">this</span>.mergeConfig(options) </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用interceptors方法使拦截器生效</span></span><br><span class="line">    <span class="keyword">this</span>.interceptors(instance, options.url) </span><br><span class="line"></span><br><span class="line">     <span class="comment">// 最后返回AxiosPromise</span></span><br><span class="line">    <span class="keyword">return</span> instance(options)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 定义这个函数用于添加全局请求和响应拦截逻辑</span></span><br><span class="line">  private interceptors(instance: AxiosInstance, url?: string) &#123;</span><br><span class="line">    <span class="comment">// 在这里添加请求和响应拦截</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这个方法用于合并基础路径配置和接口单独配置</span></span><br><span class="line">  private mergeConfig(options: AxiosRequestConfig): AxiosRequestConfig &#123; </span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Object</span>.assign(&#123; <span class="attr">baseURL</span>: <span class="keyword">this</span>.baseUrl &#125;, options);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> HttpRequest;</span><br></pre></td></tr></table></figure>
+
+<p>我们封装了这个类之后，里面的baseUrl一般本地开发环境的基础路径和线上生产环境的基础路径是不一样的，所以可以根据当前是开发环境还是生产环境做判断，应用不同的基础路径。这里我们要写在一个配置文件里，我们在src文件夹下创建一个config文件夹，然后在这个文件夹创建一个index.ts文件，在里面配置生产和开发环境接口基础路径：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/config/index.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    api: &#123;</span><br><span class="line">        devApiBaseUrl: <span class="string">'/test/api/xxx'</span>,</span><br><span class="line">        proApiBaseUrl: <span class="string">'/api/xxx'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们在<code>axios.ts</code>文件里直接引入接口配置，然后判断当前环境：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ... 其他代码省略</span></span><br><span class="line"><span class="keyword">import</span> config <span class="keyword">from</span> <span class="string">'@/config'</span>; </span><br><span class="line"><span class="keyword">const</span> &#123; <span class="attr">api</span>: &#123; devApiBaseUrl, proApiBaseUrl &#125; &#125; = config;</span><br><span class="line"><span class="keyword">const</span> apiBaseUrl = process.env.NODE_ENV === <span class="string">'production'</span> ? proApiBaseUrl : devApiBaseUrl;</span><br><span class="line"><span class="comment">// ... 其他代码省略</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来我们就可以将这个apiBaseUrl作为默认值传入HttpRequest的参数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HttpRequest</span> </span>&#123; <span class="comment">// 定义一个接口请求类，用于创建一个axios请求实例</span></span><br><span class="line">  <span class="keyword">constructor</span>(public baseUrl: string = apiBaseUrl) &#123; <span class="comment">// 这个类接收一个字符串参数，是接口请求的基本路径</span></span><br><span class="line">    <span class="keyword">this</span>.baseUrl = baseUrl;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来我们来完善拦截器，在类中interceptors方法内添加请求拦截器和响应拦截器，实现对所有接口请求的统一处理：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">private interceptors(instance: AxiosInstance, url?: string) &#123; <span class="comment">// 定义这个函数用于添加全局请求和响应拦截逻辑</span></span><br><span class="line">    <span class="comment">// 在这里添加请求和响应拦截</span></span><br><span class="line">    instance.interceptors.request.use(<span class="function">(<span class="params">config: AxiosRequestConfig</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 接口请求的所有配置，都在这个config对象中，他的类型是AxiosRequestConfig，你可以看到他有哪些字段</span></span><br><span class="line">      <span class="comment">// 如果你要修改接口请求配置，需要修改 axios.defaults 上的字段值</span></span><br><span class="line">      <span class="keyword">return</span> config</span><br><span class="line">    &#125;,</span><br><span class="line">    (error) =&gt; &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(error)</span><br><span class="line">    &#125;)</span><br><span class="line">    instance.interceptors.response.use(<span class="function">(<span class="params">res: AxiosResponse</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; data &#125; = res <span class="comment">// res的类型是AxiosResponse&lt;any&gt;，包含六个字段，其中data是服务端返回的数据</span></span><br><span class="line">      <span class="keyword">const</span> &#123; code, msg &#125; = data <span class="comment">// 通常服务端会将响应状态码、提示信息、数据等放到返回的数据中</span></span><br><span class="line">      <span class="keyword">if</span> (code !== <span class="number">0</span>) &#123; <span class="comment">// 这里我们在服务端将正确返回的状态码标为0</span></span><br><span class="line">        <span class="built_in">console</span>.error(msg) <span class="comment">// 如果不是0，则打印错误信息，我们后面讲到UI组件的时候，这里可以使用消息窗提示</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> res <span class="comment">// 返回数据</span></span><br><span class="line">    &#125;,</span><br><span class="line">    (error) =&gt; &#123; <span class="comment">// 这里是遇到报错的回调</span></span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(error)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>请求时的拦截通过给<code>instance.interceptors.request.use</code>传入回调函数来处理，这个回调函数有一个参数，就是这次请求的配置对象。如果你需要修改请求的配置，需要修改<code>axios.defaults</code>上的字段，来修改全局配置。比如你要在<code>header</code>中添加字段<code>&quot;Content-Type&quot;</code>，需要这样添加：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">axios.defaults.headers.post[<span class="string">'Content-Type'</span>] = <span class="string">'application/x-www-form-urlencoded'</span></span><br></pre></td></tr></table></figure>
+
+
+<p>到这里我们这个axios请求类就封装好了，上面我们讲了一般服务端会将状态码、提示信息和数据封装在一起，然后作为数据返回，所以我们调用所有api请求返回的数据格式都是一样的，那么我们就可以定义一个接口来指定返回的数据的结构，我们在src/utils/axios.ts文件中定义class HttpRequest前加一个接口定义，并且导出：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> interface ResponseData &#123;</span><br><span class="line">  code: number</span><br><span class="line">  data?: any</span><br><span class="line">  msg: string</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以根据你服务端实际返回的情况，来定义这个接口ResponseData，我这里data字段设为可选的。</p>
+<p>接下来我们来简单使用一下。在src文件夹下创建一个api文件夹，然后再这个文件夹创建一个index.ts文件，在这里创建请求实例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/api/index.ts</span></span><br><span class="line"><span class="keyword">import</span> HttpRequest <span class="keyword">from</span> <span class="string">'@/utils/axios'</span></span><br><span class="line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'@/utils/axios'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> HttpRequest()</span><br></pre></td></tr></table></figure>
+
+<p>我们把这个请求类引进来，然后默认导出一个这个类的实例。后面我们要进行接口请求的时候，要对接口进行分类，比如和用户相关的，和数据相关的等等。这里我们先添加一个登陆接口的请求，所以在api文件夹下创建一个user.ts文件，在这里创建一个登陆接口请求方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/api/user.ts</span></span><br><span class="line"><span class="keyword">import</span> axios, &#123; ResponseData &#125; <span class="keyword">from</span> <span class="string">'./index'</span></span><br><span class="line"><span class="keyword">import</span> &#123; AxiosPromise &#125; <span class="keyword">from</span> <span class="string">'axios'</span></span><br><span class="line"></span><br><span class="line">interface LoginReqArguInterface &#123;</span><br><span class="line">  user_name: string;</span><br><span class="line">  password: number|string</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> loginReq = (data: LoginReqArguInterface): AxiosPromise&lt;ResponseData&gt; =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> axios.request(&#123;</span><br><span class="line">    url: <span class="string">'/api/user/login'</span>,</span><br><span class="line">    data,</span><br><span class="line">    method: <span class="string">'POST'</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们封装登录请求方法loginReq，指定他需要一个参数，参数类型要符合我们定义的<code>LoginReqArguInterface</code>接口指定的结构，这个方法返回一个类型为<code>AxiosPromise</code>的<code>Promise</code>，<code>AxiosPromise</code>这个接口是axios声明文件内置的类型，他可以传入一个泛型变量参数，用于指定api请求返回的结果中data字段的类型。</p>
+<p>为什么我们要这样封装api的请求，而不是直接在需要调用接口的地方使用axios.get或者axios.request这些方法直接请求呢？这是因为我们一个api请求可能多个地方需要用到，这里的登录接口复用性很低，但是一些其他接口比如获取数据的接口，可能多个地方会用到，所以我们封装一下，可以统一管理，以后接口升级，就只需要改一个地方就可以了。</p>
+<p>接下来我们调用一个这个请求试一下，我们在src/views/Home.vue文件里先调用一下，只是为了先感受一下调用请求的方式，登录接口我们会在下个小节放到登录页实现。</p>
+<p>打开Home.vue文件后，我们首先要引入这个请求方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; loginReq &#125; <span class="keyword">from</span> <span class="string">'@/api/user'</span></span><br></pre></td></tr></table></figure>
+
+<p>然后下面我们在Home这个组件类里添加mounted声明周期钩子函数，在这里调用这个api请求方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Home</span> <span class="keyword">extends</span> <span class="title">Vue</span> </span>&#123;</span><br><span class="line">  public mounted() &#123;</span><br><span class="line">    loginReq(&#123; <span class="attr">user_name</span>: <span class="string">'Lison'</span>, <span class="attr">password</span>: <span class="number">123</span> &#125;).then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(res.data.code)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><p><strong>utils/axios.ts</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// axios.ts</span></span><br><span class="line"><span class="keyword">import</span> axios, &#123; AxiosInstance, AxiosRequestConfig, AxiosPromise, AxiosResponse &#125; <span class="keyword">from</span> <span class="string">'axios'</span></span><br><span class="line"><span class="keyword">import</span> config <span class="keyword">from</span> <span class="string">'@/config'</span></span><br><span class="line"><span class="keyword">const</span> &#123; <span class="attr">api</span>: &#123; devApiBaseUrl, proApiBaseUrl &#125; &#125; = config</span><br><span class="line"><span class="keyword">const</span> apiBaseUrl = process.env.NODE_ENV === <span class="string">'production'</span> ? proApiBaseUrl : devApiBaseUrl</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> interface ResponseData &#123;</span><br><span class="line">  code: number</span><br><span class="line">  data?: any</span><br><span class="line">  msg: string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HttpRequest</span> </span>&#123; <span class="comment">// 定义一个接口请求类，用于创建一个axios请求实例</span></span><br><span class="line">  <span class="keyword">constructor</span>(public baseUrl: string = apiBaseUrl) &#123; <span class="comment">// 这个类接收一个字符串参数，是接口请求的基本路径</span></span><br><span class="line">    <span class="keyword">this</span>.baseUrl = baseUrl</span><br><span class="line">  &#125;</span><br><span class="line">  public request(options: AxiosRequestConfig): AxiosPromise &#123; <span class="comment">// 我们实际调用接口的时候调用实例的这个方法，他返回一个AxiosPromise</span></span><br><span class="line">    <span class="keyword">const</span> instance: AxiosInstance = axios.create() <span class="comment">// 这里使用axios.create方法创建一个axios实例，他是一个函数，同时这个函数包含多个属性，就像我们前面讲的计数器的例子</span></span><br><span class="line">    options = <span class="keyword">this</span>.mergeConfig(options) <span class="comment">// 合并基础路径和每个接口单独传入的配置，比如url、参数等</span></span><br><span class="line">    <span class="keyword">this</span>.interceptors(instance, options.url) <span class="comment">// 调用interceptors方法使拦截器生效</span></span><br><span class="line">    <span class="keyword">return</span> instance(options) <span class="comment">// 最后返回AxiosPromise</span></span><br><span class="line">  &#125;</span><br><span class="line">  private interceptors(instance: AxiosInstance, url?: string) &#123; <span class="comment">// 定义这个函数用于添加全局请求和响应拦截逻辑</span></span><br><span class="line">    <span class="comment">// 在这里添加请求和响应拦截</span></span><br><span class="line">    instance.interceptors.request.use(<span class="function">(<span class="params">config: AxiosRequestConfig</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 接口请求的所有配置，都在这个config对象中，他的类型是AxiosRequestConfig，你可以看到他有哪些字段</span></span><br><span class="line">      <span class="comment">// 如果你要修改接口请求配置，需要修改 axios.defaults 上的字段值</span></span><br><span class="line">      <span class="keyword">return</span> config</span><br><span class="line">    &#125;,</span><br><span class="line">    (error) =&gt; &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(error)</span><br><span class="line">    &#125;)</span><br><span class="line">    instance.interceptors.response.use(<span class="function">(<span class="params">res: AxiosResponse</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> &#123; data &#125; = res <span class="comment">// res的类型是AxiosResponse&lt;any&gt;，包含六个字段，其中data是服务端返回的数据</span></span><br><span class="line">      <span class="keyword">const</span> &#123; code, msg &#125; = data <span class="comment">// 通常服务端会将响应状态码、提示信息、数据等放到返回的数据中</span></span><br><span class="line">      <span class="keyword">if</span> (code !== <span class="number">0</span>) &#123; <span class="comment">// 这里我们在服务端将正确返回的状态码标为0</span></span><br><span class="line">        <span class="built_in">console</span>.error(msg) <span class="comment">// 如果不是0，则打印错误信息，我们后面讲到UI组件的时候，这里可以使用消息窗提示</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> res <span class="comment">// 返回数据</span></span><br><span class="line">    &#125;,</span><br><span class="line">    (error) =&gt; &#123; <span class="comment">// 这里是遇到报错的回调</span></span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(error)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  private mergeConfig(options: AxiosRequestConfig): AxiosRequestConfig &#123; <span class="comment">// 这个方法用于合并基础路径配置和接口单独配置</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Object</span>.assign(&#123; <span class="attr">baseURL</span>: <span class="keyword">this</span>.baseUrl &#125;, options)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> HttpRequest</span><br></pre></td></tr></table></figure>
+
+<p><strong>api/index.ts</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// api/index.ts</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> HttpRequest <span class="keyword">from</span> <span class="string">'@/utils/axios'</span></span><br><span class="line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'@/utils/axios'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> HttpRequest()</span><br></pre></td></tr></table></figure>
+
+<p><strong>api/user.ts</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios, &#123; ResponseData &#125; <span class="keyword">from</span> <span class="string">'./index'</span></span><br><span class="line"><span class="keyword">import</span> &#123; AxiosPromise &#125; <span class="keyword">from</span> <span class="string">'axios'</span></span><br><span class="line"></span><br><span class="line">interface LoginReqArguInterface &#123;</span><br><span class="line">    user_name: string</span><br><span class="line">    password: number|string</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> loginReq = (data: LoginReqArguInterface): AxiosPromise&lt;ResponseData&gt; =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> axios.request(&#123;</span><br><span class="line">        url: <span class="string">'/api/user/login'</span>,</span><br><span class="line">        data,</span><br><span class="line">        method: <span class="string">'POST'</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> getInfoReq = (): AxiosPromise&lt;ResponseData&gt; =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> axios.request(&#123;</span><br><span class="line">        url: <span class="string">'/api/user/get_info'</span>,</span><br><span class="line">        method: <span class="string">'GET'</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/axios/" rel="tag"># axios</a>
+              <a href="/tags/typescript/" rel="tag"># typescript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/21/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E9%80%8FTypeScript/" rel="prev" title="零基础学透TypeScript">
+      <i class="fa fa-chevron-left"></i> 零基础学透TypeScript
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/24/%E5%89%8D%E7%AB%AF%E5%B8%B8%E8%80%83%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" rel="next" title="前端常考知识点笔记">
+      前端常考知识点笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#完整代码"><span class="nav-number">1.</span> <span class="nav-text">完整代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="king"
+      src="/images/tx.jpg">
+  <p class="site-author-name" itemprop="name">king</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RocWangPeng" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RocWangPeng" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:383557980@qq.com" title="E-Mail → mailto:383557980@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">king</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">443k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:42</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
