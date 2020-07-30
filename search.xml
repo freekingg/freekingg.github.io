@@ -7037,7 +7037,7 @@
 <h2 id="安装-Docker"><a href="#安装-Docker" class="headerlink" title="安装 Docker"></a>安装 Docker</h2><p>安装 Docker 在你的电脑上就像安装 VS Code 一样简单</p>
 <p><strong>Linux</strong>：get.docker.com/</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;get.docker.com -o get-docker.sh</span><br><span class="line">sh get-docker.sh</span><br></pre></td></tr></table></figure>
-
+<a id="more"></a>
 <h2 id="运行-Docker"><a href="#运行-Docker" class="headerlink" title="运行 Docker"></a>运行 Docker</h2><p>接下来我们搭建一个能够托管静态文件的 Nginx 服务器</p>
 <p>容器运行程序，而容器哪来的呢？容器是镜像创建出来的。那镜像又是哪来的呢？</p>
 <p>镜像是通过一个 Dockerfile 打包来的，它非常像我们前端的<code>package.json</code>文件</p>
@@ -7122,6 +7122,8 @@
     <content><![CDATA[<h2 id="1、docker部分"><a href="#1、docker部分" class="headerlink" title="1、docker部分"></a>1、docker部分</h2><h3 id="1-1、docker简介"><a href="#1-1、docker简介" class="headerlink" title="1.1、docker简介"></a>1.1、docker简介</h3><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
 <h3 id="1-2、docker架构"><a href="#1-2、docker架构" class="headerlink" title="1.2、docker架构"></a>1.2、docker架构</h3><p>简单的说，docker就是一个轻量级的linux系统。Docker 容器通过 Docker 镜像来创建。容器与镜像的关系类似于面向对象编程中的对象与类。docker架构如图所示：<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185837.png" alt=""></p>
 <h3 id="1-3、docker虚拟机管理命令"><a href="#1-3、docker虚拟机管理命令" class="headerlink" title="1.3、docker虚拟机管理命令"></a>1.3、docker虚拟机管理命令</h3><p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185955.png" alt=""></p>
+<a id="more"></a>
+
 <h3 id="1-4、安装docker"><a href="#1-4、安装docker" class="headerlink" title="1.4、安装docker"></a>1.4、安装docker</h3><p>更新软件库</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum update -y</span><br></pre></td></tr></table></figure>
 
@@ -7149,7 +7151,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull jenkins:latest</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>启动jenkins</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -d -u 0 --privileged  --name jenkins_node1 -p 5000:8080 -v &#x2F;root&#x2F;jenkins:&#x2F;var&#x2F;jenkins_home jenkins:latest</span><br><span class="line"></span><br><span class="line">&lt;!-- docker run -d -p 80:8080 -p 50000:50000 -v jenkins:&#x2F;var&#x2F;jenkins_home -v &#x2F;etc&#x2F;localtime:&#x2F;etc&#x2F;localtime --name jenkins jenkins:latest --&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -d -u 0 --privileged  --name myjenkins -p 5000:8080 -v &#x2F;root&#x2F;myjenkins:&#x2F;var&#x2F;jenkins_home jenkins</span><br><span class="line"></span><br><span class="line">&lt;!-- docker run -d -p 80:8080 -p 50000:50000 -v jenkins:&#x2F;var&#x2F;jenkins_home -v &#x2F;etc&#x2F;localtime:&#x2F;etc&#x2F;localtime --name jenkins jenkins:latest --&gt;</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
@@ -7205,6 +7207,99 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker logs nodeapp</span><br></pre></td></tr></table></figure>
 
 
+]]></content>
+  </entry>
+  <entry>
+    <title>linux安装java-jdk与jenkins</title>
+    <url>/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/</url>
+    <content><![CDATA[<h2 id="安装jdk8"><a href="#安装jdk8" class="headerlink" title="安装jdk8"></a>安装jdk8</h2><p>先查看系统是否已有自带的jdk</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa |grep java</span><br><span class="line"></span><br><span class="line">rpm -qa |grep jdk</span><br><span class="line"></span><br><span class="line">rpm -qa |grep gcj</span><br></pre></td></tr></table></figure>
+
+<p>如果没有输出信息，则说明系统没有安装。如果有输出信息，则执行下面的命令卸载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa | grep java | xargs rpm -e --nodeps</span><br></pre></td></tr></table></figure>
+
+<p>列出所有可安装的rpm软件包</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum list java-1.8*</span><br></pre></td></tr></table></figure>
+<p>此时会输出一大堆软件包列表。</p>
+<p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install java-1.8.0-openjdk* -y</span><br></pre></td></tr></table></figure>
+
+<p>验证是否安装成功</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
+<p>到此安装成功。可见yum已经自动为我们配置好了java环境变量，很方便吧。</p>
+<h2 id="安装jenkins"><a href="#安装jenkins" class="headerlink" title="安装jenkins"></a>安装jenkins</h2><p><a href="https://pkg.jenkins.io/redhat-stable/" target="_blank" rel="noopener">jenkins</a><br><a href="https://www.jianshu.com/p/180fb11a5b96" target="_blank" rel="noopener">参考2</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo wget -O &#x2F;etc&#x2F;yum.repos.d&#x2F;jenkins.repo http:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat&#x2F;jenkins.repo</span><br><span class="line">sudo rpm --import http:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat&#x2F;jenkins.io.key</span><br><span class="line">sudo yum install jenkins</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>从零搭建docker+jenkins+vue自动化部署环境</title>
+    <url>/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-vue%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<h2 id="1、docker部分"><a href="#1、docker部分" class="headerlink" title="1、docker部分"></a>1、docker部分</h2><h3 id="1-1、docker简介"><a href="#1-1、docker简介" class="headerlink" title="1.1、docker简介"></a>1.1、docker简介</h3><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
+<h3 id="1-2、docker架构"><a href="#1-2、docker架构" class="headerlink" title="1.2、docker架构"></a>1.2、docker架构</h3><p>简单的说，docker就是一个轻量级的linux系统。Docker 容器通过 Docker 镜像来创建。容器与镜像的关系类似于面向对象编程中的对象与类。docker架构如图所示：<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185837.png" alt=""></p>
+<h3 id="1-3、docker虚拟机管理命令"><a href="#1-3、docker虚拟机管理命令" class="headerlink" title="1.3、docker虚拟机管理命令"></a>1.3、docker虚拟机管理命令</h3><p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185955.png" alt=""></p>
+<h3 id="1-4、安装docker"><a href="#1-4、安装docker" class="headerlink" title="1.4、安装docker"></a>1.4、安装docker</h3><p>更新软件库</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum update -y</span><br></pre></td></tr></table></figure>
+
+<p>安装docker</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install docker -y</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5、启动docker服务"><a href="#1-5、启动docker服务" class="headerlink" title="1.5、启动docker服务"></a>1.5、启动docker服务</h3><p>启动docker服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">service docker start</span><br></pre></td></tr></table></figure>
+<p>其它相关命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">service docker restart  &#x2F;&#x2F; 重启docker服务</span><br><span class="line">service docker stop     &#x2F;&#x2F; 停止docker服务</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="2、jenkins部分"><a href="#2、jenkins部分" class="headerlink" title="2、jenkins部分"></a>2、jenkins部分</h2><ul>
+<li><p>查询jenkins镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search jenkins</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拉取最新的jenkins镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull jenkins:latest</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li>启动jenkins<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -d -u 0 --privileged  --name jenkins_node1 -p 5000:8080 -v &#x2F;root&#x2F;jenkins:&#x2F;var&#x2F;jenkins_home jenkins:latest</span><br><span class="line"></span><br><span class="line">&lt;!-- docker run -d -p 80:8080 -p 50000:50000 -v jenkins:&#x2F;var&#x2F;jenkins_home -v &#x2F;etc&#x2F;localtime:&#x2F;etc&#x2F;localtime --name jenkins jenkins:latest --&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>这里逐条解释下各参数的意义。</p>
+<ul>
+<li><code>-u 0</code>: 指的是传入root账号ID，覆盖容器中内置的账号</li>
+<li><code>v /root/jenkins:/var/jenkins_home</code> : 指的是 将docker容器内的目录/var/jenkins_home映射到宿主机 /root/jenkins目录上</li>
+<li><code>--name jenkins</code> : 将容器命名为 jenkins</li>
+<li><code>-p 5000:8080</code> : 端口映射，将容器的8080端口映射到宿主机的5000端口</li>
+<li><code>--privileged</code> : 赋予最高权限</li>
+</ul>
+<p>运行一个镜像为jenkins:latest的容器，命名为jenkins，使用root账号覆盖容器中的账号，赋予最高权限，将容器的<br>/var/jenkins_home映射到宿主机的<br>/root/jenkins目录下，映射容器中8080端口到宿主机5000端口</p>
+<p>启动后输入命令docker ps -a查看所有容器，可以看到jenkins已成功启动。</p>
+<p>不出意外你现在可以打开你的服务器地址 <a href="http://xxxxxxx:端口号">http://xxxxxxx:端口号</a> 就能看到这个界面：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729214950.png" alt=""></p>
+<p>打开你所创建的jenkins目录进入到jenkins-home<br>/home/jenkins/jenkins-home</p>
+<p>进入 secrets 目录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat initialAdminPassword</span><br></pre></td></tr></table></figure>
+
+<p>然后把里面的文本复制出来填到管理员密码中</p>
+<p>接下来需要安装两个插件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NodeJS Plugin</span><br><span class="line">Publish Over SSH</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215127.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215146.png" alt=""></p>
+<p>然后我们滑到最下方</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215328.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215413.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215434.png" alt=""></p>
+<h2 id="开始创建项目部署"><a href="#开始创建项目部署" class="headerlink" title="开始创建项目部署"></a>开始创建项目部署</h2><p><a href="https://cli.vuejs.org/guide/deployment.html#bitbucket-cloud" target="_blank" rel="noopener" title="官方参考">官方参考</a></p>
+<h3 id="1、首先在项目根目录创建一个nginx-conf文件"><a href="#1、首先在项目根目录创建一个nginx-conf文件" class="headerlink" title="1、首先在项目根目录创建一个nginx.conf文件"></a>1、首先在项目根目录创建一个nginx.conf文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">user  nginx;</span><br><span class="line">worker_processes  1;</span><br><span class="line">error_log  &#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log warn;</span><br><span class="line">pid        &#x2F;var&#x2F;run&#x2F;nginx.pid;</span><br><span class="line">events &#123;</span><br><span class="line">  worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">http &#123;</span><br><span class="line">  include       &#x2F;etc&#x2F;nginx&#x2F;mime.types;</span><br><span class="line">  default_type  application&#x2F;octet-stream;</span><br><span class="line">  log_format  main  &#39;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#39;</span><br><span class="line">  &#39;$status $body_bytes_sent &quot;$http_referer&quot; &#39;</span><br><span class="line">  &#39;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#39;;</span><br><span class="line">  access_log  &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log  main;</span><br><span class="line">  sendfile        on;</span><br><span class="line">  keepalive_timeout  65;</span><br><span class="line">  server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  www.lovelp.xin;  # 域名</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">      root   &#x2F;app;  # 指向目录</span><br><span class="line">      index  index.html;</span><br><span class="line">      try_files $uri $uri&#x2F; &#x2F;index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">      root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、在项目根目录创建一个Dockerfile文件"><a href="#2、在项目根目录创建一个Dockerfile文件" class="headerlink" title="2、在项目根目录创建一个Dockerfile文件"></a>2、在项目根目录创建一个Dockerfile文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node</span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">COPY package*.json .&#x2F;</span><br><span class="line">RUN npm install -g cnpm --registry&#x3D;https:&#x2F;&#x2F;registry.npm.taobao.org</span><br><span class="line">RUN cnpm install</span><br><span class="line">COPY .&#x2F; &#x2F;app</span><br><span class="line">RUN npm run build:prod</span><br><span class="line"></span><br><span class="line">FROM nginx</span><br><span class="line">RUN mkdir &#x2F;app</span><br><span class="line">COPY --from&#x3D;0 &#x2F;app&#x2F;dist &#x2F;app</span><br><span class="line">COPY nginx.conf &#x2F;etc&#x2F;nginx&#x2F;nginx.conf</span><br></pre></td></tr></table></figure>
+<h3 id="3、在项目根目录创建一个setup-sh来帮助我们执行脚本"><a href="#3、在项目根目录创建一个setup-sh来帮助我们执行脚本" class="headerlink" title="3、在项目根目录创建一个setup.sh来帮助我们执行脚本"></a>3、在项目根目录创建一个setup.sh来帮助我们执行脚本</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env bash</span><br><span class="line">image_version&#x3D;&#96;date +%Y%m%d%H%M&#96;;</span><br><span class="line"># 关闭shop_admin容器</span><br><span class="line">docker stop shop_admin || true;</span><br><span class="line"># 删除shop_admin容器</span><br><span class="line">docker rm shop_admin || true;</span><br><span class="line"># 删除shop&#x2F;admin镜像</span><br><span class="line">docker rmi --force $(docker images | grep shop&#x2F;admin | awk &#39;&#123;print $3&#125;&#39;)</span><br><span class="line"># 构建shop&#x2F;admin:$image_version镜像</span><br><span class="line">docker build . -t shop&#x2F;admin:$image_version;</span><br><span class="line"># 查看镜像列表</span><br><span class="line">docker images;</span><br><span class="line"># 基于shop&#x2F;admin 镜像 构建一个容器 shop_admin</span><br><span class="line">docker run -p 9527:80 -d --name shop_admin shop&#x2F;admin:$image_version;</span><br><span class="line"># 查看日志</span><br><span class="line">docker logs shop_admin;</span><br><span class="line">#删除build过程中产生的镜像    #docker image prune -a -f</span><br><span class="line">docker rmi $(docker images -f &quot;dangling&#x3D;true&quot; -q)</span><br><span class="line"># 对空间进行自动清理</span><br><span class="line">docker system prune -a -f</span><br></pre></td></tr></table></figure>
+
+<p>###　4、最后我们需要在jenkins上创建项目<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729215944.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729220004.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729220029.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729220042.png" alt=""></p>
+<p>最后我们就可以愉快的 Build Now 了</p>
 ]]></content>
   </entry>
 </search>
