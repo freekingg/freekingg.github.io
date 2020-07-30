@@ -24,7 +24,7 @@ Docker 中有两个重要概念。
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 ```
-
+<!-- more -->
 ## 运行 Docker
 
 接下来我们搭建一个能够托管静态文件的 Nginx 服务器

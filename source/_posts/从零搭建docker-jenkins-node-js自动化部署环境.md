@@ -16,6 +16,8 @@ Docker 是一个开源的应用容器引擎，让开发者可以打包他们的�
 ### 1.3、docker虚拟机管理命令
 ![](https://raw.githubusercontent.com/freekingg/king-static/master/20200729185955.png)
 
+<!-- more -->
+
 ### 1.4、安装docker
 
 更新软件库
@@ -91,7 +93,7 @@ docker pull jenkins:latest
 
 - 启动jenkins
 ```
-sudo docker run -d -u 0 --privileged  --name jenkins_node1 -p 5000:8080 -v /root/jenkins:/var/jenkins_home jenkins:latest
+sudo docker run -d -u 0 --privileged  --name myjenkins -p 5000:8080 -v /root/myjenkins:/var/jenkins_home jenkins
 
 <!-- docker run -d -p 80:8080 -p 50000:50000 -v jenkins:/var/jenkins_home -v /etc/localtime:/etc/localtime --name jenkins jenkins:latest -->
 
