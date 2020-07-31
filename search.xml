@@ -7217,7 +7217,7 @@
 
 <p>如果没有输出信息，则说明系统没有安装。如果有输出信息，则执行下面的命令卸载</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa | grep java | xargs rpm -e --nodeps</span><br></pre></td></tr></table></figure>
-
+<p><a href="http://mirror.esuni.jp/jenkins/updates/update-center.json" target="_blank" rel="noopener">http://mirror.esuni.jp/jenkins/updates/update-center.json</a></p>
 <a id="more"></a>
 
 <p>列出所有可安装的rpm软件包</p>
@@ -7380,5 +7380,314 @@
 <p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729220042.png" alt=""></p>
 <p>最后我们就可以愉快的 Build Now 了</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>通过Docker快速搭建各种环境（全攻略）</title>
+    <url>/2020/07/31/%E9%80%9A%E8%BF%87Docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%90%84%E7%A7%8D%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<h2 id="Docker-基础教程"><a href="#Docker-基础教程" class="headerlink" title="Docker 基础教程"></a>Docker 基础教程</h2><h3 id="配置国内镜像加速器"><a href="#配置国内镜像加速器" class="headerlink" title="配置国内镜像加速器"></a>配置国内镜像加速器</h3><p>Docker 配置国内镜像加速器，加速下载速度</p>
+<p>Docker 默认是从官方镜像地址 Docker Hub 下下载镜像，由于服务器在国外的缘故，导致经常下载速度非常慢。为了提升镜像的下载速度，我们可以手动配置国内镜像加速器，让下载速度飚起来。</p>
+<p>国内的镜像加速器选项较多，如：阿里云，DaoCloud 等。</p>
+<p>本文主要说说如何配置阿里云的镜像加速器。</p>
+<h4 id="一、获取加速信息"><a href="#一、获取加速信息" class="headerlink" title="一、获取加速信息"></a>一、获取加速信息</h4><ul>
+<li><p>1、首先你需要注册一个阿里云账号，没有的话，通过下面的连接跳转注册：<br><a href="https://dev.aliyun.com/" target="_blank" rel="noopener">https://dev.aliyun.com/</a></p>
+</li>
+<li><p>2、跳转镜像加速页 <a href="https://cr.console.aliyun.com/，获取加速配置信息：" target="_blank" rel="noopener">https://cr.console.aliyun.com/，获取加速配置信息：</a></p>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123229.png" alt=""></p>
+<h4 id="二、配置-Docker"><a href="#二、配置-Docker" class="headerlink" title="二、配置 Docker"></a>二、配置 Docker</h4><p><strong>确定 Docker Client 版本</strong></p>
+<p>在配置之前，首先需要确定 Docker Client 的版本，推荐是 1.10.0+:</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123341.png" alt=""></p>
+<p><strong>配置镜像加速器</strong><br>通过修改 daemon 配置文件 <code>/etc/docker/daemon.json</code> 来使用加速器：</p>
+<p>执行下面命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;docker</span><br><span class="line">sudo tee &#x2F;etc&#x2F;docker&#x2F;daemon.json &lt;&lt;-&#39;EOF&#39;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;bjtzu1jb.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<h4 id="三、验证速度"><a href="#三、验证速度" class="headerlink" title="三、验证速度"></a>三、验证速度</h4><p>以下载 mongodb 为例，看下速度：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123517.png" alt=""></p>
+<p>配置了加速器过后，速度终于飚起来了。</p>
+<h3 id="Docker-下载镜像"><a href="#Docker-下载镜像" class="headerlink" title="Docker 下载镜像"></a>Docker 下载镜像</h3><h4 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h4><p>大家都知道，镜像是 Docker 三大核心概念中最重要的。如果我们想要在本地运行容器，就必须保证本地存在对应的镜像。所以，第一步，我们需要下载镜像。当我们尝试下载镜像时，Docker 会尝试先从默认的镜像仓库（默认使用 Docker Hub 公共仓库）去下载，当然了，用户也可以自定义配置想要下载的镜像仓库。</p>
+<h4 id="二、下载镜像"><a href="#二、下载镜像" class="headerlink" title="二、下载镜像"></a>二、下载镜像</h4><p>镜像是运行容器的前提，我们可以使用 <code>docker pull [IMAGE_NAME]:[TAG]</code>命令来下载镜像，其中 <code>IMAGE_NAME</code> 表示的是镜像的名称，而 <code>TAG</code> 是镜像的标签，也就是说我们需要通过 “镜像 + 标签” 的方式来下载镜像。</p>
+<blockquote>
+<p>注意：您也可以不显式地指定 TAG, 它会默认下载 latest 标签，也就是下载仓库中最新版本的镜像。这里并不推荐您下载 latest 标签，因为该镜像的内容会跟踪镜像的最新版本，并随之变化，所以它是不稳定的。在生产环境中，可能会出现莫名其妙的 bug, 推荐您最好还是显示的指定具体的 TAG。</p>
+</blockquote>
+<p>举个例子，如我们想要下载一个 <code>Mysql 5.7</code> 镜像，可以通过命令来下载：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<p>会看到控制台输出内容如下：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123820.png" alt=""></p>
+<p>当有 <strong>Downloaded</strong> 字符串输出的时候，说明下载成功了！！</p>
+<h4 id="三、验证镜像"><a href="#三、验证镜像" class="headerlink" title="三、验证镜像"></a>三、验证镜像</h4><p>让我们来验证一下，本地是否存在 Mysql5.7 的镜像，运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123939.png" alt=""></p>
+<p>可以看到本地的确存在该镜像，确实是下载成功了！</p>
+<h4 id="四、下载镜像相关细节"><a href="#四、下载镜像相关细节" class="headerlink" title="四、下载镜像相关细节"></a>四、下载镜像相关细节</h4><p>再说说上面下载镜像的过程：<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124023.png" alt=""></p>
+<p>通过下载过程，可以看到，一个镜像一般是由多个层（layer） 组成，类似 f7e2b70d04ae这样的串表示层的唯一 ID。</p>
+<p>您可能会想，如果多个不同的镜像中，同时包含了同一个层（layer）,这样重复下载，岂不是导致了存储空间的浪费么?</p>
+<p>实际上，Docker 并不会这么傻会去下载重复的层（layer）,Docker 在下载之前，会去检测本地是否会有同样 ID 的层，如果本地已经存在了，就直接使用本地的就好了。</p>
+<h3 id="Docker-查看镜像信息"><a href="#Docker-查看镜像信息" class="headerlink" title="Docker 查看镜像信息"></a>Docker 查看镜像信息</h3><h4 id="一、images-命令列出镜像"><a href="#一、images-命令列出镜像" class="headerlink" title="一、images 命令列出镜像"></a>一、images 命令列出镜像</h4><p>通过使用如下两个命令，列出本机已有的镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<p>或：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image ls</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124249.png" alt=""></p>
+<p>对上述红色标注的字段做一下解释：</p>
+<ul>
+<li><strong>REPOSITORY</strong>: 来自于哪个仓库；</li>
+<li><strong>TAG</strong>: 镜像的标签信息，比如 5.7、latest 表示不同的版本信息；</li>
+<li><strong>IMAGE ID</strong>: 镜像的 ID, 如果您看到两个 ID 完全相同，那么实际上，它们指向的是同一个镜像，只是标签名称不同罢了；</li>
+<li><strong>CREATED</strong>: 镜像最后的更新时间；</li>
+<li><strong>SIZE</strong>: 镜像的大小，优秀的镜像一般体积都比较小，这也是我更倾向于使用轻量级的 alpine 版本的原因</li>
+</ul>
+<h4 id="二、使用-tag-命令为镜像添加标签"><a href="#二、使用-tag-命令为镜像添加标签" class="headerlink" title="二、使用 tag 命令为镜像添加标签"></a>二、使用 tag 命令为镜像添加标签</h4><p>通常情况下，为了方便在后续工作中，快速地找到某个镜像，我们可以使用 docker tag 命令，为本地镜像添加一个新的标签。如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124505.png" alt=""></p>
+<p>为 <code>docker.io/mysql</code> 镜像，添加新的镜像标签 <code>allen_mysql:5.7</code>。然后使用 <code>docker images</code> 命令，查看本地镜像：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124556.png" alt=""></p>
+<p>可以看到，本地多了一个 allen_mysql:5.7 的镜像。细心的你一定还会发现，allen_mysql:5.7 和 docker.io/mysql:5.7 的镜像 ID 是一模一样的，说明它们是同一个镜像，只是别名不同而已。</p>
+<p>docker tag 命令功能更像是, 为指定镜像添加快捷方式一样。</p>
+<h4 id="三、使用-inspect-命令查看镜像详细信息"><a href="#三、使用-inspect-命令查看镜像详细信息" class="headerlink" title="三、使用 inspect 命令查看镜像详细信息"></a>三、使用 inspect 命令查看镜像详细信息</h4><p>通过 <code>docker inspect</code> 命令，我们可以获取镜像的详细信息，其中，包括创建者，各层的数字摘要等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker inspect docker.io&#x2F;mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124709.png" alt=""></p>
+<p>docker inspect 返回的是 JSON 格式的信息，如果您想获取其中指定的一项内容，可以通过 -f 来指定，如获取镜像大小：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker inspect -f &#123;&#123;&quot;.Size&quot;&#125;&#125; docker.io&#x2F;mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<h3 id="Docker-搜索镜像"><a href="#Docker-搜索镜像" class="headerlink" title="Docker 搜索镜像"></a>Docker 搜索镜像</h3><h4 id="一、search-命令"><a href="#一、search-命令" class="headerlink" title="一、search 命令"></a>一、search 命令</h4><p>您可以通过下面命令进行搜索：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search [option] keyword</span><br></pre></td></tr></table></figure>
+
+<p>比如，您想搜索仓库中 mysql 相关的镜像，可以输入如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search mysql</span><br></pre></td></tr></table></figure>
+
+<h4 id="二、search-子命令"><a href="#二、search-子命令" class="headerlink" title="二、search 子命令"></a>二、search 子命令</h4><p>命令行输入 <code>docker search --help</code>, 输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage:  docker search [OPTIONS] TERM</span><br><span class="line"></span><br><span class="line">Search the Docker Hub for images</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --help            Print usage</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-index        Don&#39;t truncate output</span><br><span class="line">      --no-trunc        Don&#39;t truncate output</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>search</code> 支持的子命令有：</p>
+<ul>
+<li><code>-f, --filter filter</code>: 过滤输出的内容；</li>
+<li><code>--limit int</code>：指定搜索内容展示个数;</li>
+<li><code>--no-index</code>: 不截断输出内容；</li>
+<li><code>--no-trunc</code>：不截断输出内容；</li>
+</ul>
+<p>比如我们想搜索官方提供的 mysql 镜像，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search --filter&#x3D;is-offical&#x3D;true mysql</span><br></pre></td></tr></table></figure>
+
+<p>比如，我们想搜索 Stars 数超过 100 的 mysql 镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search --filter&#x3D;stars&#x3D;100 mysql</span><br></pre></td></tr></table></figure>
+
+<h3 id="Docker-删除-amp-清理镜像"><a href="#Docker-删除-amp-清理镜像" class="headerlink" title="Docker 删除&amp;清理镜像"></a>Docker 删除&amp;清理镜像</h3><h4 id="一、通过标签删除镜像"><a href="#一、通过标签删除镜像" class="headerlink" title="一、通过标签删除镜像"></a>一、通过标签删除镜像</h4><p>以下两种命令均可删除镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker rmi [image]</span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image rm [image]</span><br></pre></td></tr></table></figure>
+
+<p>支持的子命令如下：</p>
+<ul>
+<li><code>-f, -force</code>: 强制删除镜像，即便有容器引用该镜像；</li>
+<li><code>-no-prune</code>: 不要删除未带标签的父镜像；</li>
+</ul>
+<p>例如，我们想删除上章节创建的 allen_mysql:5.7 镜像，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker rmi allen_mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<h4 id="二、通过-ID-删除镜像"><a href="#二、通过-ID-删除镜像" class="headerlink" title="二、通过 ID 删除镜像"></a>二、通过 ID 删除镜像</h4><p>除了通过标签名称来删除镜像，我们还可以通过制定镜像 ID, 来删除镜像，如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker rmi ee7cbd482336</span><br></pre></td></tr></table></figure>
+<p>一旦制定了通过 ID 来删除镜像，它会先尝试删除所有指向该镜像的标签，然后在删除镜像本身。</p>
+<h4 id="三、删除镜像的限制"><a href="#三、删除镜像的限制" class="headerlink" title="三、删除镜像的限制"></a>三、删除镜像的限制</h4><p>删除镜像很简单，但也不是我们何时何地都能删除的，它存在一些限制条件。</p>
+<p>当通过该镜像创建的容器未被销毁时，镜像是无法被删除的。</p>
+<p>正确的做法应该是：</p>
+<ul>
+<li>先删除引用这个镜像的容器；</li>
+<li>再删除这个镜像；</li>
+</ul>
+<h4 id="四、清理镜像"><a href="#四、清理镜像" class="headerlink" title="四、清理镜像"></a>四、清理镜像</h4><p>我们在使用 Docker 一段时间后，系统一般都会残存一些临时的、没有被使用的镜像文件，可以通过以下命令进行清理：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image prune</span><br></pre></td></tr></table></figure>
+<p>它支持的子命令有：</p>
+<ul>
+<li><code>-a, --all</code>: 删除所有没有用的镜像，而不仅仅是临时文件；</li>
+<li><code>-f, --force</code>：强制删除镜像文件，无需弹出提示确认；</li>
+</ul>
+<p>另外，执行完 docker image prune 命令后，还是告诉我们释放了多少存储空间！</p>
+<h3 id="Docker-创建镜像"><a href="#Docker-创建镜像" class="headerlink" title="Docker 创建镜像"></a>Docker 创建镜像</h3><p>Docker 创建镜像主要有三种：</p>
+<ul>
+<li>基于已有的镜像创建；</li>
+<li>基于 Dockerfile 来创建；</li>
+<li>基于本地模板来导入；</li>
+</ul>
+<p>我们将主要介绍常用的 1，2 两种。</p>
+<h4 id="一、基于已有的镜像创建"><a href="#一、基于已有的镜像创建" class="headerlink" title="一、基于已有的镜像创建"></a>一、基于已有的镜像创建</h4><p>通过如下命令来创建：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker container commit</span><br></pre></td></tr></table></figure>
+
+<p>支持的子命令如下：</p>
+<ul>
+<li><code>-a, --author=&quot;&quot;</code>: 作者信息；</li>
+<li><code>-c, --change=[]</code>: 可以在提交的时候执行 Dockerfile 指令，如 <code>CMD、ENTRYPOINT、ENV、EXPOSE、LABEL、ONBUILD、- USER、VOLUME、WORIR</code> 等；</li>
+<li><code>-m, --message=&quot;&quot;</code>: 提交信息；</li>
+<li><code>-p, --pause=true</code>: 提交时，暂停容器运行。</li>
+</ul>
+<p>接下来，基于本地已有的 Ubuntu 镜像，创建一个新的镜像：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731125918.png" alt=""></p>
+<p>首先，让我将它运行起来，并在其中创建一个 test.txt 文件：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731125939.png" alt=""></p>
+<p>命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -it docker.io&#x2F;ubuntu:latest &#x2F;bin&#x2F;bash</span><br><span class="line">root@a0a0c8cfec3a:&#x2F;# touch test.txt</span><br><span class="line">root@a0a0c8cfec3a:&#x2F;# exit</span><br></pre></td></tr></table></figure>
+
+<p>创建完 test.txt 文件后，需要记住标注的容器 ID: a0a0c8cfec3a, 用它来提交一个新的镜像(PS: 你也可以通过名称来提交镜像，这里只演示通过 ID 的方式)。</p>
+<p>执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker container commit -m &quot;Added test.txt file&quot; -a &quot;Allen&quot; a0a0c8cfec3a test:0.1</span><br></pre></td></tr></table></figure>
+
+<p>提交成功后，会返回新创建的镜像 ID 信息，如下图所示：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130151.png" alt=""></p>
+<p>再次查看本地镜像信息，可以看到新创建的 test:0.1 镜像了：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130309.png" alt=""></p>
+<h4 id="二、基于-Dockerfile-来创建镜像"><a href="#二、基于-Dockerfile-来创建镜像" class="headerlink" title="二、基于 Dockerfile 来创建镜像"></a>二、基于 Dockerfile 来创建镜像</h4><p>通过 Dockerfile 的方式来创建镜像，是最常见的一种方式了，也是比较推荐的方式。Dockerfile 是一个文本指令文件，它描述了是如何基于一个父镜像，来创建一个新镜像的过程。</p>
+<p>下面让我们来编写一个简单的 Dockerfile 文件，它描述了基于 Ubuntu 父镜像，安装 Python3 环境的镜像：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">FROM docker.io/ubuntu:latest</span><br><span class="line"></span><br><span class="line">LABEL version="1.0" maintainer="Allen &lt;weiwosuo@github&gt;"</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; \</span><br><span class="line">    apt-get install -y python3 &amp;&amp; \</span><br><span class="line">    apt-get clean &amp;&amp; \</span><br><span class="line">    rm -rf /var/lib/apt/lists/*</span><br></pre></td></tr></table></figure>
+
+<p>创建完成后，通过这个 Dockerfile 文件，来构建新的镜像，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image build -t python:3 .</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：命令的最后有个点，如果不加的话，会构建不成功 ！</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130453.png" alt=""></p>
+<p>编译成功后，再次查看本地镜像信息，就可以看到新构建的 python:3 镜像了。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130557.png" alt=""></p>
+<h3 id="Docker-导出-amp-加载镜像"><a href="#Docker-导出-amp-加载镜像" class="headerlink" title="Docker 导出&amp;加载镜像"></a>Docker 导出&amp;加载镜像</h3><p>当我们需要将镜像分享给别人时，可以将镜像导出成 tar 包，别人直接通过加载这个 tar 包，快速地将镜像引入到本地镜像库。</p>
+<p>要想使用这两个功能，主要是通过如下两个命令：</p>
+<ul>
+<li>docker save</li>
+<li>docker load</li>
+</ul>
+<h4 id="一、导出镜像"><a href="#一、导出镜像" class="headerlink" title="一、导出镜像"></a>一、导出镜像</h4><p>查看本地镜像如下：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130743.png" alt=""></p>
+<p>例如，我们想要将 python:3 镜像导出来，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker save -o python_3.tar python:3</span><br></pre></td></tr></table></figure>
+
+<p>执行成功后，查看当前目录：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130821.png" alt=""></p>
+<p>可以看到 python_3.tar 镜像文件已经生成。接下来，你可以将它通过复制的方式，分享给别人了！</p>
+<h4 id="二、加载镜像"><a href="#二、加载镜像" class="headerlink" title="二、加载镜像"></a>二、加载镜像</h4><p>别人拿到了这个 tar 包后，要如何导入到本地的镜像库呢？</p>
+<p>通过执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker load -i python_3.tar</span><br></pre></td></tr></table></figure>
+<p>或者：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker load &lt; python_3.tar</span><br></pre></td></tr></table></figure>
+
+<p>导入成功后，查看本地镜像信息，你就可以获得别人分享的镜像了！</p>
+<h2 id="常用环境安装篇"><a href="#常用环境安装篇" class="headerlink" title="常用环境安装篇"></a>常用环境安装篇</h2><h3 id="Mysql-环境"><a href="#Mysql-环境" class="headerlink" title="Mysql 环境"></a>Mysql 环境</h3><h4 id="一、下载-Mysql-镜像"><a href="#一、下载-Mysql-镜像" class="headerlink" title="一、下载 Mysql 镜像"></a>一、下载 Mysql 镜像</h4><p>这里以 Mysql 5.7 为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
+<p>下载完成后，通过 docker images 检查一下镜像是否下载成功:</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131108.png" alt=""></p>
+<h4 id="二、正式运行-Mysql-容器："><a href="#二、正式运行-Mysql-容器：" class="headerlink" title="二、正式运行 Mysql 容器："></a>二、正式运行 Mysql 容器：</h4><p>正式运行 Mysql 容器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name mysql \</span><br><span class="line">-p 3306:3306 \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;mysql&#x2F;config&#x2F;mysqld.cnf:&#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;mysql&#x2F;data&#x2F;mysql:&#x2F;var&#x2F;lib&#x2F;mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD&#x3D;123456 \</span><br><span class="line">mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>-d</code>：以后台的方式运行；</li>
+<li><code>--name mysql</code>：指定容器的名称为 mysql;</li>
+<li><code>-p 3306:3306</code> 将容器的 3306 端口挂载到宿主机的 3306 端口上；</li>
+<li><code>-e MYSQL_ROOT_PASSWORD=123456</code>：指定 root 的密码为 123456</li>
+<li><code>-v /usr/local/docker/mysql/config/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf</code>: 将容器中 /etc/mysql/mysql.conf.d/mysqld.cnf 配置文件挂载到宿主机的 /usr/local/docker/mysql/config/mysqld.cnf 文件上；</li>
+<li><code>-v /usr/local/docker/mysql/data:/var/lib/mysql</code>: 将容器中 /var/lib/mysql 数据目录挂载到宿主机的 /usr/local/docker/mysql/data 目录下；</li>
+</ul>
+<p>执行命令完成后，查看下容器是否启动：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131907.png" alt=""></p>
+<h4 id="三、通过-Mysql-客户端连接一下试试"><a href="#三、通过-Mysql-客户端连接一下试试" class="headerlink" title="三、通过 Mysql 客户端连接一下试试"></a>三、通过 Mysql 客户端连接一下试试</h4><p>通过 MySQL 客户端连接刚刚创建的 mysql, 看看能否连接成功：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131944.png" alt=""></p>
+<p>连接成功了！</p>
+<h4 id="相关问题补充"><a href="#相关问题补充" class="headerlink" title="相关问题补充"></a>相关问题补充</h4><p><strong>时区不对问题</strong></p>
+<p>在向数据库插入数据时，总是发现时间比系统时间少 8 个小时，这是因为 Mysql 的时区并不是我们想要的东八区。</p>
+<p>解决方案：我们可以在上面说到的，挂载到宿主机的 Mysql 配置文件 mysqld.cnf 中，添加如下参数：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">default-time-zone &#x3D; &#39;+08:00&#39;</span><br></pre></td></tr></table></figure>
+
+<p>添加改配置后，重启 MySQL 容器, 再插入数据，就发现时间正常了：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker restart your_mysql_container_name</span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis-环境"><a href="#Redis-环境" class="headerlink" title="Redis 环境"></a>Redis 环境</h3><h4 id="一、下载-Redis-镜像"><a href="#一、下载-Redis-镜像" class="headerlink" title="一、下载 Redis 镜像"></a>一、下载 Redis 镜像</h4><p>首先拉取 Redis 镜像, 这里我选择的是 <code>redis:alpine</code> 轻量级镜像版本：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull redis:alpine</span><br></pre></td></tr></table></figure>
+<p>下载完成后，通过 docker images 确认镜像是否已经下载到本地：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132144.png" alt=""></p>
+<h4 id="二、运行-Redis-容器"><a href="#二、运行-Redis-容器" class="headerlink" title="二、运行 Redis 容器"></a>二、运行 Redis 容器</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run \</span><br><span class="line">-p 6379:6379 \</span><br><span class="line">--name redis \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;redis&#x2F;redis.conf:&#x2F;etc&#x2F;redis&#x2F;redis.conf \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;redis&#x2F;data:&#x2F;data \</span><br><span class="line">-d redis:alpine \</span><br><span class="line">redis-server &#x2F;etc&#x2F;redis&#x2F;redis.conf --appendonly yes --requirepass &quot;mypassword&quot;</span><br></pre></td></tr></table></figure>
+
+<p>命令说明：</p>
+<ul>
+<li><code>-p 6379:6379</code>: 将容器的 6379 端口映射到宿主机的 6379 端口；</li>
+<li><code>-v /usr/local/docker/redis/data:/data</code> : 将容器中的 /data 数据存储目录, 挂载到宿主机中 /usr/local/docker/redis/data 目录下；</li>
+<li><code>-v /usr/local/docker/redis/redis.conf:/etc/redis/redis.conf</code> ： 将容器中 /etc/redis/redis.conf 配置文件，挂载到宿主机的 /usr/local/docker/redis/redis.conf 文件上；</li>
+<li><code>redis-server --appendonly yes --requirepass &quot;mypassword&quot;</code>: 在容器执行 redis-server 启动命令，并打开 redis 持久化配置, 以及设置密码;</li>
+</ul>
+<p>命令运行完成后，查看容器是否启动成功：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132300.png" alt=""></p>
+<h4 id="三、连接刚刚创建好的容器"><a href="#三、连接刚刚创建好的容器" class="headerlink" title="三、连接刚刚创建好的容器"></a>三、连接刚刚创建好的容器</h4><p>执行如下命令，连接 redis：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -it redis:alpine redis-cli -h 172.17.0.1</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132330.png" alt=""></p>
+<h3 id="MongDB-环境"><a href="#MongDB-环境" class="headerlink" title="MongDB 环境"></a>MongDB 环境</h3><h4 id="一、下载-MongoDB-镜像"><a href="#一、下载-MongoDB-镜像" class="headerlink" title="一、下载 MongoDB 镜像"></a>一、下载 MongoDB 镜像</h4><p>这里以 mongo 4 版本为例，下载镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull mongo:4</span><br></pre></td></tr></table></figure>
+
+<p>下载完成后，确认一下镜像是否下载成功:</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132416.png" alt=""></p>
+<h4 id="二、运行-MongoDB-镜像"><a href="#二、运行-MongoDB-镜像" class="headerlink" title="二、运行 MongoDB 镜像"></a>二、运行 MongoDB 镜像</h4><p>下载成功后，运行 mongoDB 镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name mongo \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;mongo&#x2F;configdb:&#x2F;data&#x2F;configdb \</span><br><span class="line">-v &#x2F;usr&#x2F;local&#x2F;docker&#x2F;mongo&#x2F;data:&#x2F;data&#x2F;db \</span><br><span class="line">-p 27017:27017 \</span><br><span class="line">mongo:4 \</span><br><span class="line">--auth</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>-d</code>: 以后台的方式运行；</li>
+<li><code>--name mongo</code>: 指定容器名称为 mongo;</li>
+<li><code>-v /usr/local/docker/mongo/configdb:/data/configdb</code>: 将容器中 /data/configdb 目录挂载到宿主机的 /usr/local/docker/mongo/configdb 目录下；</li>
+<li><code>-v /usr/local/docker/mongo/data:/data/db</code>: 将容器中 /data/db 数据目录挂载到宿主机的 /usr/local/docker/mongo/data 目录下；</li>
+<li>-p <code>27017:27017</code>: 将容器的 27017 端口映射到宿主机的 27017 端口；</li>
+</ul>
+<p>执行命令完成后，查看下容器是否启动：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132541.png" alt=""></p>
+<h4 id="三、添加管理员账号"><a href="#三、添加管理员账号" class="headerlink" title="三、添加管理员账号"></a>三、添加管理员账号</h4><p>执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker exec -it mongo mongo admin</span><br></pre></td></tr></table></figure>
+
+<p>然后，创建一个拥有最高权限 root 账号:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">db.createUser(&#123; user: &#39;admin&#39;, pwd: &#39;123456&#39;, roles: [ &#123; role: &quot;root&quot;, db: &quot;admin&quot; &#125; ] &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>创建成功后，你会看到 Successfully added user:</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132627.png" alt=""></p>
+<h4 id="四、用新创建的-root-账户连接，测试一下"><a href="#四、用新创建的-root-账户连接，测试一下" class="headerlink" title="四、用新创建的 root 账户连接，测试一下"></a>四、用新创建的 root 账户连接，测试一下</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -it --rm --link mongo:mongo mongo mongo -u admin -p 123456 --authenticationDatabase admin mongo&#x2F;admin</span><br></pre></td></tr></table></figure>
+<p>连接成功后，我们可以执行相关 sql：</p>
+<p><strong>显示所有的数据库：</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show dbs</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用某个数据库：</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">use admin</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132734.png" alt=""></p>
+<p>输入命令 exit，退出连接！</p>
+<h3 id="Ngnix-环境"><a href="#Ngnix-环境" class="headerlink" title="Ngnix 环境"></a>Ngnix 环境</h3><h4 id="一、下载-Nginx-镜像"><a href="#一、下载-Nginx-镜像" class="headerlink" title="一、下载 Nginx 镜像"></a>一、下载 Nginx 镜像</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull nginx:alpine</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>PS：我这里用的是 alipne 轻量级的镜像.</p>
+</blockquote>
+<p>下载完成后，通过 docker images 命令检查一下镜像是否下载成功：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132929.png" alt=""></p>
+<p>执行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -d \ </span><br><span class="line">-p 80:80 \ </span><br><span class="line">--name nginx \</span><br><span class="line">-v &#x2F;docker&#x2F;nginx&#x2F;nginx.conf:&#x2F;etc&#x2F;nginx&#x2F;nginx.conf \</span><br><span class="line">-v &#x2F;docker&#x2F;nginx&#x2F;conf.d:&#x2F;etc&#x2F;nginx&#x2F;conf.d \</span><br><span class="line">-v &#x2F;docker&#x2F;nginx&#x2F;logs:&#x2F;var&#x2F;log&#x2F;nginx \</span><br><span class="line">nginx:alpine</span><br></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<ul>
+<li><code>-d</code>: 以后台方式运行镜像；</li>
+<li><code>--name</code>: 指定容器的名称为 nginx;</li>
+<li><code>-p 80:80</code>：将容器的 80 端口映射到主机的 80 端口；</li>
+<li>`-v /docker/nginx/nginx.conf:/etc/nginx/nginx.conf：将容器中的 /etc/nginx/nginx.conf 文件挂载到宿主机中的 /docker/nginx/nginx.conf 文件；</li>
+<li><code>-v /docker/nginx/conf.d:/etc/nginx/conf.d</code>：将容器中 /etc/nginx/conf.d 目录挂载到宿主机中的 conf.d 目录下；</li>
+<li><code>-v /docker/nginx/logs:/var/log/nginx</code>：将容器中的 /var/log/nginx 目录挂载到宿主机中的 /docker/nginx/logs 目录下, 用以查看 Nginx 日志；</li>
+</ul>
+<p>运行命令成功后，直接访问公网 IP 的 80 端口</p>
+<p>后续可以在 conf.d/default.config 中添加反向代理相关配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name www.example.top; #你的申请过证书的域名</span><br><span class="line">    client_max_body_size 64M;</span><br><span class="line">    fastcgi_read_timeout 3600;</span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    try_files $uri $uri&#x2F; @rewrite;</span><br><span class="line">    # ssl on;</span><br><span class="line">    ssl_certificate     &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;certs&#x2F;www.example.top&#x2F;example.pem;</span><br><span class="line">    ssl_certificate_key &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;certs&#x2F;www.example.top&#x2F;example.key;</span><br><span class="line">    ssl_session_timeout 5m;</span><br><span class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; #按照这个协议配置</span><br><span class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;#按照这个套件配置</span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        add_header Content-Security-Policy upgrade-insecure-requests;</span><br><span class="line">        proxy_set_header HOST $host;</span><br><span class="line">        proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;172.17.0.5:9001&#x2F;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="通过-Docker-搭建反向代理-Ngnix，并配置-Https-SSL-证书"><a href="#通过-Docker-搭建反向代理-Ngnix，并配置-Https-SSL-证书" class="headerlink" title="通过 Docker 搭建反向代理 Ngnix，并配置 Https SSL 证书"></a>通过 Docker 搭建反向代理 Ngnix，并配置 Https SSL 证书</h2><p><a href="https://www.exception.site/docker/how-to-config-ssl-with-docker-nginx" target="_blank" rel="noopener">https://www.exception.site/docker/how-to-config-ssl-with-docker-nginx</a></p>
+<h2 id="用-Docker-搭建-Node-Express-应用"><a href="#用-Docker-搭建-Node-Express-应用" class="headerlink" title="用 Docker 搭建 Node Express 应用"></a>用 Docker 搭建 Node Express 应用</h2><h3 id="创建koa项目"><a href="#创建koa项目" class="headerlink" title="创建koa项目"></a>创建koa项目</h3><p>通过koa框架写一个hello-world项目<br>app.js</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Koa &#x3D; require(&#39;koa&#39;);</span><br><span class="line">const app &#x3D; new Koa();</span><br><span class="line"></span><br><span class="line">app.use(async ctx &#x3D;&gt; &#123;</span><br><span class="line">  ctx.body &#x3D; &#39;Hello World&#39;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(3000);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dockerfile-编写"><a href="#Dockerfile-编写" class="headerlink" title="Dockerfile 编写"></a>Dockerfile 编写</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.1.3</span><br><span class="line"></span><br><span class="line">MAINTAINER YeTing &quot;me@yeting.info&quot;</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">CMD node app.js</span><br></pre></td></tr></table></figure>
+
+<p>有了 Dockerfile 以后，我们可以运行下面的命令构建前端镜像并命名为 my-koa-app：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker build -t my-koa-app .</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署-Docker-Image"><a href="#部署-Docker-Image" class="headerlink" title="部署 Docker Image"></a>部署 Docker Image</h3><p>最后，让我们从镜像启动容器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -p 80:3000 my-koa-app</span><br></pre></td></tr></table></figure>
+
+<p>这样子我们就能从 80 端口去访问我们的 Express 应用。</p>
+<h3 id="应用运行优化"><a href="#应用运行优化" class="headerlink" title="应用运行优化"></a>应用运行优化</h3><p>当然， Node 是公认的不稳定，经常会出现服务器内存溢出，而崩溃退出。</p>
+<p>我们针对这一点，可以对 koa 启动命令做优化。引入 pm2 插件，通过 pm2 来启动 express 应用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.1.3</span><br><span class="line"></span><br><span class="line">MAINTAINER YeTing &quot;me@yeting.info&quot;</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">CMD pm2 start app.js</span><br></pre></td></tr></table></figure>]]></content>
   </entry>
 </search>

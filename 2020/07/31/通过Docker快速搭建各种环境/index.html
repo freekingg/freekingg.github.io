@@ -20,27 +20,61 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="记忆的时间差">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="Docker 基础教程配置国内镜像加速器Docker 配置国内镜像加速器，加速下载速度 Docker 默认是从官方镜像地址 Docker Hub 下下载镜像，由于服务器在国外的缘故，导致经常下载速度非常慢。为了提升镜像的下载速度，我们可以手动配置国内镜像加速器，让下载速度飚起来。 国内的镜像加速器选项较多，如：阿里云，DaoCloud 等。 本文主要说说如何配置阿里云的镜像加速器。 一、获取加速信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过Docker快速搭建各种环境（全攻略）">
+<meta property="og:url" content="http://yoursite.com/2020/07/31/%E9%80%9A%E8%BF%87Docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%90%84%E7%A7%8D%E7%8E%AF%E5%A2%83/index.html">
 <meta property="og:site_name" content="记忆的时间差">
+<meta property="og:description" content="Docker 基础教程配置国内镜像加速器Docker 配置国内镜像加速器，加速下载速度 Docker 默认是从官方镜像地址 Docker Hub 下下载镜像，由于服务器在国外的缘故，导致经常下载速度非常慢。为了提升镜像的下载速度，我们可以手动配置国内镜像加速器，让下载速度飚起来。 国内的镜像加速器选项较多，如：阿里云，DaoCloud 等。 本文主要说说如何配置阿里云的镜像加速器。 一、获取加速信">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123229.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123341.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123517.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123820.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123939.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124023.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124249.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124505.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124556.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731124709.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731125918.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731125939.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130151.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130309.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130453.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130557.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130743.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731130821.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131108.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131907.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731131944.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132144.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132300.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132330.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132416.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132541.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132627.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132734.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731132929.png">
+<meta property="article:published_time" content="2020-07-31T04:24:44.000Z">
+<meta property="article:modified_time" content="2020-07-31T04:24:44.000Z">
 <meta property="article:author" content="king">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123229.png">
 
-<link rel="canonical" href="http://yoursite.com/">
+<link rel="canonical" href="http://yoursite.com/2020/07/31/%E9%80%9A%E8%BF%87Docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%90%84%E7%A7%8D%E7%8E%AF%E5%A2%83/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false
+    isHome : false,
+    isPost : true
   };
 </script>
 
-  <title>记忆的时间差</title>
+  <title>通过Docker快速搭建各种环境（全攻略） | 记忆的时间差</title>
   
 
 
@@ -187,10 +221,10 @@
             
 
   <div class="posts-expand">
-        
+      
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/31/%E9%80%9A%E8%BF%87Docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%90%84%E7%A7%8D%E7%8E%AF%E5%A2%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -204,8 +238,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/31/%E9%80%9A%E8%BF%87Docker%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%90%84%E7%A7%8D%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">通过Docker快速搭建各种环境（全攻略）</a>
+          通过Docker快速搭建各种环境（全攻略）
         </h1>
 
         <div class="post-meta">
@@ -241,7 +274,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Docker-基础教程"><a href="#Docker-基础教程" class="headerlink" title="Docker 基础教程"></a>Docker 基础教程</h2><h3 id="配置国内镜像加速器"><a href="#配置国内镜像加速器" class="headerlink" title="配置国内镜像加速器"></a>配置国内镜像加速器</h3><p>Docker 配置国内镜像加速器，加速下载速度</p>
+        <h2 id="Docker-基础教程"><a href="#Docker-基础教程" class="headerlink" title="Docker 基础教程"></a>Docker 基础教程</h2><h3 id="配置国内镜像加速器"><a href="#配置国内镜像加速器" class="headerlink" title="配置国内镜像加速器"></a>配置国内镜像加速器</h3><p>Docker 配置国内镜像加速器，加速下载速度</p>
 <p>Docker 默认是从官方镜像地址 Docker Hub 下下载镜像，由于服务器在国外的缘故，导致经常下载速度非常慢。为了提升镜像的下载速度，我们可以手动配置国内镜像加速器，让下载速度飚起来。</p>
 <p>国内的镜像加速器选项较多，如：阿里云，DaoCloud 等。</p>
 <p>本文主要说说如何配置阿里云的镜像加速器。</p>
@@ -546,783 +579,33 @@
 <h3 id="应用运行优化"><a href="#应用运行优化" class="headerlink" title="应用运行优化"></a>应用运行优化</h3><p>当然， Node 是公认的不稳定，经常会出现服务器内存溢出，而崩溃退出。</p>
 <p>我们针对这一点，可以对 koa 启动命令做优化。引入 pm2 插件，通过 pm2 来启动 express 应用。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.1.3</span><br><span class="line"></span><br><span class="line">MAINTAINER YeTing &quot;me@yeting.info&quot;</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">CMD pm2 start app.js</span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
         
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/" class="post-title-link" itemprop="url">linux安装jenkins</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-30 20:07:37" itemprop="dateCreated datePublished" datetime="2020-07-30T20:07:37+08:00">2020-07-30</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="安装jdk8"><a href="#安装jdk8" class="headerlink" title="安装jdk8"></a>安装jdk8</h2><p>先查看系统是否已有自带的jdk</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa |grep java</span><br><span class="line"></span><br><span class="line">rpm -qa |grep jdk</span><br><span class="line"></span><br><span class="line">rpm -qa |grep gcj</span><br></pre></td></tr></table></figure>
-
-<p>如果没有输出信息，则说明系统没有安装。如果有输出信息，则执行下面的命令卸载</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa | grep java | xargs rpm -e --nodeps</span><br></pre></td></tr></table></figure>
-<p><a href="http://mirror.esuni.jp/jenkins/updates/update-center.json" target="_blank" rel="noopener">http://mirror.esuni.jp/jenkins/updates/update-center.json</a></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/" rel="prev" title="linux安装jenkins">
+      <i class="fa fa-chevron-left"></i> linux安装jenkins
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-vue%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-vue%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">从零搭建docker+jenkins+vue自动化部署环境</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-29 21:47:43" itemprop="dateCreated datePublished" datetime="2020-07-29T21:47:43+08:00">2020-07-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>3.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="1、docker部分"><a href="#1、docker部分" class="headerlink" title="1、docker部分"></a>1、docker部分</h2><h3 id="1-1、docker简介"><a href="#1-1、docker简介" class="headerlink" title="1.1、docker简介"></a>1.1、docker简介</h3><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
-<h3 id="1-2、docker架构"><a href="#1-2、docker架构" class="headerlink" title="1.2、docker架构"></a>1.2、docker架构</h3><p>简单的说，docker就是一个轻量级的linux系统。Docker 容器通过 Docker 镜像来创建。容器与镜像的关系类似于面向对象编程中的对象与类。docker架构如图所示：<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185837.png" alt=""></p>
-<h3 id="1-3、docker虚拟机管理命令"><a href="#1-3、docker虚拟机管理命令" class="headerlink" title="1.3、docker虚拟机管理命令"></a>1.3、docker虚拟机管理命令</h3><p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185955.png" alt=""></p>
-<h3 id="1-4、安装docker"><a href="#1-4、安装docker" class="headerlink" title="1.4、安装docker"></a>1.4、安装docker</h3><p>更新软件库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum update -y</span><br></pre></td></tr></table></figure>
-
-<p>安装docker</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install docker -y</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-5、启动docker服务"><a href="#1-5、启动docker服务" class="headerlink" title="1.5、启动docker服务"></a>1.5、启动docker服务</h3><p>启动docker服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service docker start</span><br></pre></td></tr></table></figure>
-<p>其它相关命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service docker restart  &#x2F;&#x2F; 重启docker服务</span><br><span class="line">service docker stop     &#x2F;&#x2F; 停止docker服务</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-vue%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">从零搭建docker+jenkins+node.js自动化部署环境</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-29 18:57:02" itemprop="dateCreated datePublished" datetime="2020-07-29T18:57:02+08:00">2020-07-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>2.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="1、docker部分"><a href="#1、docker部分" class="headerlink" title="1、docker部分"></a>1、docker部分</h2><h3 id="1-1、docker简介"><a href="#1-1、docker简介" class="headerlink" title="1.1、docker简介"></a>1.1、docker简介</h3><p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口</p>
-<h3 id="1-2、docker架构"><a href="#1-2、docker架构" class="headerlink" title="1.2、docker架构"></a>1.2、docker架构</h3><p>简单的说，docker就是一个轻量级的linux系统。Docker 容器通过 Docker 镜像来创建。容器与镜像的关系类似于面向对象编程中的对象与类。docker架构如图所示：<br><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185837.png" alt=""></p>
-<h3 id="1-3、docker虚拟机管理命令"><a href="#1-3、docker虚拟机管理命令" class="headerlink" title="1.3、docker虚拟机管理命令"></a>1.3、docker虚拟机管理命令</h3><p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200729185955.png" alt=""></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/docker%E5%AE%9E%E6%88%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/29/docker%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">docker实战</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-29 17:49:01" itemprop="dateCreated datePublished" datetime="2020-07-29T17:49:01+08:00">2020-07-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="镜像与容器"><a href="#镜像与容器" class="headerlink" title="镜像与容器"></a>镜像与容器</h2><p>Docker 中有两个重要概念。</p>
-<p>一个是容器（Container）：容器特别像一个虚拟机，容器中运行着一个完整的操作系统。可以在容器中装 <code>Nodejs</code>，可以执行<code>npm install</code>，可以做一切你当前操作系统能做的事情</p>
-<p>另一个是镜像（Image）：镜像是一个文件，它是用来创建容器的。如果你有装过 Windows 操作系统，那么 Docker 镜像特别像“Win7纯净版.rar”文件</p>
-<p>上边就是你所需要了解的 Docker 全部基础知识。就这么简单</p>
-<p>在 Docker 中，我们通常称你当前使用的真实操作系统为<strong>宿主机(Host)</strong></p>
-<h2 id="安装-Docker"><a href="#安装-Docker" class="headerlink" title="安装 Docker"></a>安装 Docker</h2><p>安装 Docker 在你的电脑上就像安装 VS Code 一样简单</p>
-<p><strong>Linux</strong>：get.docker.com/</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;get.docker.com -o get-docker.sh</span><br><span class="line">sh get-docker.sh</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/29/docker%E5%AE%9E%E6%88%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/29/%E5%89%8D%E7%AB%AF%E5%9B%A2%E9%98%9F%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/29/%E5%89%8D%E7%AB%AF%E5%9B%A2%E9%98%9F%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" class="post-title-link" itemprop="url">前端团队代码规范最佳实践</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-29 10:03:15" itemprop="dateCreated datePublished" datetime="2020-04-29T10:03:15+08:00">2020-04-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>803</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>一千个读者，就有一千个哈姆雷特。</p>
-<p>一千个程序员，就有一千种代码风格。</p>
-<p>那什么是代码风格呢？从小的来说，有的开发喜欢带分号，有的不喜欢带分号。有的喜欢使用空格，有的喜欢使用 Tab。有的喜欢空两个空格，有的喜欢四个空格。除了这些，还有一些关于代码的优化，如避免声明未使用，避免冗余的代码逻辑等。如果你是新参加工作的人员，又恰好遇到一个代码风格混乱，密密麻麻赋值前后都不带空格的项目，只能有苦难言了。</p>
-<p>因此团队合作中需要统一规范。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/29/%E5%89%8D%E7%AB%AF%E5%9B%A2%E9%98%9F%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/29/%E5%AF%B9%E4%B8%8E%E6%88%91%E5%BE%97%E5%8A%9B%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/29/%E5%AF%B9%E4%B8%8E%E6%88%91%E5%BE%97%E5%8A%9B%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/" class="post-title-link" itemprop="url">对与我得力的一些生产力工具</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-29 09:29:21" itemprop="dateCreated datePublished" datetime="2020-04-29T09:29:21+08:00">2020-04-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>604</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Visual-Studio-Code"><a href="#Visual-Studio-Code" class="headerlink" title="Visual Studio Code"></a>Visual Studio Code</h2><p>代码编辑器很多，有些是免费的，有些是付费的。其中最喜欢的代码编辑器是 Visual Studio Code。它是免费的，并具有强大的功能，我陆续抛弃了Atom、Sublime Text以及也很强大的WebStorm。</p>
-<h2 id="HBuilderX"><a href="#HBuilderX" class="headerlink" title="HBuilderX"></a>HBuilderX</h2><p>HBuilderX代码编辑器是DCloud开发的，周边很多生态相关产品，平时主要用他来做uniapp开发以及和vscode配合使用</p>
-<h2 id="uTools快速启动软件"><a href="#uTools快速启动软件" class="headerlink" title="uTools快速启动软件"></a>uTools快速启动软件</h2><p>uTools 是一款极简、插件化、跨平台、现代化的桌面增强效率软件，它为用户提供了一个可以随时呼出的“看似简单”的输入框 (搜索框)，但这个输入框却蕴含了近乎“无限”的能力。</p>
-<h2 id="cmder"><a href="#cmder" class="headerlink" title="cmder"></a>cmder</h2><p>Cmder是Windows下非常好用的终端模拟器， 常用于替换windows自带的终端。它可以在不同的标签页中同时连接不同的底层Shell</p>
-<h2 id="GifCam"><a href="#GifCam" class="headerlink" title="GifCam"></a>GifCam</h2><p>GifCam 是款集录制与剪辑为一体的屏幕GIF 动画制作工具，录制后的动画可以逐帧编辑</p>
-<h2 id="CamtasiaStudio（录屏工具）"><a href="#CamtasiaStudio（录屏工具）" class="headerlink" title="CamtasiaStudio（录屏工具）"></a>CamtasiaStudio（录屏工具）</h2><p>是一款功能强大的屏幕动作录制工具,能在任何颜色模式下轻松地记录屏幕动作(屏幕/摄像头),包括影像、音效、鼠标移动轨迹、解说声音等</p>
-<h2 id="Photoshop"><a href="#Photoshop" class="headerlink" title="Photoshop"></a>Photoshop</h2><p>图像处理软件</p>
-<h2 id="XMind"><a href="#XMind" class="headerlink" title="XMind"></a>XMind</h2><p>思维导图软件，为激发灵感和创意而生</p>
-<h2 id="Postman"><a href="#Postman" class="headerlink" title="Postman"></a>Postman</h2><p>一款接口测试工具</p>
-<h2 id="Xshell"><a href="#Xshell" class="headerlink" title="Xshell"></a>Xshell</h2><p>一款高效专业的实用型免费SSH客户端</p>
-<h2 id="PicGo"><a href="#PicGo" class="headerlink" title="PicGo"></a>PicGo</h2><p>一款比较优秀的图床工具</p>
-<h2 id="网易有道词典"><a href="#网易有道词典" class="headerlink" title="网易有道词典"></a>网易有道词典</h2><p>全能免费语言翻译软件</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/24/%E5%89%8D%E7%AB%AF%E5%B8%B8%E8%80%83%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/24/%E5%89%8D%E7%AB%AF%E5%B8%B8%E8%80%83%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">前端常考知识点笔记</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-24 10:51:17" itemprop="dateCreated datePublished" datetime="2020-04-24T10:51:17+08:00">2020-04-24</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>12 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="开篇：为什么要记录"><a href="#开篇：为什么要记录" class="headerlink" title="开篇：为什么要记录"></a>开篇：为什么要记录</h2><p>多年的经历，使我得出一个结论：面试表现和工作能力，并没有大多数人以为的那么相关。一个技术能力优秀的程序员，很可能因为忘记 Event Loop 的内容而被认为基础知识不扎实；一个原来在团队中没有存在感每天划水的人，却有可能因为碰巧面试前一天晚上刷到了浏览器缓存机制的面试题，而被认为是基础扎实的大牛。实际上，如果面试总是能准确地反映出一个人真正的技术能力，大公司里就不会有这么多划水的人了。</p>
-<p>工作能力强，并不代表面试表现就一定好；工作有工作的技巧，面试有面试的技巧，它们有一些联系，但是它们是两个不同的学科。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/24/%E5%89%8D%E7%AB%AF%E5%B8%B8%E8%80%83%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/" class="post-title-link" itemprop="url">使用typescript封装axios</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-22 12:25:51" itemprop="dateCreated datePublished" datetime="2020-04-22T12:25:51+08:00">2020-04-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/typescript/" itemprop="url" rel="index"><span itemprop="name">typescript</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>7.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>7 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我们在开发中广泛使用的axios调用接口，为了更好地调用，做一些全局的拦截，我们通常会对其进行一下封装，本小节我们就来看下如何使用TypeScript对它进行封装，使其同时能够有很好的类型支持。</p>
-<p>首先我们需要安装axios</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install axios</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/22/%E4%BD%BF%E7%94%A8typescript%E5%B0%81%E8%A3%85axios/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E9%80%8FTypeScript/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E9%80%8FTypeScript/" class="post-title-link" itemprop="url">零基础学透TypeScript</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-21 17:05:57" itemprop="dateCreated datePublished" datetime="2020-04-21T17:05:57+08:00">2020-04-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/typescript/" itemprop="url" rel="index"><span itemprop="name">typescript</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>57k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>52 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="开篇词：Hello-TypeScript"><a href="#开篇词：Hello-TypeScript" class="headerlink" title="开篇词：Hello~TypeScript"></a>开篇词：Hello~TypeScript</h2><p>同学你好，我是 TypeScript，如果你觉得我是 JavaScript 的孪生兄弟，或者觉得我是前端圈新扶持起来的太子，那你可能对我是有点误解了。其实我并不是一个新的语言，用大家公认的说法，我是JavaScript的超集，你可以理解为，我是加了一身装备铭文的进化版 JavaScript。JavaScript 有的，我都有，而且做得更好。JavaScript 没有的，我也有，而且我是在很长一段时间内不会被 JavaScript 赶上的。</p>
-<p>虽然我作为超集，但是我始终紧跟 ECMAScript 标准，所以 ES6/7/8/9 等新语法标准我都是支持的，而且我还在语言层面上，对一些语法进行拓展。比如新增了枚举(Enum)这种在一些语言中常见的数据类型，对类(Class)实现了一些ES6标准中没有确定的语法标准等等。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/21/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E9%80%8FTypeScript/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
   </article>
   
   
   
 
   </div>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
-
 
 
           </div>
@@ -1373,6 +656,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-基础教程"><span class="nav-number">1.</span> <span class="nav-text">Docker 基础教程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置国内镜像加速器"><span class="nav-number">1.1.</span> <span class="nav-text">配置国内镜像加速器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、获取加速信息"><span class="nav-number">1.1.1.</span> <span class="nav-text">一、获取加速信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、配置-Docker"><span class="nav-number">1.1.2.</span> <span class="nav-text">二、配置 Docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、验证速度"><span class="nav-number">1.1.3.</span> <span class="nav-text">三、验证速度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-下载镜像"><span class="nav-number">1.2.</span> <span class="nav-text">Docker 下载镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、前言"><span class="nav-number">1.2.1.</span> <span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、下载镜像"><span class="nav-number">1.2.2.</span> <span class="nav-text">二、下载镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、验证镜像"><span class="nav-number">1.2.3.</span> <span class="nav-text">三、验证镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、下载镜像相关细节"><span class="nav-number">1.2.4.</span> <span class="nav-text">四、下载镜像相关细节</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-查看镜像信息"><span class="nav-number">1.3.</span> <span class="nav-text">Docker 查看镜像信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、images-命令列出镜像"><span class="nav-number">1.3.1.</span> <span class="nav-text">一、images 命令列出镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、使用-tag-命令为镜像添加标签"><span class="nav-number">1.3.2.</span> <span class="nav-text">二、使用 tag 命令为镜像添加标签</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、使用-inspect-命令查看镜像详细信息"><span class="nav-number">1.3.3.</span> <span class="nav-text">三、使用 inspect 命令查看镜像详细信息</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-搜索镜像"><span class="nav-number">1.4.</span> <span class="nav-text">Docker 搜索镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、search-命令"><span class="nav-number">1.4.1.</span> <span class="nav-text">一、search 命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、search-子命令"><span class="nav-number">1.4.2.</span> <span class="nav-text">二、search 子命令</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-删除-amp-清理镜像"><span class="nav-number">1.5.</span> <span class="nav-text">Docker 删除&amp;清理镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、通过标签删除镜像"><span class="nav-number">1.5.1.</span> <span class="nav-text">一、通过标签删除镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、通过-ID-删除镜像"><span class="nav-number">1.5.2.</span> <span class="nav-text">二、通过 ID 删除镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、删除镜像的限制"><span class="nav-number">1.5.3.</span> <span class="nav-text">三、删除镜像的限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、清理镜像"><span class="nav-number">1.5.4.</span> <span class="nav-text">四、清理镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-创建镜像"><span class="nav-number">1.6.</span> <span class="nav-text">Docker 创建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、基于已有的镜像创建"><span class="nav-number">1.6.1.</span> <span class="nav-text">一、基于已有的镜像创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、基于-Dockerfile-来创建镜像"><span class="nav-number">1.6.2.</span> <span class="nav-text">二、基于 Dockerfile 来创建镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-导出-amp-加载镜像"><span class="nav-number">1.7.</span> <span class="nav-text">Docker 导出&amp;加载镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、导出镜像"><span class="nav-number">1.7.1.</span> <span class="nav-text">一、导出镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、加载镜像"><span class="nav-number">1.7.2.</span> <span class="nav-text">二、加载镜像</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用环境安装篇"><span class="nav-number">2.</span> <span class="nav-text">常用环境安装篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql-环境"><span class="nav-number">2.1.</span> <span class="nav-text">Mysql 环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、下载-Mysql-镜像"><span class="nav-number">2.1.1.</span> <span class="nav-text">一、下载 Mysql 镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、正式运行-Mysql-容器："><span class="nav-number">2.1.2.</span> <span class="nav-text">二、正式运行 Mysql 容器：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、通过-Mysql-客户端连接一下试试"><span class="nav-number">2.1.3.</span> <span class="nav-text">三、通过 Mysql 客户端连接一下试试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关问题补充"><span class="nav-number">2.1.4.</span> <span class="nav-text">相关问题补充</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-环境"><span class="nav-number">2.2.</span> <span class="nav-text">Redis 环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、下载-Redis-镜像"><span class="nav-number">2.2.1.</span> <span class="nav-text">一、下载 Redis 镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、运行-Redis-容器"><span class="nav-number">2.2.2.</span> <span class="nav-text">二、运行 Redis 容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、连接刚刚创建好的容器"><span class="nav-number">2.2.3.</span> <span class="nav-text">三、连接刚刚创建好的容器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MongDB-环境"><span class="nav-number">2.3.</span> <span class="nav-text">MongDB 环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、下载-MongoDB-镜像"><span class="nav-number">2.3.1.</span> <span class="nav-text">一、下载 MongoDB 镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、运行-MongoDB-镜像"><span class="nav-number">2.3.2.</span> <span class="nav-text">二、运行 MongoDB 镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、添加管理员账号"><span class="nav-number">2.3.3.</span> <span class="nav-text">三、添加管理员账号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、用新创建的-root-账户连接，测试一下"><span class="nav-number">2.3.4.</span> <span class="nav-text">四、用新创建的 root 账户连接，测试一下</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ngnix-环境"><span class="nav-number">2.4.</span> <span class="nav-text">Ngnix 环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、下载-Nginx-镜像"><span class="nav-number">2.4.1.</span> <span class="nav-text">一、下载 Nginx 镜像</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-Docker-搭建反向代理-Ngnix，并配置-Https-SSL-证书"><span class="nav-number">3.</span> <span class="nav-text">通过 Docker 搭建反向代理 Ngnix，并配置 Https SSL 证书</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用-Docker-搭建-Node-Express-应用"><span class="nav-number">4.</span> <span class="nav-text">用 Docker 搭建 Node Express 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建koa项目"><span class="nav-number">4.1.</span> <span class="nav-text">创建koa项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile-编写"><span class="nav-number">4.2.</span> <span class="nav-text">Dockerfile 编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署-Docker-Image"><span class="nav-number">4.3.</span> <span class="nav-text">部署 Docker Image</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用运行优化"><span class="nav-number">4.4.</span> <span class="nav-text">应用运行优化</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
