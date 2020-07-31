@@ -7210,13 +7210,15 @@
 ]]></content>
   </entry>
   <entry>
-    <title>linux安装java-jdk与jenkins</title>
+    <title>linux安装jenkins</title>
     <url>/2020/07/30/linux%E5%AE%89%E8%A3%85java-jdk%E4%B8%8Ejenkins/</url>
     <content><![CDATA[<h2 id="安装jdk8"><a href="#安装jdk8" class="headerlink" title="安装jdk8"></a>安装jdk8</h2><p>先查看系统是否已有自带的jdk</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa |grep java</span><br><span class="line"></span><br><span class="line">rpm -qa |grep jdk</span><br><span class="line"></span><br><span class="line">rpm -qa |grep gcj</span><br></pre></td></tr></table></figure>
 
 <p>如果没有输出信息，则说明系统没有安装。如果有输出信息，则执行下面的命令卸载</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -qa | grep java | xargs rpm -e --nodeps</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
 
 <p>列出所有可安装的rpm软件包</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum list java-1.8*</span><br></pre></td></tr></table></figure>
@@ -7227,9 +7229,86 @@
 <p>验证是否安装成功</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
 <p>到此安装成功。可见yum已经自动为我们配置好了java环境变量，很方便吧。</p>
-<h2 id="安装jenkins"><a href="#安装jenkins" class="headerlink" title="安装jenkins"></a>安装jenkins</h2><p><a href="https://pkg.jenkins.io/redhat-stable/" target="_blank" rel="noopener">jenkins</a><br><a href="https://www.jianshu.com/p/180fb11a5b96" target="_blank" rel="noopener">参考2</a></p>
+<h2 id="安装jenkins"><a href="#安装jenkins" class="headerlink" title="安装jenkins"></a>安装jenkins</h2><p><a href="https://www.jenkins.io/doc/book/installing/#red-hat-centos" target="_blank" rel="noopener">jenkins</a><br><a href="https://www.jianshu.com/p/180fb11a5b96" target="_blank" rel="noopener">参考2</a></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo wget -O &#x2F;etc&#x2F;yum.repos.d&#x2F;jenkins.repo http:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat&#x2F;jenkins.repo</span><br><span class="line">sudo rpm --import http:&#x2F;&#x2F;pkg.jenkins.io&#x2F;redhat&#x2F;jenkins.io.key</span><br><span class="line">sudo yum install jenkins</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置权限</strong><br>为了不因为权限出现各种问题，这里直接使用root</p>
+<p>修改用户为root</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;sysconfig&#x2F;jenkins</span><br><span class="line"></span><br><span class="line">#修改配置</span><br><span class="line">$JENKINS_USER&#x3D;&quot;root&quot;</span><br></pre></td></tr></table></figure>
+<p>修改目录权限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chown -R root:root &#x2F;var&#x2F;lib&#x2F;jenkins</span><br><span class="line">chown -R root:root &#x2F;var&#x2F;cache&#x2F;jenkins</span><br><span class="line">chown -R root:root &#x2F;var&#x2F;log&#x2F;jenkins</span><br></pre></td></tr></table></figure>
+<p>重启</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">service jenkins restart</span><br><span class="line">ps -ef | grep jenkins</span><br></pre></td></tr></table></figure>
+
+
+<p>使用以下命令启动Jenkins服务：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo systemctl start jenkins</span><br></pre></td></tr></table></figure>
+
+<p>使用以下命令检查Jenkins服务的状态：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo systemctl status jenkins</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Jenkins-使用国内镜像快速安装（rpm安装）"><a href="#Jenkins-使用国内镜像快速安装（rpm安装）" class="headerlink" title="Jenkins 使用国内镜像快速安装（rpm安装）"></a>Jenkins 使用国内镜像快速安装（rpm安装）</h2><h3 id="下载rpm包"><a href="#下载rpm包" class="headerlink" title="下载rpm包"></a>下载rpm包</h3><p>是目前最新 jenkins LTS版本: 可以在去 清华大学镜像站 看一下，替换成最新的链接</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;jenkins&#x2F;redhat-stable&#x2F;jenkins-2.204.3-1.1.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装并启动"><a href="#安装并启动" class="headerlink" title="安装并启动"></a>安装并启动</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum install jenkins-2.204.3-1.1.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改端口"><a href="#修改端口" class="headerlink" title="修改端口"></a>修改端口</h3><p>jenkins 默认8080端口，如果和别的程序冲突，可以修改端口号</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;sysconfig&#x2F;jenkins</span><br></pre></td></tr></table></figure>
+
+<h3 id="开启服务"><a href="#开启服务" class="headerlink" title="开启服务"></a>开启服务</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl start jenkins.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取访问秘钥，复制下来，接下来要验证"><a href="#获取访问秘钥，复制下来，接下来要验证" class="headerlink" title="获取访问秘钥，复制下来，接下来要验证"></a>获取访问秘钥，复制下来，接下来要验证</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;var&#x2F;lib&#x2F;jenkins&#x2F;secrets&#x2F;initialAdminPassword</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改默认镜像源"><a href="#修改默认镜像源" class="headerlink" title="修改默认镜像源"></a>修改默认镜像源</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;var&#x2F;lib&#x2F;jenkins&#x2F;hudson.model.UpdateCenter.xml</span><br></pre></td></tr></table></figure>
+
+<p>将 url 修改为 清华大学官方镜像：<a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&#39;1.1&#39; encoding&#x3D;&#39;UTF-8&#39;?&gt;</span><br><span class="line">&lt;sites&gt;</span><br><span class="line">  &lt;site&gt;</span><br><span class="line">    &lt;id&gt;default&lt;&#x2F;id&gt;</span><br><span class="line">    &lt;url&gt;https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;jenkins&#x2F;updates&#x2F;update-center.json&lt;&#x2F;url&gt;</span><br><span class="line">  &lt;&#x2F;site&gt;</span><br><span class="line">&lt;&#x2F;sites&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="访问"><a href="#访问" class="headerlink" title="访问"></a>访问</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip地址:端口号</span><br></pre></td></tr></table></figure>
+
+<h2 id="Docker-快速安装Jenkins实用教程"><a href="#Docker-快速安装Jenkins实用教程" class="headerlink" title="Docker 快速安装Jenkins实用教程"></a>Docker 快速安装Jenkins实用教程</h2><h3 id="查找镜像"><a href="#查找镜像" class="headerlink" title="查找镜像"></a>查找镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker search jenkins</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731110630.png" alt=""></p>
+<h3 id="下载Jenkins镜像文件"><a href="#下载Jenkins镜像文件" class="headerlink" title="下载Jenkins镜像文件"></a>下载Jenkins镜像文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull jenkins&#x2F;jenkins</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731110705.png" alt=""></p>
+<h3 id="创建Jenkins挂载目录并授权"><a href="#创建Jenkins挂载目录并授权" class="headerlink" title="创建Jenkins挂载目录并授权"></a>创建Jenkins挂载目录并授权</h3><p>我们在服务器上先创建一个jenkins工作目录 /var/jenkins_node，赋予相应权限，稍后我们将jenkins容器目录挂载到这个目录上，这样我们就可以很方便地对容器内的配置文件进行修改。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir -p &#x2F;var&#x2F;jenkins_node</span><br><span class="line">chmod 777 &#x2F;var&#x2F;jenkins_node</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建并启动容器"><a href="#创建并启动容器" class="headerlink" title="创建并启动容器"></a>创建并启动容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -d -p 10240:8080 -p 10241:50000 -v &#x2F;var&#x2F;jenkins_node:&#x2F;var&#x2F;jenkins_home -v &#x2F;etc&#x2F;localtime:&#x2F;etc&#x2F;localtime --name myjenkins jenkins&#x2F;jenkins</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>-d</code> 后台运行镜像</p>
+</li>
+<li><p><code>-p 10240:8080</code> 将镜像的8080端口映射到服务器的10240端口。</p>
+</li>
+<li><p><code>-p 10241:50000</code> 将镜像的50000端口映射到服务器的10241端口</p>
+</li>
+<li><p><code>-v /var/jenkins_node:/var/jenkins_home</code> /var/jenkins_home目录为容器jenkins工作目录，我们将硬盘上的一个目录挂载到这个位置，方便后续更新镜像后继续使用原来的工作目录。这里我们设置的就是上面我们创建的 /var/jenkins_node目录</p>
+</li>
+<li><p><code>-v /etc/localtime:/etc/localtime</code> 让容器使用和服务器同样的时间设置。</p>
+</li>
+<li><p><code>--name myjenkins</code> 给容器起一个别名</p>
+</li>
+</ul>
+<h3 id="查看容器状态"><a href="#查看容器状态" class="headerlink" title="查看容器状态"></a>查看容器状态</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731111050.png" alt=""></p>
+<h3 id="查看容器日志"><a href="#查看容器日志" class="headerlink" title="查看容器日志"></a>查看容器日志</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker logs myjenkins</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731111130.png" alt=""></p>
+<h3 id="配置镜像加速"><a href="#配置镜像加速" class="headerlink" title="配置镜像加速"></a>配置镜像加速</h3><p>可供选择的jenkins2 插件镜像列表：<br>Jenkins 所有镜像列表： <a href="http://mirrors.jenkins-ci.org/status.html" target="_blank" rel="noopener">http://mirrors.jenkins-ci.org/status.html</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">比如日本的镜像：</span><br><span class="line">http:&#x2F;&#x2F;mirror.esuni.jp&#x2F;jenkins&#x2F;,</span><br><span class="line">http:&#x2F;&#x2F;ftp.yz.yamagata-u.ac.jp&#x2F;pub&#x2F;misc&#x2F;jenkins&#x2F;，</span><br><span class="line">http:&#x2F;&#x2F;ftp.tsukuba.wide.ad.jp&#x2F;software&#x2F;jenkins&#x2F;</span><br><span class="line">德国的镜像：</span><br><span class="line">http:&#x2F;&#x2F;jenkins.mirror.isppower.de&#x2F; ，</span><br><span class="line">http:&#x2F;&#x2F;mirror.yandex.ru&#x2F;mirrors&#x2F;jenkins&#x2F;</span><br><span class="line">官方的镜像：</span><br><span class="line">http:&#x2F;&#x2F;mirrors.jenkins-ci.org&#x2F;， </span><br><span class="line">http:&#x2F;&#x2F;archives.jenkins-ci.org&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>推荐清华大学镜像：<br><a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd &#x2F;var&#x2F;jenkins_node</span><br></pre></td></tr></table></figure>
+<p>修改 <code>hudson.model.UpdateCenter.xml</code>里的内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&#39;1.1&#39; encoding&#x3D;&#39;UTF-8&#39;?&gt;</span><br><span class="line">&lt;sites&gt;</span><br><span class="line">  &lt;site&gt;</span><br><span class="line">    &lt;id&gt;default&lt;&#x2F;id&gt;</span><br><span class="line">    &lt;url&gt;https:&#x2F;&#x2F;updates.jenkins.io&#x2F;update-center.json&lt;&#x2F;url&gt;</span><br><span class="line">  &lt;&#x2F;site&gt;</span><br><span class="line">&lt;&#x2F;sites&gt;</span><br></pre></td></tr></table></figure>
+<p>将 url 修改为 清华大学官方镜像：<a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&#39;1.1&#39; encoding&#x3D;&#39;UTF-8&#39;?&gt;</span><br><span class="line">&lt;sites&gt;</span><br><span class="line">  &lt;site&gt;</span><br><span class="line">    &lt;id&gt;default&lt;&#x2F;id&gt;</span><br><span class="line">    &lt;url&gt;https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;jenkins&#x2F;updates&#x2F;update-center.json&lt;&#x2F;url&gt;</span><br><span class="line">  &lt;&#x2F;site&gt;</span><br><span class="line">&lt;&#x2F;sites&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731111426.png" alt=""></p>
+<h3 id="访问-1"><a href="#访问-1" class="headerlink" title="访问"></a>访问</h3><p>你的ip地址加上端口号<br><a href="http://ip地址:1024" target="_blank" rel="noopener">http://ip地址:1024</a></p>
+<h3 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h3><p>如果我们不配置镜像加速，那么很有可能会出现： Jenkins 一直卡在 启动界面 Please wait while Jenkins is getting ready to work …</p>
 ]]></content>
+      <tags>
+        <tag>部署</tag>
+        <tag>安装</tag>
+      </tags>
   </entry>
   <entry>
     <title>从零搭建docker+jenkins+vue自动化部署环境</title>
