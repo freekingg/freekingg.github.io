@@ -223,13 +223,13 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
               </span>
-              <span>11k</span>
+              <span>14k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
-              <span>10 分钟</span>
+              <span>13 分钟</span>
             </span>
 
         </div>
@@ -531,21 +531,70 @@
 
 
 <h2 id="通过-Docker-搭建反向代理-Ngnix，并配置-Https-SSL-证书"><a href="#通过-Docker-搭建反向代理-Ngnix，并配置-Https-SSL-证书" class="headerlink" title="通过 Docker 搭建反向代理 Ngnix，并配置 Https SSL 证书"></a>通过 Docker 搭建反向代理 Ngnix，并配置 Https SSL 证书</h2><p><a href="https://www.exception.site/docker/how-to-config-ssl-with-docker-nginx" target="_blank" rel="noopener">https://www.exception.site/docker/how-to-config-ssl-with-docker-nginx</a></p>
-<h2 id="用-Docker-搭建-Node-Express-应用"><a href="#用-Docker-搭建-Node-Express-应用" class="headerlink" title="用 Docker 搭建 Node Express 应用"></a>用 Docker 搭建 Node Express 应用</h2><h3 id="创建koa项目"><a href="#创建koa项目" class="headerlink" title="创建koa项目"></a>创建koa项目</h3><p>通过koa框架写一个hello-world项目<br>app.js</p>
+<h2 id="动态设置环境变量"><a href="#动态设置环境变量" class="headerlink" title="动态设置环境变量"></a>动态设置环境变量</h2><p>Dockerfile </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EXPOSE 30010</span><br><span class="line"></span><br><span class="line">ARG node_env # 新增加</span><br><span class="line">ENV NODE_ENV&#x3D;$node_env  # 新增加</span><br><span class="line">CMD npm run $&#123;NODE_ENV&#125; # 修改</span><br></pre></td></tr></table></figure>
+
+<p>下面对上面的代码做个解释</p>
+<ul>
+<li>通过 <code>ARG</code> 指令定义了一个变量，用户可以在构建时通过使用 <code>--build-arg =</code> 标志的 <code>docker build</code> 命令将其传递给构建器 <code>ARG node_env</code></li>
+<li>在 Dockerfile 中使用 ENV 引用这个变量<code>ENV NODE_ENV=$node_env</code></li>
+<li>这一步就是使用了 <code>CMD npm run ${NODE_ENV}</code></li>
+</ul>
+<p>剩下的就是在构建镜像时动态传入参数了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker image build --build-arg node_env&#x3D;dev -t my-koa-app . # 构建测试环境</span><br><span class="line">$ docker image build --build-arg node_env&#x3D;pro -t my-koa-app . # 构建生产环境</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="用-Docker-搭建-nodejs-应用"><a href="#用-Docker-搭建-nodejs-应用" class="headerlink" title="用 Docker 搭建 nodejs 应用"></a>用 Docker 搭建 nodejs 应用</h2><h3 id="创建koa项目"><a href="#创建koa项目" class="headerlink" title="创建koa项目"></a>创建koa项目</h3><p>通过koa框架写一个hello-world项目<br>app.js</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const Koa &#x3D; require(&#39;koa&#39;);</span><br><span class="line">const app &#x3D; new Koa();</span><br><span class="line"></span><br><span class="line">app.use(async ctx &#x3D;&gt; &#123;</span><br><span class="line">  ctx.body &#x3D; &#39;Hello World&#39;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(3000);</span><br></pre></td></tr></table></figure>
 
-<h3 id="Dockerfile-编写"><a href="#Dockerfile-编写" class="headerlink" title="Dockerfile 编写"></a>Dockerfile 编写</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.1.3</span><br><span class="line"></span><br><span class="line">MAINTAINER YeTing &quot;me@yeting.info&quot;</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">CMD node app.js</span><br></pre></td></tr></table></figure>
+<h3 id="创建-Dockerfile-文件"><a href="#创建-Dockerfile-文件" class="headerlink" title="创建 Dockerfile 文件"></a>创建 Dockerfile 文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.16.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;usr&#x2F;src&#x2F;testApp&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD node app.js</span><br></pre></td></tr></table></figure>
 
-<p>有了 Dockerfile 以后，我们可以运行下面的命令构建前端镜像并命名为 my-koa-app：</p>
+<h3 id="制作镜像"><a href="#制作镜像" class="headerlink" title="制作镜像"></a>制作镜像</h3><p>有了 Dockerfile 以后，我们可以运行下面的命令构建前端镜像并命名为 my-koa-app：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t my-koa-app .</span><br></pre></td></tr></table></figure>
 
-<h3 id="部署-Docker-Image"><a href="#部署-Docker-Image" class="headerlink" title="部署 Docker Image"></a>部署 Docker Image</h3><p>最后，让我们从镜像启动容器：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 80:3000 my-koa-app</span><br></pre></td></tr></table></figure>
+<h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h3><p>最后，让我们从镜像启动容器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">docker run \</span><br><span class="line">-p 3006:3000 \</span><br><span class="line">-d --name koaApp \</span><br><span class="line">my-koa-app</span><br></pre></td></tr></table></figure>
 
-<p>这样子我们就能从 80 端口去访问我们的 Express 应用。</p>
+<p>这样子我们就能从 3006 端口去访问我们的 node 应用。</p>
 <h3 id="应用运行优化"><a href="#应用运行优化" class="headerlink" title="应用运行优化"></a>应用运行优化</h3><p>当然， Node 是公认的不稳定，经常会出现服务器内存溢出，而崩溃退出。</p>
 <p>我们针对这一点，可以对 koa 启动命令做优化。引入 pm2 插件，通过 pm2 来启动 express 应用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.1.3</span><br><span class="line"></span><br><span class="line">MAINTAINER YeTing &quot;me@yeting.info&quot;</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;app</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">CMD pm2 start app.js</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>使用命令 <code>pm2 start app.js</code> 之后, pm2 默认在后台运行, 如果使用了 Docker 后,容器运行并立即退出,需要手动给“ pm2 ”指定参数 <code>--no-daemon</code></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.1.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;usr&#x2F;src&#x2F;testApp&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD pm2 start app.js --no-daemon</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="用-Docker-搭建-vue-应用-案例一"><a href="#用-Docker-搭建-vue-应用-案例一" class="headerlink" title="用 Docker 搭建 vue 应用 (案例一)"></a>用 Docker 搭建 vue 应用 (案例一)</h2><h3 id="说在前面"><a href="#说在前面" class="headerlink" title="说在前面"></a>说在前面</h3><p>网上很多docker部署vue项目的教程，其中很多的文章不乏都是先将vue项目执行npm run build 在本地进行打包，传到自己的仓库去，然后到服务器去拉取我们的代码，获取dist文件，再将该文件挂载到dockr容器内。其实这种操作应当是有缺陷的，我们应当把打包的操作也放到docker的镜像里面去操作。</p>
+<h3 id="准备好vue项目"><a href="#准备好vue项目" class="headerlink" title="准备好vue项目"></a>准备好vue项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vue create vueTest</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建-Dockerfile-文件-1"><a href="#创建-Dockerfile-文件-1" class="headerlink" title="创建 Dockerfile 文件"></a>创建 Dockerfile 文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">FROM node:12.16.3-alpine AS builder</span><br><span class="line"></span><br><span class="line"># 将容器的工作目录设置为&#x2F;app(当前目录，如果&#x2F;app不存在，WORKDIR会创建&#x2F;app文件夹)</span><br><span class="line">WORKDIR &#x2F;app </span><br><span class="line"></span><br><span class="line">COPY .&#x2F;package*.json &#x2F;app&#x2F; </span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm config set registry &quot;https:&#x2F;&#x2F;registry.npm.taobao.org&#x2F;&quot; \</span><br><span class="line">  &amp;&amp; npm install </span><br><span class="line">COPY . &#x2F;app</span><br><span class="line">RUN npm run build </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#指定nginx配置项目，--from&#x3D;builder 指的是从上一次 build 的结果中提取了编译结果</span><br><span class="line">FROM nginx</span><br><span class="line"></span><br><span class="line">#将打包后的文件复制到nginx中</span><br><span class="line">COPY --from&#x3D;builder app&#x2F;dist &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;</span><br><span class="line"></span><br><span class="line">#用本地的 default.conf 配置来替换nginx镜像里的默认配置。</span><br><span class="line">COPY --from&#x3D;builder app&#x2F;nginx.conf &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;default.conf</span><br><span class="line"></span><br><span class="line">#暴露容器80端口</span><br><span class="line">EXPOSE 80</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，在这里将打包操作也放到Dokcerfile里面进行操作了。</p>
+<p><strong>该条命令是将我们在镜像里面打包生成的dist文件放进容器内nginx的web目录下面。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY --from&#x3D;builder app&#x2F;dist &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p><strong>该条命令是将我们项目目录下面的nginx.conf文件复制到容器内nginx的配置文件的目录下面，从而覆盖原有的配置文件。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY --from&#x3D;builder app&#x2F;nginx.conf &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建-nginx-conf-文件"><a href="#创建-nginx-conf-文件" class="headerlink" title="创建 nginx.conf 文件"></a>创建 nginx.conf 文件</h3><p>在项目根目录下创建nginx文件，该文件夹下新建文件nginx.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    # 开启 gzip</span><br><span class="line">    gzip  on;</span><br><span class="line">    gzip_min_length 1k;</span><br><span class="line">    gzip_buffers 16 64k;</span><br><span class="line">    gzip_http_version 1.1;</span><br><span class="line">    gzip_comp_level 9;</span><br><span class="line">    gzip_types text&#x2F;plain application&#x2F;x-javascript application&#x2F;javascript text&#x2F;css application&#x2F;xml text&#x2F;javascript application&#x2F;x-httpd-php image&#x2F;jpeg image&#x2F;gif image&#x2F;png;</span><br><span class="line">    gzip_vary on;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        # 根目录</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">        index  index.html index.htm;</span><br><span class="line"></span><br><span class="line">        # 解决HTML5 History 模式</span><br><span class="line">        try_files $uri $uri&#x2F; &#x2F;index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建-dockerignore-文件"><a href="#创建-dockerignore-文件" class="headerlink" title="创建 .dockerignore 文件"></a>创建 .dockerignore 文件</h3><p>在项目根目录下创建.dockerignore，用与忽略镜像打包文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.git</span><br><span class="line">node_modules</span><br><span class="line">npm-debug.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="制作镜像-1"><a href="#制作镜像-1" class="headerlink" title="制作镜像"></a>制作镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image build -t vuetest:1.0 .</span><br></pre></td></tr></table></figure>
+<p>-t 是给镜像命名 . 是基于当前目录的Dockerfile来构建镜像</p>
+<h3 id="启动容器-1"><a href="#启动容器-1" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">-p 3000:80 \</span><br><span class="line">-d --name vueTest \</span><br><span class="line">vuetest</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>docker run</code> 基于镜像启动一个容器</li>
+<li><code>-p 3000:80</code> 端口映射，将宿主的3000端口映射到容器的80端口</li>
+<li><code>-d</code> 后台方式运行</li>
+<li><code>--name</code> 容器名 查看 docker 进程</li>
+</ul>
+<p>可以发现名为 vueTest的容器已经运行起来。此时访问 http://{ip}:3000 应该就能访问到该vue应用:</p>
+
       
     </div>
 
@@ -791,90 +840,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/07/29/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BAdocker-jenkins-node-js%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/docker%E5%AE%9E%E6%88%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/29/docker%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">docker实战</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-29 17:49:01" itemprop="dateCreated datePublished" datetime="2020-07-29T17:49:01+08:00">2020-07-29</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="镜像与容器"><a href="#镜像与容器" class="headerlink" title="镜像与容器"></a>镜像与容器</h2><p>Docker 中有两个重要概念。</p>
-<p>一个是容器（Container）：容器特别像一个虚拟机，容器中运行着一个完整的操作系统。可以在容器中装 <code>Nodejs</code>，可以执行<code>npm install</code>，可以做一切你当前操作系统能做的事情</p>
-<p>另一个是镜像（Image）：镜像是一个文件，它是用来创建容器的。如果你有装过 Windows 操作系统，那么 Docker 镜像特别像“Win7纯净版.rar”文件</p>
-<p>上边就是你所需要了解的 Docker 全部基础知识。就这么简单</p>
-<p>在 Docker 中，我们通常称你当前使用的真实操作系统为<strong>宿主机(Host)</strong></p>
-<h2 id="安装-Docker"><a href="#安装-Docker" class="headerlink" title="安装 Docker"></a>安装 Docker</h2><p>安装 Docker 在你的电脑上就像安装 VS Code 一样简单</p>
-<p><strong>Linux</strong>：get.docker.com/</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;get.docker.com -o get-docker.sh</span><br><span class="line">sh get-docker.sh</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/29/docker%E5%AE%9E%E6%88%98/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1316,6 +1281,96 @@
   
   
 
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">webpack配置详解</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-21 16:52:02" itemprop="dateCreated datePublished" datetime="2020-04-21T16:52:02+08:00">2020-04-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webpack/" itemprop="url" rel="index"><span itemprop="name">webpack</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>上官方文档镇楼</strong></p>
+<p><a href="https://www.webpackjs.com/concepts/" target="_blank" rel="noopener">官方文档</a></p>
+<h2 id="entry"><a href="#entry" class="headerlink" title="entry"></a>entry</h2><p>目录结构</p>
+<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421165252.png" alt=""></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; resolve &#125; = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> HtmlWebpackPlugin = <span class="built_in">require</span>(<span class="string">'html-webpack-plugin'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  entry: 入口起点</span></span><br><span class="line"><span class="comment">    1. string --&gt; './src/index.js'</span></span><br><span class="line"><span class="comment">      单入口</span></span><br><span class="line"><span class="comment">      打包形成一个chunk。 输出一个bundle文件。</span></span><br><span class="line"><span class="comment">      此时chunk的名称默认是 main</span></span><br><span class="line"><span class="comment">    2. array  --&gt; ['./src/index.js', './src/add.js']</span></span><br><span class="line"><span class="comment">      多入口</span></span><br><span class="line"><span class="comment">      所有入口文件最终只会形成一个chunk, 输出出去只有一个bundle文件。</span></span><br><span class="line"><span class="comment">        --&gt; 只有在HMR功能中让html热更新生效~</span></span><br><span class="line"><span class="comment">    3. object</span></span><br><span class="line"><span class="comment">      多入口</span></span><br><span class="line"><span class="comment">      有几个入口文件就形成几个chunk，输出几个bundle文件</span></span><br><span class="line"><span class="comment">      此时chunk的名称是 key</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">      --&gt; 特殊用法</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">          // 所有入口文件最终只会形成一个chunk, 输出出去只有一个bundle文件。</span></span><br><span class="line"><span class="comment">          index: ['./src/index.js', './src/count.js'], </span></span><br><span class="line"><span class="comment">          // 形成一个chunk，输出一个bundle文件。</span></span><br><span class="line"><span class="comment">          add: './src/add.js'</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: &#123;</span><br><span class="line">    index: [<span class="string">'./src/index.js'</span>, <span class="string">'./src/count.js'</span>], </span><br><span class="line">    add: <span class="string">'./src/add.js'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">'[name].js'</span>,</span><br><span class="line">    path: resolve(__dirname, <span class="string">'build'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [<span class="keyword">new</span> HtmlWebpackPlugin()],</span><br><span class="line">  mode: <span class="string">'development'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
   </div>
 
   
@@ -1388,7 +1443,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1443,12 +1498,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">461k</span>
+    <span title="站点总字数">460k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">6:59</span>
+    <span title="站点阅读时长">6:58</span>
 </div>
 
         

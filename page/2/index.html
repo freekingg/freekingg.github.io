@@ -191,96 +191,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">webpack配置详解</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-21 16:52:02" itemprop="dateCreated datePublished" datetime="2020-04-21T16:52:02+08:00">2020-04-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/webpack/" itemprop="url" rel="index"><span itemprop="name">webpack</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>上官方文档镇楼</strong></p>
-<p><a href="https://www.webpackjs.com/concepts/" target="_blank" rel="noopener">官方文档</a></p>
-<h2 id="entry"><a href="#entry" class="headerlink" title="entry"></a>entry</h2><p>目录结构</p>
-<p><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200421165252.png" alt=""></p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; resolve &#125; = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> HtmlWebpackPlugin = <span class="built_in">require</span>(<span class="string">'html-webpack-plugin'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  entry: 入口起点</span></span><br><span class="line"><span class="comment">    1. string --&gt; './src/index.js'</span></span><br><span class="line"><span class="comment">      单入口</span></span><br><span class="line"><span class="comment">      打包形成一个chunk。 输出一个bundle文件。</span></span><br><span class="line"><span class="comment">      此时chunk的名称默认是 main</span></span><br><span class="line"><span class="comment">    2. array  --&gt; ['./src/index.js', './src/add.js']</span></span><br><span class="line"><span class="comment">      多入口</span></span><br><span class="line"><span class="comment">      所有入口文件最终只会形成一个chunk, 输出出去只有一个bundle文件。</span></span><br><span class="line"><span class="comment">        --&gt; 只有在HMR功能中让html热更新生效~</span></span><br><span class="line"><span class="comment">    3. object</span></span><br><span class="line"><span class="comment">      多入口</span></span><br><span class="line"><span class="comment">      有几个入口文件就形成几个chunk，输出几个bundle文件</span></span><br><span class="line"><span class="comment">      此时chunk的名称是 key</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">      --&gt; 特殊用法</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">          // 所有入口文件最终只会形成一个chunk, 输出出去只有一个bundle文件。</span></span><br><span class="line"><span class="comment">          index: ['./src/index.js', './src/count.js'], </span></span><br><span class="line"><span class="comment">          // 形成一个chunk，输出一个bundle文件。</span></span><br><span class="line"><span class="comment">          add: './src/add.js'</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: &#123;</span><br><span class="line">    index: [<span class="string">'./src/index.js'</span>, <span class="string">'./src/count.js'</span>], </span><br><span class="line">    add: <span class="string">'./src/add.js'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">'[name].js'</span>,</span><br><span class="line">    path: resolve(__dirname, <span class="string">'build'</span>)</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [<span class="keyword">new</span> HtmlWebpackPlugin()],</span><br><span class="line">  mode: <span class="string">'development'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/21/webpack%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/21/%E6%9E%81%E9%80%9F%E5%85%A5%E9%97%A8Node%C2%B7Vue%C2%B7React%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1126,6 +1036,104 @@
   
   
 
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%81%B5%E5%9B%BE%E4%B9%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%81%B5%E5%9B%BE%E4%B9%A6/" class="post-title-link" itemprop="url">puppeteer实践-批量下载图灵图书</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 16:16:30" itemprop="dateCreated datePublished" datetime="2020-04-03T16:16:30+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%88%E4%BE%8B/" itemprop="url" rel="index"><span itemprop="name">案例</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="puppeteer实践-批量下载图灵图书"><a href="#puppeteer实践-批量下载图灵图书" class="headerlink" title="puppeteer实践-批量下载图灵图书"></a>puppeteer实践-批量下载图灵图书</h1><h2 id="下载图灵图书"><a href="#下载图灵图书" class="headerlink" title="下载图灵图书"></a>下载图灵图书</h2><p>借助无头浏览器 Puppeteer 的无头模式，实现简单的下载已购买书籍为 pdf 到本地的脚本，支持批量下载已购买的书籍。</p>
+<p><strong>Puppeteer能做什么</strong></p>
+<ul>
+<li>对网页进行截图保存为图片或 pdf</li>
+<li>抓取单页应用(SPA)执行并渲染(解决传统 HTTP 爬虫抓取单页应用难以处理异步请求的问题)</li>
+<li>做表单的自动提交、UI的自动化测试、模拟键盘输入等</li>
+<li>用浏览器自带的一些调试工具和性能分析工具帮助我们分析问题</li>
+<li>写爬虫做你想做的事情~</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/03/puppeteer%E5%AE%9E%E8%B7%B5-%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%81%B5%E5%9B%BE%E4%B9%A6/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
   </div>
 
   
@@ -1198,7 +1206,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1253,12 +1261,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">461k</span>
+    <span title="站点总字数">460k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">6:59</span>
+    <span title="站点阅读时长">6:58</span>
 </div>
 
         
