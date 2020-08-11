@@ -7305,6 +7305,8 @@
 </li>
 </ul>
 <p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123229.png" alt=""></p>
+<a id="more"></a>
+
 <h4 id="二、配置-Docker"><a href="#二、配置-Docker" class="headerlink" title="二、配置 Docker"></a>二、配置 Docker</h4><p><strong>确定 Docker Client 版本</strong></p>
 <p>在配置之前，首先需要确定 Docker Client 的版本，推荐是 1.10.0+:</p>
 <p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200731123341.png" alt=""></p>
@@ -7479,6 +7481,51 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker load &lt; python_3.tar</span><br></pre></td></tr></table></figure>
 
 <p>导入成功后，查看本地镜像信息，你就可以获得别人分享的镜像了！</p>
+<h3 id="容器使用"><a href="#容器使用" class="headerlink" title="容器使用"></a>容器使用</h3><h4 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h4><p>如果我们本地没有 ubuntu 镜像，我们可以使用 docker pull 命令来载入 ubuntu 镜像：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull ubuntu</span><br></pre></td></tr></table></figure>
+
+<h4 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h4><p>以下命令使用 ubuntu 镜像启动一个容器，参数为以命令行模式进入该容器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -it ubuntu &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li><code>-i</code>: 交互式操作。</li>
+<li><code>-t</code>: 终端。</li>
+<li><code>ubuntu</code>: ubuntu 镜像。</li>
+<li><code>/bin/bash</code>：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 /bin/bash。</li>
+</ul>
+<p>要退出终端，直接输入 exit:</p>
+<h4 id="启动已停止运行的容器"><a href="#启动已停止运行的容器" class="headerlink" title="启动已停止运行的容器"></a>启动已停止运行的容器</h4><p>查看所有的容器命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker ps -a</span><br></pre></td></tr></table></figure>
+<p>使用 <code>docker start</code> 启动一个已停止的容器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker start b750bbbcfd88</span><br></pre></td></tr></table></figure>
+<h4 id="后台运行"><a href="#后台运行" class="headerlink" title="后台运行"></a>后台运行</h4><p>在大部分的场景下，我们希望 docker 的服务是在后台运行的，我们可以过 <code>-d</code> 指定容器的运行模式。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -itd --name ubuntu-test ubuntu &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+<p>注：加了 -d 参数默认不会进入容器，想要进入容器需要使用指令 docker exec</p>
+<h4 id="停止容器"><a href="#停止容器" class="headerlink" title="停止容器"></a>停止容器</h4><p>停止容器的命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker stop &lt;容器 ID&gt;</span><br></pre></td></tr></table></figure>
+<p>停止的容器可以通过 docker restart 重启：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker restart &lt;容器 ID&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h4><p>在使用 <code>-d</code> 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：</p>
+<p><strong>docker exec：</strong><br>推荐大家使用 docker exec 命令，因为此退出容器终端，不会导致容器的停止。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker exec -it 243c32535da7 &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+<h4 id="导出和导入容器"><a href="#导出和导入容器" class="headerlink" title="导出和导入容器"></a>导出和导入容器</h4><p><strong>导出容器</strong><br>如果要导出本地某个容器，可以使用 docker export 命令。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker export 1e560fca3906 &gt; ubuntu.tar</span><br></pre></td></tr></table></figure>
+<p><strong>导入容器</strong></p>
+<p>可以使用 <code>docker import</code> 从容器快照文件中再导入为镜像，以下实例将快照文件 <code>ubuntu.tar</code> 导入到镜像 <code>test/ubuntu:v1:</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat docker&#x2F;ubuntu.tar | docker import - test&#x2F;ubuntu:v1</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h4><p>删除容器使用 <code>docker rm</code> 命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker rm -f 1e560fca3906</span><br></pre></td></tr></table></figure>
+
+<h4 id="清理容器"><a href="#清理容器" class="headerlink" title="清理容器"></a>清理容器</h4><p>下面的命令可以清理掉所有处于终止状态的容器。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker container prune</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看容器日志"><a href="#查看容器日志" class="headerlink" title="查看容器日志"></a>查看容器日志</h4><figure class="highlight docker"><figcaption><span>logs [ID或者名字]``` 可以查看容器内部的标准输出。</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">``` js</span><br><span class="line">docker logs -f bf08b7f2cd89</span><br></pre></td></tr></table></figure>
+
+<h4 id="检查容器详细信息inspect"><a href="#检查容器详细信息inspect" class="headerlink" title="检查容器详细信息inspect"></a>检查容器详细信息inspect</h4><p>使用 <code>docker inspect</code> 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker inspect wizardly_chandrasekhar</span><br></pre></td></tr></table></figure>
+
+
 <h2 id="常用环境安装篇"><a href="#常用环境安装篇" class="headerlink" title="常用环境安装篇"></a>常用环境安装篇</h2><h3 id="Mysql-环境"><a href="#Mysql-环境" class="headerlink" title="Mysql 环境"></a>Mysql 环境</h3><h4 id="一、下载-Mysql-镜像"><a href="#一、下载-Mysql-镜像" class="headerlink" title="一、下载 Mysql 镜像"></a>一、下载 Mysql 镜像</h4><p>这里以 Mysql 5.7 为例：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
 <p>下载完成后，通过 docker images 检查一下镜像是否下载成功:</p>
@@ -7600,12 +7647,12 @@
 <h2 id="用-Docker-搭建-nodejs-应用"><a href="#用-Docker-搭建-nodejs-应用" class="headerlink" title="用 Docker 搭建 nodejs 应用"></a>用 Docker 搭建 nodejs 应用</h2><h3 id="创建koa项目"><a href="#创建koa项目" class="headerlink" title="创建koa项目"></a>创建koa项目</h3><p>通过koa框架写一个hello-world项目<br>app.js</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const Koa &#x3D; require(&#39;koa&#39;);</span><br><span class="line">const app &#x3D; new Koa();</span><br><span class="line"></span><br><span class="line">app.use(async ctx &#x3D;&gt; &#123;</span><br><span class="line">  ctx.body &#x3D; &#39;Hello World&#39;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(3000);</span><br></pre></td></tr></table></figure>
 
-<h3 id="创建-Dockerfile-文件"><a href="#创建-Dockerfile-文件" class="headerlink" title="创建 Dockerfile 文件"></a>创建 Dockerfile 文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.16.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;usr&#x2F;src&#x2F;testApp&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD node app.js</span><br></pre></td></tr></table></figure>
+<h3 id="创建-Dockerfile-文件"><a href="#创建-Dockerfile-文件" class="headerlink" title="创建 Dockerfile 文件"></a>创建 Dockerfile 文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.16.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;app&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD node app.js</span><br></pre></td></tr></table></figure>
 
 <h3 id="制作镜像"><a href="#制作镜像" class="headerlink" title="制作镜像"></a>制作镜像</h3><p>有了 Dockerfile 以后，我们可以运行下面的命令构建前端镜像并命名为 my-koa-app：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker build -t my-koa-app .</span><br></pre></td></tr></table></figure>
 
-<h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h3><p>最后，让我们从镜像启动容器：</p>
+<h3 id="启动容器-1"><a href="#启动容器-1" class="headerlink" title="启动容器"></a>启动容器</h3><p>最后，让我们从镜像启动容器：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">docker run \</span><br><span class="line">-p 3006:3000 \</span><br><span class="line">-d --name koaApp \</span><br><span class="line">my-koa-app</span><br></pre></td></tr></table></figure>
 
 <p>这样子我们就能从 3006 端口去访问我们的 node 应用。</p>
@@ -7614,7 +7661,7 @@
 <blockquote>
 <p>使用命令 <code>pm2 start app.js</code> 之后, pm2 默认在后台运行, 如果使用了 Docker 后,容器运行并立即退出,需要手动给“ pm2 ”指定参数 <code>--no-daemon</code></p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.1.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;usr&#x2F;src&#x2F;testApp&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD pm2 start app.js --no-daemon</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM node:12.1.3-alpine</span><br><span class="line"></span><br><span class="line">LABEL maintainer&#x3D;&quot;SvenDowideit@home.org.au&quot;</span><br><span class="line"></span><br><span class="line"># 在容器中创建一个目录</span><br><span class="line">RUN mkdir -p &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line"># 定位到容器的工作目录</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;src&#x2F;testApp&#x2F;</span><br><span class="line"></span><br><span class="line">RUN npm install -g pm2</span><br><span class="line"></span><br><span class="line"># RUN&#x2F;COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包</span><br><span class="line">COPY .&#x2F;package*.json &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">#安装依赖</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line"># 把当前目录下的所有文件拷贝到 Image 的 &#x2F;app&#x2F; 目录下</span><br><span class="line">COPY . &#x2F;app&#x2F;</span><br><span class="line"></span><br><span class="line">#暴露端口</span><br><span class="line">EXPOSE 3000</span><br><span class="line"></span><br><span class="line">#容器启动后执行的命令</span><br><span class="line">CMD pm2 start app.js --no-daemon</span><br></pre></td></tr></table></figure>
 
 
 
@@ -7638,7 +7685,7 @@
 
 <h3 id="制作镜像-1"><a href="#制作镜像-1" class="headerlink" title="制作镜像"></a>制作镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image build -t vuetest:1.0 .</span><br></pre></td></tr></table></figure>
 <p>-t 是给镜像命名 . 是基于当前目录的Dockerfile来构建镜像</p>
-<h3 id="启动容器-1"><a href="#启动容器-1" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run \</span><br><span class="line">-p 3000:80 \</span><br><span class="line">-d --name vueTest \</span><br><span class="line">vuetest</span><br></pre></td></tr></table></figure>
+<h3 id="启动容器-2"><a href="#启动容器-2" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run \</span><br><span class="line">-p 3000:80 \</span><br><span class="line">-d --name vueTest \</span><br><span class="line">vuetest</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><code>docker run</code> 基于镜像启动一个容器</li>
@@ -7647,6 +7694,141 @@
 <li><code>--name</code> 容器名 查看 docker 进程</li>
 </ul>
 <p>可以发现名为 vueTest的容器已经运行起来。此时访问 http://{ip}:3000 应该就能访问到该vue应用:</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Windows平台安装MongoDB教程</title>
+    <url>/2020/08/04/Windows%E5%B9%B3%E5%8F%B0%E5%AE%89%E8%A3%85MongoDB%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="一、MongoDB简介"><a href="#一、MongoDB简介" class="headerlink" title="一、MongoDB简介"></a>一、MongoDB简介</h2><p>MongoDB是一个基于分布式文件存储的数据库，由C++语言编写，旨在为WEB应用提供可扩展的高性能数据存储解决方案。</p>
+<p>MongoDB将数据存储为一个文档，数据结构由键值(key=&gt;value)对组成，MongoDB文档类似于JSON对象，字段值可以包含其他文档，数组及文档数组。</p>
+<p>MongoDB服务端可运行在Linux、Windows或mac os x平台，支持32位和64位应用，默认端口为27017。</p>
+<p>MongoDB支持各种编程语言: Python，Java，C++，PHP，C#等多种语言。</p>
+<a id="more"></a>
+
+<h2 id="二、下载MongoDB"><a href="#二、下载MongoDB" class="headerlink" title="二、下载MongoDB"></a>二、下载MongoDB</h2><p>MongoDB提供了可用于32位系统和64位系统的预编译二进制包（新版本没有了32位系统的安装文件），你可以进入MongoDB官网下载安装，MongoDB的预编译二进制包的下载地址为：<a href="https://www.mongodb.com/download-center/community，打开之后会看到如下图，直接点击Download下载即可，也可以在Version中选择你想要的版本：" target="_blank" rel="noopener">https://www.mongodb.com/download-center/community，打开之后会看到如下图，直接点击Download下载即可，也可以在Version中选择你想要的版本：</a></p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110433.png" alt=""></p>
+<h2 id="三、安装MongoDB"><a href="#三、安装MongoDB" class="headerlink" title="三、安装MongoDB"></a>三、安装MongoDB</h2><p>双击打开文件进行安装，在安装过程中，可以通过点击 “Custom(自定义)” 按钮来设置你的安装目录。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110505.png" alt=""></p>
+<p>这里我选择安装在E:\MongoDB这个目录下（安装目录会影响我们后面的配置）。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110526.png" alt=""></p>
+<p>这里选择直接next：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110543.png" alt=""></p>
+<p>这里安装 “Install MongoDB Compass” 不勾选，否则可能要很长时间都一直在执行安装，MongoDB Compass是一个图形界面管理工具，这里不安装也是没有问题的，可以自己去下载一个图形界面管理工具，比如Robo3T。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110606.png" alt=""></p>
+<p>之后稍微等待一会就安装好了。</p>
+<h2 id="四、配置MongoDB"><a href="#四、配置MongoDB" class="headerlink" title="四、配置MongoDB"></a>四、配置MongoDB</h2><p>首先要在MongoDB的data文件夹里新建一个db文件夹和一个log文件夹：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110642.png" alt=""></p>
+<p>然后在log文件夹下新建一个mongo.log：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110702.png" alt=""></p>
+<p>然后将E:\MongoDB\bin添加到环境变量path中，此时打开cmd窗口运行一下mongo命令，出现如下情况：</p>
+<p>这是为什么呢？这是因为我们还没有启动MongoDB服务，自然也就连接不上服务了。那要怎么启动呢？在cmd窗口中运行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongod --dbpath E:\MongoDB\data\db</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是：如果你没有提前创建db文件夹，是无法启动成功的。运行成功之后，我们打开浏览器，输入127.0.0.1:27017，看到如下图，就说明MongoDB服务已经成功启动了。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110754.png" alt=""></p>
+<p>但是如果每次都要这么启动服务的话也太麻烦了吧，这里你可以选择设置成开机自启动，也可以选择用命令<code>net start mongodb</code>来手动启动，这里我选择使用后者，具体方法如下。</p>
+<p>还是打开cmd窗口，不过这次是以管理员身份运行，然后输入如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongod --dbpath &quot;E:\MongoDB\data\db&quot; --logpath &quot;E:\MongoDB\data\log\mongo.log&quot; -install -serviceName &quot;MongoDB&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如果没有报错的话就说明成功添加到服务里了，可以使用win+R然后输入services.msc命令进行查看：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110837.png" alt=""></p>
+<p>默认是自动运行的，这里我选择把它改成手动的(随自己情况)。然后在cmd窗口中运行net start mongodb：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804110915.png" alt=""></p>
+<p>怎么解决呢？两个步骤：</p>
+<p>1）运行sc delete mongodb删除服务；</p>
+<p>2）再运行一次配置服务的命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongod --dbpath &quot;E:\MongoDB\data\db&quot; --logpath &quot;E:\MongoDB\data\log\mongo.log&quot; -install -serviceName &quot;MongoDB&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后再运行net start mongodb，服务启动成功：</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200804111051.png" alt=""></p>
+<h2 id="五、可能遇到的问题"><a href="#五、可能遇到的问题" class="headerlink" title="五、可能遇到的问题"></a>五、可能遇到的问题</h2><p><strong>1.mongod不是内部或外部命令</strong><br>出现这种问题说明你没有把bin目录添加到环境变量之中，重新添加一下即可解决。</p>
+<p><strong>2.服务名无效</strong><br>首先是看你输入的服务名称是否有误，然后再查看本地服务中有没有MongoDB服务，如果没有服务，则运行命令添加服务即可。</p>
+<p><strong>3.发生服务特定错误：100</strong><br>删除db文件夹下的mongod.lock和storage.bson两个文件，若删除完之后仍然出现这种问题，用sc delete mongodb删除服务，再配置一下服务就能解决了。</p>
+<h2 id="安装参考二"><a href="#安装参考二" class="headerlink" title="安装参考二"></a>安装参考二</h2><p><a href="https://www.runoob.com/mongodb/mongodb-window-install.html" target="_blank" rel="noopener">https://www.runoob.com/mongodb/mongodb-window-install.html</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>linux下安装mysql及问题</title>
+    <url>/2020/08/11/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/</url>
+    <content><![CDATA[<h2 id="下载安装包"><a href="#下载安装包" class="headerlink" title="下载安装包"></a>下载安装包</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;repo.mysql.com&#x2F;mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<p>未安装wget的同学执行以下命令安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum install wget</span><br></pre></td></tr></table></figure>
+
+
+<a id="more"></a>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo rpm -ivh mysql57-community-release-el7-8.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum install mysql-server</span><br></pre></td></tr></table></figure>
+
+<p>安装完成</p>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl start mysqld</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="设置密码"><a href="#设置密码" class="headerlink" title="设置密码"></a>设置密码</h2><p>当第一次启动MySQL服务器时，为MySQL根用户生成一个临时密码。 您可以通过运行以下文件找到密码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;var&#x2F;log&#x2F;mysqld.log</span><br></pre></td></tr></table></figure>
+<p>找到里面的 <code>localhost：</code>后边的就是临时密码，先复制下来</p>
+<p>tip:</p>
+<p>如果这个文件为空：</p>
+<ul>
+<li>1.删除原来安装过的mysql残留的数据<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rf &#x2F;var&#x2F;lib&#x2F;mysql</span><br></pre></td></tr></table></figure></li>
+<li>2.重启mysqld服务<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure></li>
+<li>3.再去找临时密码</li>
+</ul>
+<h2 id="配置mysql安装项："><a href="#配置mysql安装项：" class="headerlink" title="配置mysql安装项："></a>配置mysql安装项：</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo mysql_secure_installation</span><br></pre></td></tr></table></figure>
+<p>输入刚才的临时密码</p>
+<p>接下来mysql会提示你输入新的密码,<br>和一下其他设置，一般情况下我们都会输入y（密码必须至少包含8个字符并且至少包含一个大写字母，一个小写字母，一个数字和一个特殊字符。）</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>看到All done!表示配置已经完成，尝试远程访问一下</p>
+<h2 id="远程连接"><a href="#远程连接" class="headerlink" title="远程连接"></a>远程连接</h2><p>访问成功，但是在利用SQLyog工具连接出现了问题</p>
+<p>报错:不允许远程登陆</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR 1130: Host ’...′ is not allowed to connect to this MySQL server</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200811150445.png" alt=""></p>
+<ul>
+<li><p>1、连接服务器: mysql -u root -p</p>
+</li>
+<li><p>2、看当前所有数据库：show databases;</p>
+</li>
+<li><p>3、进入mysql数据库：use mysql;</p>
+</li>
+<li><p>4、查看mysql数据库中所有的表：show tables;</p>
+</li>
+<li><p>5、修改user表中的<code>update user set host = &#39;%&#39; where user = &#39;root&#39;;</code></p>
+</li>
+<li><p>6、最后刷新一下：flush privileges;</p>
+</li>
+</ul>
+<p><strong>注意</strong></p>
+<p>将Host设置为通配符%</p>
+<p>Host列指定了允许用户登录所使用的IP，比如user=root Host=192.168.1.1。这里的意思就是说root用户只能通过192.168.1.1的客户端去访问。 user=root Host=localhost，表示只能通过本机客户端去访问。而%是个通配符，如果Host=192.168.1.%，那么就表示只要是IP地址前缀为“192.168.1.”的客户端都可以连接。如果Host=%，表示所有IP都有连接权限。 </p>
+<p>注意：在生产环境下不能为了省事将host设置为%，这样做会存在安全问题，具体的设置可以根据生产环境的IP进行设置；</p>
+<h2 id="开机自启动"><a href="#开机自启动" class="headerlink" title="开机自启动"></a>开机自启动</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">systemctl enable mysqld</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>nuxt项目打包部署</title>
+    <url>/2020/08/03/nuxt%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2/</url>
+    <content><![CDATA[<h2 id="首先在本地构建项目"><a href="#首先在本地构建项目" class="headerlink" title="首先在本地构建项目"></a>首先在本地构建项目</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm run build</span><br></pre></td></tr></table></figure>
+
+<h2 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h2><p>构建成功后，会生成.nuxt的隐藏文件夹。将此文件夹以及nuxt.config.js、static和package.json一起上传到服务器</p>
+<h2 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h2><p>然后进入对应目录，执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nuxt start</span><br></pre></td></tr></table></figure>
+<p>这样就可以通过localhost:3000访问项目了</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>在docker容器内访问宿主机的mysql服务</title>
+    <url>/2020/08/11/%E5%9C%A8docker%E5%AE%B9%E5%99%A8%E5%86%85%E8%AE%BF%E9%97%AE%E5%AE%BF%E4%B8%BB%E6%9C%BA%E7%9A%84mysql%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>宿主机部署MySQL、Redis，docker内部署node项目</p>
+<h2 id="需求："><a href="#需求：" class="headerlink" title="需求："></a>需求：</h2><p>docker内的node应用访问宿主机的MySQL和Redis</p>
+<h2 id="方法："><a href="#方法：" class="headerlink" title="方法："></a>方法：</h2><p>一、连接地址切记不能用localhost和127.0.0.1</p>
+<p>这些地址代表的都是容器内的系统，根本没有访问到宿主机，会一直报连接mysql/redis异常。</p>
+<p>二、用docker的虚拟网卡地址</p>
+<p>在宿主机查询网卡情况——ifconfig</p>
+<p>docker0这块虚拟网卡的 inet 地址就是正确的本地ip(如172.17.0.1)</p>
+<p>使用ifconfig命令可以看到，有一个docker0和eth0，在docker容器中可以通过eth0的IP地址加上端口号（3306）这样就可以连接上宿主机的MySQL了；另外，nginx可以通过docker0的IP地址加上构建容器时指定的端口号进行访问容器。</p>
+<p><img src="https://raw.githubusercontent.com/freekingg/king-static/master/20200811205741.png" alt=""></p>
 ]]></content>
   </entry>
 </search>

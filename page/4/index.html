@@ -191,6 +191,341 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-07%E6%8B%96%E6%8B%BD%E9%AA%8C%E8%AF%81%E7%A0%81%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-07%E6%8B%96%E6%8B%BD%E9%AA%8C%E8%AF%81%E7%A0%81%E6%93%8D%E4%BD%9C/" class="post-title-link" itemprop="url">puppeteer系列教程-07拖拽验证码操作</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 13:03:24" itemprop="dateCreated datePublished" datetime="2020-04-03T13:03:24+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="拖拽操作"><a href="#拖拽操作" class="headerlink" title="拖拽操作"></a>拖拽操作</h2><p>使用 api <code>mouse</code></p>
+<p>自动化操作阿里云注册页面的验证码部分<br><img src="https://raw.githubusercontent.com/RocWangPeng/king-static/master/20200403130504.png" alt=""></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">aliyun</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch(&#123;<span class="attr">headless</span>:<span class="literal">false</span>,<span class="attr">ignoreDefaultArgs</span>:[<span class="string">'--enable-automation'</span>]&#125;);</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    <span class="keyword">await</span> page.goto(<span class="string">'https://account.aliyun.com/register/register.htm'</span>,&#123;<span class="attr">waitUntil</span>:<span class="string">"networkidle2"</span>&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> frame = <span class="keyword">await</span> page.frames().find(<span class="function"><span class="params">frame</span>=&gt;</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(frame.url())</span><br><span class="line">        <span class="keyword">return</span> frame.url().includes(<span class="string">'https://passport.aliyun.com/member/reg/fast/fast_reg.htm'</span>)</span><br><span class="line"></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> span = <span class="keyword">await</span> frame.waitForSelector(<span class="string">'#nc_1_n1z'</span>);</span><br><span class="line">    <span class="keyword">const</span> spaninfo = <span class="keyword">await</span> span.boundingBox();</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'spaninfo'</span>,spaninfo)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">await</span> page.mouse.move(spaninfo.x,spaninfo.y);</span><br><span class="line">    <span class="keyword">await</span> page.mouse.down();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> div = <span class="keyword">await</span> frame.waitForSelector(<span class="string">'div#nc_1__scale_text &gt; span.nc-lang-cnt'</span>);</span><br><span class="line">    <span class="keyword">const</span> divinfo = <span class="keyword">await</span> div.boundingBox();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'divinfo'</span>,divinfo)</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;divinfo.width;i++)&#123;</span><br><span class="line">        <span class="keyword">await</span> page.mouse.move(spaninfo.x+i,spaninfo.y);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">await</span> page.mouse.up();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">aliyun();</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-06%E5%88%87%E6%8D%A2frame%E8%BF%9B%E8%A1%8C%E5%AE%89%E5%B1%85%E5%AE%A2%E7%99%BB%E9%99%86%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-06%E5%88%87%E6%8D%A2frame%E8%BF%9B%E8%A1%8C%E5%AE%89%E5%B1%85%E5%AE%A2%E7%99%BB%E9%99%86%E6%93%8D%E4%BD%9C/" class="post-title-link" itemprop="url">puppeteer系列教程-06切换frame进行安居客登陆操作</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 13:02:03" itemprop="dateCreated datePublished" datetime="2020-04-03T13:02:03+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>587</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="切换frame"><a href="#切换frame" class="headerlink" title="切换frame"></a>切换frame</h2><p>使用api  <code>page.frames()</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">anjuke</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch(&#123;<span class="attr">headless</span>:<span class="literal">false</span>&#125;);</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    <span class="keyword">await</span> page.goto(<span class="string">'https://login.anjuke.com/login/form'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 切换iframe</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> page.frames().map(<span class="function"><span class="params">frame</span> =&gt;</span> &#123;<span class="built_in">console</span>.log(frame.url())&#125;)</span><br><span class="line">    <span class="keyword">const</span> targetFrameUrl = <span class="string">'https://login.anjuke.com/login/iframeform'</span></span><br><span class="line">    <span class="keyword">const</span> frame =  <span class="keyword">await</span> page.frames().find(<span class="function"><span class="params">frame</span> =&gt;</span> frame.url().includes(targetFrameUrl));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> phone= <span class="keyword">await</span> frame.waitForSelector(<span class="string">'#phoneIpt'</span>)</span><br><span class="line">    <span class="keyword">await</span> phone.type(<span class="string">"13411112222"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">anjuke();</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-05%E5%A4%84%E7%90%86%E5%A4%9A%E4%B8%AA%E5%85%83%E7%B4%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-05%E5%A4%84%E7%90%86%E5%A4%9A%E4%B8%AA%E5%85%83%E7%B4%A0/" class="post-title-link" itemprop="url">puppeteer系列教程-05处理多个元素</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 13:00:13" itemprop="dateCreated datePublished" datetime="2020-04-03T13:00:13+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>503</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="多个元素处理"><a href="#多个元素处理" class="headerlink" title="多个元素处理"></a>多个元素处理</h2><ul>
+<li>$$()</li>
+<li>$$eval()<br>代码片段<br>京东手机列表<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">jd</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch(&#123;<span class="attr">headless</span>:<span class="literal">false</span>&#125;);</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    <span class="keyword">await</span> page.goto(<span class="string">'https://www.jd.com'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> input = <span class="keyword">await</span> page.$(<span class="string">'#key'</span>)</span><br><span class="line">    <span class="keyword">await</span> input.type(<span class="string">'手机'</span>);</span><br><span class="line">    <span class="keyword">await</span> page.keyboard.press(<span class="string">'Enter'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> page.waitForSelector(<span class="string">'ul.gl-warp&gt;li'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> list = <span class="keyword">await</span> page.$$<span class="built_in">eval</span>(<span class="string">'ul.gl-warp&gt;li'</span>,eles=&gt;eles.map(<span class="function"><span class="params">ele</span>=&gt;</span>ele.innerText))</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'List =='</span>,list);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">jd();</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/pupputeer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-04%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/tx.jpg">
+      <meta itemprop="name" content="king">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="记忆的时间差">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/03/pupputeer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-04%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" class="post-title-link" itemprop="url">pupputeer系列教程-04文件上传</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-03 12:57:59" itemprop="dateCreated datePublished" datetime="2020-04-03T12:57:59+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/puppeteer/" itemprop="url" rel="index"><span itemprop="name">puppeteer</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>459</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> puppeteer = <span class="built_in">require</span>(<span class="string">'puppeteer'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">const</span> browser = <span class="keyword">await</span> puppeteer.launch(&#123;<span class="attr">headless</span>:<span class="literal">false</span>&#125;);</span><br><span class="line">    <span class="keyword">const</span> page = <span class="keyword">await</span> browser.newPage();</span><br><span class="line">    <span class="keyword">await</span> page.goto(<span class="string">'https://www.baidu.com'</span>);</span><br><span class="line">    <span class="keyword">const</span> soutuBtn = <span class="keyword">await</span> page.waitForSelector(<span class="string">'span.soutu-btn'</span>);</span><br><span class="line">    <span class="keyword">await</span> soutuBtn.click();</span><br><span class="line">    <span class="keyword">const</span> uploadPic = <span class="keyword">await</span> page.waitForSelector(<span class="string">'input.upload-pic'</span>)</span><br><span class="line">    <span class="keyword">await</span> uploadPic.uploadFile(<span class="string">'C:\\Users\\zyzhao\\Documents\\puppeteer_teach\\puppeteer.png'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">upload();</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/puppeteer%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B-03%E8%8E%B7%E5%8F%96%E6%96%87%E6%9C%AC%E5%80%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -733,414 +1068,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/02/mongoDB%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/02/mongoDB%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">mongoDB入门</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-02 17:24:34" itemprop="dateCreated datePublished" datetime="2020-04-02T17:24:34+08:00">2020-04-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>7.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>7 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="MongoDB介绍"><a href="#MongoDB介绍" class="headerlink" title="MongoDB介绍"></a>MongoDB介绍</h2><ul>
-<li><p>MongoDB是一个NoSQL的数据库</p>
-</li>
-<li><p>MongoDB是一款文档型数据库</p>
-</li>
-<li><p>数据库指的就是一个存储数据的仓库<br>  数据库可以使我们完成对数据的持久化的操作</p>
-</li>
-<li><p>MongoDB数据库中存储的数据的基本单位就是文档，<br>  MongoDB中存储的就是文档，所谓文档其实就是一个“JSON”</p>
-</li>
-<li><p>MongoDB中的“JSON”我们称为BSON，比普通的JSON的功能要更加的强大</p>
-</li>
-<li><p>MongoDB数据库使用的是JavaScript进行操作的，在MongoDB含有一个对ES标准实现的引擎，<br>  在MongoDB中所有ES中的语法中都可以使用</p>
-</li>
-<li><p>MongoDB的基本的指令</p>
-<ul>
-<li>启动服务器<br>  mongod –dbpath 路径 –port 端口号</li>
-<li>启动客户端<br>  mongo
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/02/mongoDB%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/vue-cli3%E5%BC%80%E5%8F%91Chrome%E6%8F%92%E4%BB%B6%E5%AE%9E%E8%B7%B5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/31/vue-cli3%E5%BC%80%E5%8F%91Chrome%E6%8F%92%E4%BB%B6%E5%AE%9E%E8%B7%B5/" class="post-title-link" itemprop="url">vue-cli3开发Chrome插件实践</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-31 16:59:10" itemprop="dateCreated datePublished" datetime="2020-03-31T16:59:10+08:00">2020-03-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">浏览器插件开发</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%88%E4%BE%8B/" itemprop="url" rel="index"><span itemprop="name">案例</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>6.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>之前找了不少如何开发谷歌插件的文章，结果发现都是些很基础的内容，并没有写到如何快速编译打包插件。我就在想为什么不能通过webpack来打包插件呢？如果通过webpack编译的话，就能使开发过程变得更舒服，使文件结构趋向模块化，并且打包的时候直接编译压缩代码。后来发现了vue-cli-plugin-chrome-ext插件，通过这个插件能很方便地用vue-cli3来开发谷歌插件，并能直接引用各种UI框架跟npm插件。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/31/vue-cli3%E5%BC%80%E5%8F%91Chrome%E6%8F%92%E4%BB%B6%E5%AE%9E%E8%B7%B5/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/python%E7%B3%BB%E5%88%97-Python%E8%BE%93%E5%85%A5-%E8%BE%93%E5%87%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/31/python%E7%B3%BB%E5%88%97-Python%E8%BE%93%E5%85%A5-%E8%BE%93%E5%87%BA/" class="post-title-link" itemprop="url">python系列-Python输入-输出</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-31 16:08:02" itemprop="dateCreated datePublished" datetime="2020-03-31T16:08:02+08:00">2020-03-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>647</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h2><h3 id="print-函数"><a href="#print-函数" class="headerlink" title="print 函数"></a>print 函数</h3><p>语法</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(values, sep, end, file, flush)</span><br></pre></td></tr></table></figure>
-<p><strong>values</strong><br>需要输出的值<br>多个值, 使用 “,” 进行分割</p>
-<p><strong>sep</strong><br>分割符<br>多个值, 被输出出来之后, 值与值之间, 会添加指定的分隔符</p>
-<p><strong>end</strong><br>输出完毕之后, 以指定的字符, 结束<br>默认是换行 ‘\n’</p>
-<p><strong>file</strong><br>表示输出的目标<br>默认是标准的输出(控制台)<code>file=sys.stdout</code><br>还可以是一个可写入的文件句柄</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f = open(<span class="string">"xxx"</span>, <span class="string">"w"</span>)</span><br><span class="line">file=f</span><br></pre></td></tr></table></figure>
-
-<p><strong>flush</strong><br>表示立即输出的意思<br>值为Bool类型,默认False</p>
-<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><h3 id="输出一个值"><a href="#输出一个值" class="headerlink" title="输出一个值"></a>输出一个值</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="number">123</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出一个变量"><a href="#输出一个变量" class="headerlink" title="输出一个变量"></a>输出一个变量</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">55</span></span><br><span class="line">print(num)</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出多个变量"><a href="#输出多个变量" class="headerlink" title="输出多个变量"></a>输出多个变量</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">num = <span class="number">55</span></span><br><span class="line">num2 = <span class="number">155</span></span><br><span class="line">print(num,num2)</span><br></pre></td></tr></table></figure>
-
-<h3 id="格式化输出"><a href="#格式化输出" class="headerlink" title="格式化输出"></a>格式化输出</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">name = <span class="string">'sz'</span></span><br><span class="line">age = <span class="number">18</span></span><br><span class="line">我的名字是xxx, 年龄是xxx</span><br><span class="line">print(<span class="string">"我的名字是%s, 年龄是%d"</span>%(name, age))</span><br><span class="line">print(<span class="string">"我的名字是&#123;0&#125;, 年龄是&#123;1&#125;"</span>.format(name, age))</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出到文件中"><a href="#输出到文件中" class="headerlink" title="输出到文件中"></a>输出到文件中</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> &gt;&gt;open(<span class="string">"test.txt"</span>, <span class="string">"w"</span>), <span class="string">"12345"</span></span><br><span class="line">f = open(<span class="string">"test.txt"</span>, <span class="string">"w"</span>)</span><br><span class="line">print(<span class="string">"xxxxxxxx"</span>, file=sys.stdout)</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出不自动换行"><a href="#输出不自动换行" class="headerlink" title="输出不自动换行"></a>输出不自动换行</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"abc"</span>, end=<span class="string">""</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="输出-使用分隔符分割"><a href="#输出-使用分隔符分割" class="headerlink" title="输出,使用分隔符分割"></a>输出,使用分隔符分割</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"1"</span>, <span class="string">"2"</span>, <span class="string">"3"</span>, sep=<span class="string">"&amp;&amp;&amp;&amp;&amp;"</span>)</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/31/python%E7%B3%BB%E5%88%97-Python%E4%BB%8B%E7%BB%8D%E4%B8%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/tx.jpg">
-      <meta itemprop="name" content="king">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="记忆的时间差">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/31/python%E7%B3%BB%E5%88%97-Python%E4%BB%8B%E7%BB%8D%E4%B8%80/" class="post-title-link" itemprop="url">python系列-Python介绍一</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-31 15:47:49" itemprop="dateCreated datePublished" datetime="2020-03-31T15:47:49+08:00">2020-03-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              <span>356</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="定位"><a href="#定位" class="headerlink" title="定位"></a>定位</h2><ul>
-<li>一门解释型的高级编程语言</li>
-</ul>
-<h2 id="作者"><a href="#作者" class="headerlink" title="作者"></a>作者</h2><ul>
-<li>荷兰人</li>
-<li>Guido van Rossum（吉多·范罗苏姆）, 人称“龟叔”</li>
-<li>1991年初，Python发布了第一个公开发行版</li>
-</ul>
-<h2 id="应用领域"><a href="#应用领域" class="headerlink" title="应用领域"></a>应用领域</h2><ul>
-<li>Web全栈开发</li>
-<li>图形界面开发</li>
-<li>大数据</li>
-<li>人工智能</li>
-<li>爬虫</li>
-<li>系统网络运维</li>
-<li>云计算系统管理</li>
-</ul>
-<h2 id="Python版本"><a href="#Python版本" class="headerlink" title="Python版本"></a>Python版本</h2><p>目前流行版本两个</p>
-<ul>
-<li>Python2.x</li>
-<li>Python3.x</li>
-</ul>
-<h2 id="Python解释器"><a href="#Python解释器" class="headerlink" title="Python解释器"></a>Python解释器</h2><p>作用:将源码转换成为二进制代码进行运行</p>
-<ul>
-<li>CPython<br>用C语言开发的，所以叫CPython,官方版本的解释器</li>
-<li>IPython<br>基于CPython之上的一个交互式解释器</li>
-<li>PyPy<br>目标是为了提高执行速度,采用JIT技术，对Python代码进行动态编译</li>
-<li>Jython<br>运行在Java平台上的Python解释器</li>
-<li>IronPython<br>和Jython类似，只不过IronPython是运行在微软.Net平台上的Python解释器</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1208,7 +1140,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1263,12 +1195,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">460k</span>
+    <span title="站点总字数">464k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">6:58</span>
+    <span title="站点阅读时长">7:02</span>
 </div>
 
         
