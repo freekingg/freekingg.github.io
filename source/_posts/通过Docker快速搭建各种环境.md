@@ -26,6 +26,8 @@ https://dev.aliyun.com/
 
 ![](https://raw.githubusercontent.com/freekingg/king-static/master/20200731123229.png)
 
+<!-- more -->
+
 #### 二、配置 Docker
 **确定 Docker Client 版本**
 
@@ -392,6 +394,103 @@ docker load < python_3.tar
 
 导入成功后，查看本地镜像信息，你就可以获得别人分享的镜像了！
 
+### 容器使用
+
+#### 获取镜像
+
+如果我们本地没有 ubuntu 镜像，我们可以使用 docker pull 命令来载入 ubuntu 镜像：
+
+```
+docker pull ubuntu
+```
+
+#### 启动容器
+以下命令使用 ubuntu 镜像启动一个容器，参数为以命令行模式进入该容器：
+```
+docker run -it ubuntu /bin/bash
+```
+参数说明：
+- `-i`: 交互式操作。
+- `-t`: 终端。
+- `ubuntu`: ubuntu 镜像。
+- `/bin/bash`：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 /bin/bash。
+
+要退出终端，直接输入 exit:
+
+#### 启动已停止运行的容器
+查看所有的容器命令如下：
+```
+ docker ps -a
+```
+使用 `docker start` 启动一个已停止的容器：
+```
+docker start b750bbbcfd88 
+```
+#### 后台运行
+在大部分的场景下，我们希望 docker 的服务是在后台运行的，我们可以过 `-d` 指定容器的运行模式。
+```
+docker run -itd --name ubuntu-test ubuntu /bin/bash
+```
+注：加了 -d 参数默认不会进入容器，想要进入容器需要使用指令 docker exec
+
+#### 停止容器
+停止容器的命令如下：
+```
+docker stop <容器 ID>
+```
+停止的容器可以通过 docker restart 重启：
+```
+docker restart <容器 ID>
+```
+#### 进入容器
+在使用 `-d` 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：
+
+**docker exec：**
+推荐大家使用 docker exec 命令，因为此退出容器终端，不会导致容器的停止。
+```
+docker exec -it 243c32535da7 /bin/bash
+```
+#### 导出和导入容器
+
+**导出容器**
+如果要导出本地某个容器，可以使用 docker export 命令。
+```
+docker export 1e560fca3906 > ubuntu.tar
+```
+**导入容器**
+
+可以使用 ```docker import``` 从容器快照文件中再导入为镜像，以下实例将快照文件 ```ubuntu.tar``` 导入到镜像 ```test/ubuntu:v1:```
+
+```
+cat docker/ubuntu.tar | docker import - test/ubuntu:v1
+```
+
+#### 删除容器
+删除容器使用 ```docker rm``` 命令：
+```
+docker rm -f 1e560fca3906
+```
+
+#### 清理容器
+下面的命令可以清理掉所有处于终止状态的容器。
+```
+docker container prune
+```
+
+#### 查看容器日志
+```docker logs [ID或者名字]``` 可以查看容器内部的标准输出。
+
+``` js
+docker logs -f bf08b7f2cd89
+```
+
+#### 检查容器详细信息inspect
+使用 ```docker inspect``` 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息。
+
+```
+docker inspect wizardly_chandrasekhar
+```
+
 
 ## 常用环境安装篇
 
@@ -698,19 +797,19 @@ FROM node:12.16.3-alpine
 LABEL maintainer="SvenDowideit@home.org.au"
 
 # 在容器中创建一个目录
-RUN mkdir -p /usr/src/testApp/
+RUN mkdir -p /app/
 
 # 定位到容器的工作目录
-WORKDIR /usr/src/testApp/
+WORKDIR /app/
 
 # RUN/COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包
-COPY ./package*.json /usr/src/testApp/
+COPY ./package*.json /app/
 
 #安装依赖
 RUN npm install
 
-# 把当前目录下的所有文件拷贝到 Image 的 /usr/src/testApp/ 目录下
-COPY . /usr/src/testApp/
+# 把当前目录下的所有文件拷贝到 Image 的 /app/ 目录下
+COPY . /app/
 
 #暴露端口
 EXPOSE 3000
@@ -755,7 +854,7 @@ FROM node:12.1.3-alpine
 LABEL maintainer="SvenDowideit@home.org.au"
 
 # 在容器中创建一个目录
-RUN mkdir -p /usr/src/testApp/
+RUN mkdir -p /app/
 
 # 定位到容器的工作目录
 WORKDIR /usr/src/testApp/
@@ -763,13 +862,13 @@ WORKDIR /usr/src/testApp/
 RUN npm install -g pm2
 
 # RUN/COPY 是分层的，package.json 提前，只要没修改，就不会重新安装包
-COPY ./package*.json /usr/src/testApp/
+COPY ./package*.json /app/
 
 #安装依赖
 RUN npm install
 
-# 把当前目录下的所有文件拷贝到 Image 的 /usr/src/testApp/ 目录下
-COPY . /usr/src/testApp/
+# 把当前目录下的所有文件拷贝到 Image 的 /app/ 目录下
+COPY . /app/
 
 #暴露端口
 EXPOSE 3000
